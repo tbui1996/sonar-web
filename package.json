@@ -1,8 +1,8 @@
 {
-  "name": "echo-web",
+  "name": "sonar-web",
   "version": "0.0.1",
   "main": "index.js",
-  "repository": "git@github.com:circulohealth/echo-web.git",
+  "repository": "git@github.com:circulohealth/sonar-web.git",
   "author": "Tony Duco <tony@circulohealth.com>",
   "license": "UNLICENSED",
   "private": true,
