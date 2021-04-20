@@ -1,46 +1,56 @@
-import { FunctionComponent, Suspense } from 'react';
-import { ThemeProvider } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import AppShell from 'components/core/AppShell';
+import { Router } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
+import { HelmetProvider } from 'react-helmet-async';
+import { Provider as ReduxProvider } from 'react-redux';
+import { PersistGate } from 'redux-persist/lib/integration/react';
+// material
+import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
+import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
+// redux
+import { store, persistor } from './redux/store';
+// routes
+import routes, { renderRoutes } from './routes';
+// theme
+import ThemeConfig from './theme';
+// components
+import Settings from './components/settings';
+import RtlLayout from './components/RtlLayout';
+import ScrollToTop from './components/ScrollToTop';
+import LoadingScreen from './components/LoadingScreen';
+import GoogleAnalytics from './components/GoogleAnalytics';
+import NotistackProvider from './components/NotistackProvider';
 
+// Using for Auth (Check doc https://minimals.cc/docs/authentication)
+import JwtProvider from './components/authentication/JwtProvider';
+// import FirebaseProvider from './components/authentication/FirebaseProvider';
 
-// Pages
-import BroadcastPage from 'pages/Broadcast';
-import WorkflowPage from 'pages/Workflow';
-import DashboardPage from 'pages/Dashboard';
+// ----------------------------------------------------------------------
 
-import theme from './theme';
+const history = createBrowserHistory();
 
-const App: FunctionComponent = () => (
-  <ThemeProvider theme={theme}>
-    <CssBaseline />
-    <Suspense fallback="loading">
-      <Router>
-        <AppShell>
-          <Switch>
-            <Route path="/" exact>
-              <DashboardPage />
-            </Route>
-            <Route path="/note">
-              <WorkflowPage />
-            </Route>
-            <Route path="/broadcast">
-              <BroadcastPage />
-            </Route>
-            <Route path="/echoes">
-              <p>Echoes</p>
-            </Route>
-            <Route path="/contacts">
-              <p>Contacts</p>
-            </Route>
-          </Switch>
-        </AppShell>
-      </Router>
-    </Suspense>
-  </ThemeProvider>
-)
-
-export default App;
+export default function App() {
+  return (
+    <HelmetProvider>
+      <ReduxProvider store={store}>
+        <PersistGate loading={<LoadingScreen />} persistor={persistor}>
+          <ThemeConfig>
+            <RtlLayout>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <NotistackProvider>
+                  <Router history={history}>
+                    <JwtProvider>
+                      <Settings />
+                      <ScrollToTop />
+                      <GoogleAnalytics />
+                      {renderRoutes(routes)}
+                    </JwtProvider>
+                  </Router>
+                </NotistackProvider>
+              </LocalizationProvider>
+            </RtlLayout>
+          </ThemeConfig>
+        </PersistGate>
+      </ReduxProvider>
+    </HelmetProvider>
+  );
+}
