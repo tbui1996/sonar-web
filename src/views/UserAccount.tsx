@@ -25,8 +25,6 @@ import Page from '../components/Page';
 import HeaderDashboard from '../components/HeaderDashboard';
 import {
   AccountGeneral,
-  AccountBilling,
-  AccountSocialLinks,
   AccountNotifications,
   AccountChangePassword
 } from '../components/user/account';
@@ -70,27 +68,11 @@ export default function UserAccount() {
       icon: <Icon icon={roundAccountBox} width={20} height={20} />,
       component: <AccountGeneral />
     },
-    {
-      value: 'billing',
-      icon: <Icon icon={roundReceipt} width={20} height={20} />,
-      component: (
-        <AccountBilling
-          cards={cards}
-          addressBook={addressBook}
-          invoices={invoices}
-        />
-      )
-    },
-    {
-      value: 'notifications',
-      icon: <Icon icon={bellFill} width={20} height={20} />,
-      component: <AccountNotifications notifications={notifications} />
-    },
-    {
-      value: 'social_links',
-      icon: <Icon icon={shareFill} width={20} height={20} />,
-      component: <AccountSocialLinks myProfile={myProfile} />
-    },
+    // {
+    // value: 'notifications',
+    // icon: <Icon icon={bellFill} width={20} height={20} />,
+    // component: <AccountNotifications notifications={notifications} />
+    // },
     {
       value: 'change_password',
       icon: <Icon icon={roundVpnKey} width={20} height={20} />,
@@ -105,7 +87,6 @@ export default function UserAccount() {
           heading="Account"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'User', href: PATH_DASHBOARD.user.root },
             { name: 'Account Settings' }
           ]}
         />

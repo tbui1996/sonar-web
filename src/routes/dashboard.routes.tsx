@@ -22,11 +22,6 @@ const DashboardRoutes = {
     },
     {
       exact: true,
-      path: PATH_DASHBOARD.general.ecommerce,
-      component: lazy(() => import('../views/GeneralEcommerce'))
-    },
-    {
-      exact: true,
       path: PATH_DASHBOARD.general.analytics,
       component: lazy(() => import('../views/GeneralAnalytics'))
     },

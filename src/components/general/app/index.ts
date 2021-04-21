@@ -11,3 +11,4 @@ export { default as AppTotalInstalled } from './AppTotalInstalled';
 export { default as AppWelcome } from './AppWelcome';
 export { default as AppWidgets1 } from './AppWidgets1';
 export { default as AppWidgets2 } from './AppWidgets2';
+export { default as AppModalities } from './AppModalities';

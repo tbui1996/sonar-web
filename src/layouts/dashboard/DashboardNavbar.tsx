@@ -66,7 +66,6 @@ export default function DashboardNavbar({
             }
           }}
         >
-          <LanguagePopover />
           <NotificationsPopover />
           <AccountPopover />
         </Box>
