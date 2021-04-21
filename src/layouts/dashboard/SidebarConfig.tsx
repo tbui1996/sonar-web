@@ -61,39 +61,39 @@ const sidebarConfig = [
     items: [
       {
         title: 'Note',
-        href: PATH_DASHBOARD.mail.root,
+        href: PATH_DASHBOARD.modalities.note,
         icon: ICONS.animate
       },
       {
         title: 'Message',
-        href: PATH_DASHBOARD.chat.root,
+        href: PATH_DASHBOARD.modalities.message,
         icon: ICONS.chat
       },
       {
         title: 'Broadcast',
-        href: PATH_DASHBOARD.calendar,
+        href: PATH_DASHBOARD.modalities.broadcast,
         icon: ICONS.mail
       },
       {
         title: 'Datasheet',
-        href: PATH_DASHBOARD.calendar,
+        href: PATH_DASHBOARD.modalities.datasheet,
         icon: ICONS.elements
       }
     ]
-  },
+  }
 
   // MANAGEMENT
   // ----------------------------------------------------------------------
-  {
-    subheader: 'management',
-    items: [
-      {
-        title: 'users',
-        icon: ICONS.user,
-        href: PATH_DASHBOARD.user.list
-      }
-    ]
-  }
+  // {
+  // subheader: 'management',
+  // items: [
+  // {
+  // title: 'users',
+  // icon: ICONS.user,
+  // href: '#'
+  // }
+  // ]
+  // }
 ];
 
 export default sidebarConfig;

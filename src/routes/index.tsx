@@ -10,8 +10,6 @@ import LoadingScreen from '../components/LoadingScreen';
 //
 import { PATH_PAGE, PATH_AUTH } from './paths';
 import DashboardRoutes from './dashboard.routes';
-import HomeRoutes from './home.routes';
-import DocsRoutes from './docs.routes';
 
 // ----------------------------------------------------------------------
 
@@ -164,28 +162,12 @@ const routes: RouteItem[] = [
   },
   {
     exact: true,
-    path: PATH_PAGE.pricing,
-    component: lazy(() => import('../views/Pricing'))
-  },
-  {
-    exact: true,
-    path: PATH_PAGE.payment,
-    component: lazy(() => import('../views/Payment'))
-  },
-  {
-    exact: true,
     path: PATH_AUTH.root,
     component: () => <Redirect to={PATH_AUTH.login} />
   },
 
   // App Routes
-  DashboardRoutes,
-
-  // Docs Routes
-  DocsRoutes,
-
-  // Home Routes
-  HomeRoutes
+  DashboardRoutes
 ];
 
 export default routes;

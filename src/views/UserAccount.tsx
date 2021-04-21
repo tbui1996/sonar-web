@@ -68,11 +68,6 @@ export default function UserAccount() {
       icon: <Icon icon={roundAccountBox} width={20} height={20} />,
       component: <AccountGeneral />
     },
-    // {
-    // value: 'notifications',
-    // icon: <Icon icon={bellFill} width={20} height={20} />,
-    // component: <AccountNotifications notifications={notifications} />
-    // },
     {
       value: 'change_password',
       icon: <Icon icon={roundVpnKey} width={20} height={20} />,
