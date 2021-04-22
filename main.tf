@@ -23,7 +23,7 @@ variable "root_domain_name" {
 
 # Bucket
 resource "aws_s3_bucket" "web" {
-  bucket = "${var.domain_name}"
+  bucket = var.domain_name
   acl    = "public-read"
   
   policy = <<EOF
@@ -65,35 +65,22 @@ resource "aws_acm_certificate" "web" {
 
 resource "aws_acm_certificate_validation" "validate_web" {
   certificate_arn         = aws_acm_certificate.web.arn
-  validation_record_fqdns = [for record in aws_route53_record.web_route53 : record.fqdn]
-  
+  validation_record_fqdns = [aws_route53_record.web_route53.fqdn]
 }
 
 resource "aws_route53_record" "web_route53" {
-  for_each = {
-    for dvo in aws_acm_certificate.web.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
+  zone_id = "Z0245196LCP8G3V46P5V"
+  name    = var.domain_name
+  type    = "A"
+  
+  alias {
+    name                   = aws_cloudfront_distribution.cdn.domain_name
+    zone_id                = aws_cloudfront_distribution.cdn.hosted_zone_id
+    evaluate_target_health = false
   }
-  name            = each.value.name
-  records         = [each.value.record]
-  type            = each.value.type
-  zone_id         = "Z0245196LCP8G3V46P5V"
-  ttl             = 60
-  allow_overwrite = true
 }
 
-resource "aws_apigatewayv2_domain_name" "web_domain" {
-  domain_name = "sonar.circulo.dev"
-  
-  domain_name_configuration {
-    certificate_arn = aws_acm_certificate.web.arn
-    endpoint_type   = "REGIONAL"
-    security_policy = "TLS_1_2"
-  }
-}
+
 
 # CloudFront (cdn)
 resource "aws_cloudfront_distribution" "cdn" {
@@ -147,5 +134,17 @@ resource "aws_cloudfront_distribution" "cdn" {
     cloudfront_default_certificate = true
     ssl_support_method             = "sni-only"
     minimum_protocol_version       = "TLSv1.1_2016"
+  }
+
+  custom_error_response {
+    error_code    = 404
+    response_code = 200
+    response_page_path = "/index.html"
+  }
+
+  custom_error_response {
+    error_code         = 403
+    response_code      = 200
+    response_page_path = "/index.html"
   }
 }
