@@ -23,7 +23,6 @@ jobs:
       - run:
           command: yarn build
       - aws-s3/sync:
-          aws-region: 'us-east-1'
           from: build
           to: 's3://sonar.circulo.dev'
 
