@@ -26,3 +26,9 @@ jobs:
           aws-region: 'us-east-1'
           from: build
           to: 's3://sonar.circulo.dev'
+
+workflows:
+  version: 2
+  ci:
+    jobs:
+      - deploy
