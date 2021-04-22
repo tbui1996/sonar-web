@@ -3,14 +3,14 @@ import { experimentalStyled as styled } from '@material-ui/core/styles';
 import {
   Box,
   Card,
-  Link,
+  // Link,
   Alert,
   Hidden,
   Tooltip,
   Container,
   Typography
 } from '@material-ui/core';
-import { PATH_AUTH } from '../../routes/paths';
+// import { PATH_AUTH } from '../../routes/paths';
 import useAuth from '../../hooks/useAuth';
 import Page from '../../components/Page';
 import Logo from '../../components/Logo';

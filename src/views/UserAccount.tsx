@@ -1,11 +1,11 @@
 import { Icon } from '@iconify/react';
 import { capitalCase } from 'change-case';
 import { useState, useEffect } from 'react';
-import bellFill from '@iconify/icons-eva/bell-fill';
-import shareFill from '@iconify/icons-eva/share-fill';
+// import bellFill from '@iconify/icons-eva/bell-fill';
+// import shareFill from '@iconify/icons-eva/share-fill';
 import { useDispatch, useSelector } from 'react-redux';
 import roundVpnKey from '@iconify/icons-ic/round-vpn-key';
-import roundReceipt from '@iconify/icons-ic/round-receipt';
+// import roundReceipt from '@iconify/icons-ic/round-receipt';
 import roundAccountBox from '@iconify/icons-ic/round-account-box';
 // material
 import { Container, Tab, Box, Tabs } from '@material-ui/core';
@@ -25,7 +25,7 @@ import Page from '../components/Page';
 import HeaderDashboard from '../components/HeaderDashboard';
 import {
   AccountGeneral,
-  AccountNotifications,
+  // AccountNotifications,
   AccountChangePassword
 } from '../components/user/account';
 
@@ -36,9 +36,9 @@ export default function UserAccount() {
   const dispatch = useDispatch();
   const {
     cards,
-    invoices,
+    // invoices,
     myProfile,
-    addressBook,
+    // addressBook,
     notifications
   } = useSelector((state: RootState) => state.user);
 

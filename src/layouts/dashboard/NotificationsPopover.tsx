@@ -2,7 +2,7 @@ import faker from 'faker';
 import { noCase } from 'change-case';
 import { useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { set, sub, formatDistanceToNow } from 'date-fns';
+import { sub, formatDistanceToNow } from 'date-fns';
 import { Icon } from '@iconify/react';
 import bellFill from '@iconify/icons-eva/bell-fill';
 import clockFill from '@iconify/icons-eva/clock-fill';
@@ -23,7 +23,7 @@ import {
   ListItemAvatar
 } from '@material-ui/core';
 // utils
-import { mockImgAvatar } from '../../utils/mockImages';
+// import { mockImgAvatar } from '../../utils/mockImages';
 // components
 import Scrollbar from '../../components/Scrollbar';
 import MenuPopover from '../../components/MenuPopover';

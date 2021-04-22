@@ -1,12 +1,12 @@
 import { ReactNode, useEffect } from 'react';
 import { Link as RouterLink, useLocation, matchPath } from 'react-router-dom';
 // material
-import { alpha, experimentalStyled as styled } from '@material-ui/core/styles';
+import { experimentalStyled as styled } from '@material-ui/core/styles';
 import {
   Box,
   Link,
   List,
-  Button,
+  // Button,
   Drawer,
   Hidden,
   Typography,
@@ -44,14 +44,14 @@ const AccountStyle = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.grey[500_12]
 }));
 
-const DocStyle = styled('div')(({ theme }) => ({
-  padding: theme.spacing(2.5),
-  borderRadius: theme.shape.borderRadiusMd,
-  backgroundColor:
-    theme.palette.mode === 'light'
-      ? alpha(theme.palette.primary.main, 0.08)
-      : theme.palette.primary.lighter
-}));
+// const DocStyle = styled('div')(({ theme }) => ({
+// padding: theme.spacing(2.5),
+// borderRadius: theme.shape.borderRadiusMd,
+// backgroundColor:
+// theme.palette.mode === 'light'
+// ? alpha(theme.palette.primary.main, 0.08)
+// : theme.palette.primary.lighter
+// }));
 // ----------------------------------------------------------------------
 
 type TNavItem = {

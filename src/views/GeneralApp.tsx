@@ -1,30 +1,22 @@
 // material
 import { Container, Grid } from '@material-ui/core';
 // hooks
-import useAuth from '../hooks/useAuth';
+// import useAuth from '../hooks/useAuth';
 // components
 import Page from '../components/Page';
 import {
-  AppWelcome,
-  AppWidgets1,
-  AppWidgets2,
-  AppFeatured,
   AppModalities,
-  AppNewInvoice,
-  AppTopAuthors,
-  AppTopRelated,
   AppAreaInstalled,
   AppTotalDownloads,
   AppTotalInstalled,
   AppCurrentDownload,
-  AppTotalActiveUsers,
-  AppTopInstalledCountries
+  AppTotalActiveUsers
 } from '../components/general/app';
 
 // ----------------------------------------------------------------------
 
 export default function GeneralApp() {
-  const { user } = useAuth();
+  // const { user } = useAuth();
 
   return (
     <Page title="Dashboard: App | Minimal-UI">

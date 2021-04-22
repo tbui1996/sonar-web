@@ -6,7 +6,7 @@ import { Box, AppBar, Hidden, Toolbar, IconButton } from '@material-ui/core';
 //
 import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';
-import LanguagePopover from './LanguagePopover';
+// import LanguagePopover from './LanguagePopover';
 import NotificationsPopover from './NotificationsPopover';
 
 // ----------------------------------------------------------------------
