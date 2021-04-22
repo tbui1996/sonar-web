@@ -8,7 +8,7 @@ import GuestGuard from '../guards/GuestGuard';
 // components
 import LoadingScreen from '../components/LoadingScreen';
 //
-import { PATH_PAGE, PATH_AUTH } from './paths';
+import { PATH_PAGE, PATH_AUTH, PATH_DASHBOARD } from './paths';
 import DashboardRoutes from './dashboard.routes';
 
 // ----------------------------------------------------------------------
@@ -164,6 +164,11 @@ const routes: RouteItem[] = [
     exact: true,
     path: PATH_AUTH.root,
     component: () => <Redirect to={PATH_AUTH.login} />
+  },
+  {
+    exact: true,
+    path: '/',
+    component: () => <Redirect to={PATH_DASHBOARD.general.app} />
   },
 
   // App Routes

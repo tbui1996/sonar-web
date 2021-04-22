@@ -1,4 +1,5 @@
 import { Icon } from '@iconify/react';
+import { useState, useEffect } from 'react';
 import { ApexOptions } from 'apexcharts';
 import ReactApexChart from 'react-apexcharts';
 import trendingUpFill from '@iconify/icons-eva/trending-up-fill';
@@ -11,6 +12,7 @@ import {
 } from '@material-ui/core/styles';
 import { Box, Card, Typography } from '@material-ui/core';
 // utils
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { fNumber, fPercent } from '../../../utils/formatNumber';
 
 // ----------------------------------------------------------------------
@@ -30,11 +32,23 @@ const IconWrapperStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 const PERCENT = 2.6;
-const TOTAL_USER = 22;
+// const TOTAL_USER = 22;
 const CHART_DATA = [{ data: [10, 2, 18, 32, 19, 12, 18, 48, 5, 10, 22] }];
 
 export default function AppTotalActiveUsers() {
   const theme = useTheme();
+
+  const [numConnected, setNumConnected] = useState<number>(0);
+  const { lastMessage, readyState } = useWebSocket(
+    'wss://tony:tony@ws.sonar.circulo.dev'
+  );
+
+  useEffect(() => {
+    if (lastMessage) {
+      console.log(lastMessage);
+      setNumConnected(Number(JSON.parse(lastMessage.data).connected));
+    }
+  }, [lastMessage]);
 
   const chartOptions: ApexOptions = {
     colors: [theme.palette.primary.main],
@@ -95,18 +109,26 @@ export default function AppTotalActiveUsers() {
             alignItems: 'center'
           }}
         >
-          <Typography noWrap variant="h3">
-            {fNumber(TOTAL_USER)}
-          </Typography>
-          <img
-            style={{
-              marginLeft: '5px',
-              marginTop: '7px'
-            }}
-            width={30}
-            src="/static/icons/pulse.svg"
-            alt="active users pulse"
-          />
+          {readyState === ReadyState.OPEN ? (
+            <>
+              <Typography noWrap variant="h3">
+                {fNumber(numConnected)}
+              </Typography>
+              <img
+                style={{
+                  marginLeft: '5px',
+                  marginTop: '7px'
+                }}
+                width={30}
+                src="/static/icons/pulse.svg"
+                alt="active users pulse"
+              />
+            </>
+          ) : (
+            <Typography noWrap variant="h3">
+              Connecting
+            </Typography>
+          )}
         </Box>
       </Box>
 
