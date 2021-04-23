@@ -40,7 +40,10 @@ export default function AppTotalActiveUsers() {
 
   const [numConnected, setNumConnected] = useState<number>(0);
   const { lastMessage, readyState } = useWebSocket(
-    'wss://tony:tony@ws.sonar.circulo.dev'
+    'wss://tony:tony@ws.sonar.circulo.dev',
+    {
+      shouldReconnect: () => true
+    }
   );
 
   useEffect(() => {
