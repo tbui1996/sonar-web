@@ -51,7 +51,21 @@ const DashboardRoutes = {
       path: PATH_DASHBOARD.modalities.datasheet,
       component: lazy(() => import('../views/Datasheet'))
     },
-
+    {
+      exact: true,
+      path: PATH_DASHBOARD.modalities.forms.root,
+      component: lazy(() => import('../views/forms/Root'))
+    },
+    {
+      exact: true,
+      path: PATH_DASHBOARD.modalities.forms.create,
+      component: lazy(() => import('../views/forms/Create'))
+    },
+    {
+      exact: true,
+      path: PATH_DASHBOARD.modalities.forms.view,
+      component: lazy(() => import('../views/forms/View'))
+    },
     {
       exact: true,
       path: PATH_DASHBOARD.user.account,
