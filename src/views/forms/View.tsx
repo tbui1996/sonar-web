@@ -49,7 +49,7 @@ export default function View() {
     setSending(true);
 
     await axios
-      .post(`https://api.sonar.circulo.dev/forms/${params.id}/`)
+      .post(`https://api.sonar.circulo.dev/forms/${params.id}/send`)
       .catch((e) => {
         console.log(e);
       });
