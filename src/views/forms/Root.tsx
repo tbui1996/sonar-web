@@ -40,7 +40,7 @@ export default function Forms() {
   useEffect(() => {
     async function execute() {
       const res = await axios.get<ListForm>(
-        'https://e6r7h2b74b.execute-api.us-east-2.amazonaws.com/dev/forms'
+        'https://api.sonar.circulo.dev/forms'
       );
 
       if (!res?.data?.forms || !Array.isArray(res.data.forms)) {

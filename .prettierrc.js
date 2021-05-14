@@ -2,12 +2,12 @@
 
 module.exports = {
   // Trailing commas help with git merging and conflict resolution
-  trailingComma: "all",
+  trailingComma: 'none',
+  singleQuote: true,
   overrides: [
     {
-      files: ".editorconfig",
-      options: { parser: "yaml" },
+      files: '.editorconfig',
+      options: { parser: 'yaml' },
     },
   ],
-}
-
+};

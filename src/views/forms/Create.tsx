@@ -63,23 +63,20 @@ function Form() {
     setOpenConfirm(false);
     setCreating(true);
     const res = await axios
-      .post(
-        'https://e6r7h2b74b.execute-api.us-east-2.amazonaws.com/dev/forms',
-        {
-          title,
-          description,
-          inputs: inputs.map((item) => {
-            if (item.type === 'text') {
-              return item;
-            }
+      .post('https://api.sonar.circulo.dev/forms', {
+        title,
+        description,
+        inputs: inputs.map((item) => {
+          if (item.type === 'text') {
+            return item;
+          }
 
-            return {
-              ...item,
-              options: JSON.stringify((item as OptionsInput).options)
-            };
-          })
-        }
-      )
+          return {
+            ...item,
+            options: JSON.stringify((item as OptionsInput).options)
+          };
+        })
+      })
       .catch((e) => {
         console.log(e);
       });
