@@ -42,7 +42,12 @@ export const PATH_DASHBOARD = {
     note: path(ROOTS_DASHBOARD, '/note'),
     broadcast: path(ROOTS_DASHBOARD, '/broadcast'),
     message: path(ROOTS_DASHBOARD, '/message'),
-    datasheet: path(ROOTS_DASHBOARD, '/datasheet')
+    datasheet: path(ROOTS_DASHBOARD, '/datasheet'),
+    forms: {
+      root: path(ROOTS_DASHBOARD, '/forms'),
+      create: path(ROOTS_DASHBOARD, '/forms/create'),
+      view: path(ROOTS_DASHBOARD, '/forms/:id')
+    }
   },
   user: {
     account: path(ROOTS_DASHBOARD, '/user/account')

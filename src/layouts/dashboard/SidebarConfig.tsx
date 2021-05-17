@@ -78,6 +78,11 @@ const sidebarConfig = [
         title: 'Datasheet',
         href: PATH_DASHBOARD.modalities.datasheet,
         icon: ICONS.elements
+      },
+      {
+        title: 'Forms',
+        href: PATH_DASHBOARD.modalities.forms.root,
+        icon: ICONS.blog
       }
     ]
   }
