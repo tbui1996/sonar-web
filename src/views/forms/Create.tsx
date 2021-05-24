@@ -73,7 +73,7 @@ function Form() {
 
           return {
             ...item,
-            options: JSON.stringify((item as OptionsInput).options)
+            options: (item as OptionsInput).options
           };
         })
       })

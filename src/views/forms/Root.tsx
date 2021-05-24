@@ -28,10 +28,6 @@ type Form = {
   created: string;
 };
 
-type ListForm = {
-  forms: Array<Form>;
-};
-
 export default function Forms() {
   const history = useHistory();
   const [forms, setForms] = useState<Array<Form>>([]);
@@ -39,15 +35,15 @@ export default function Forms() {
 
   useEffect(() => {
     async function execute() {
-      const res = await axios.get<ListForm>(
+      const res = await axios.get<Array<Form>>(
         'https://api.sonar.circulo.dev/forms'
       );
 
-      if (!res?.data?.forms || !Array.isArray(res.data.forms)) {
+      if (!res.data || !Array.isArray(res.data)) {
         console.log('Expected forms to exist and be an array');
       }
 
-      setForms(res.data.forms);
+      setForms(res.data || []);
     }
 
     setLoading(true);
