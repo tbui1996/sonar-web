@@ -6,47 +6,100 @@ import {
   useCallback
 } from 'react';
 import { useImmer } from 'use-immer';
+import { FormContextType, Input, TypeInputComponent } from '../@types/form';
+import TextInputComponent from '../components/general/forms/TextInputComponent';
+import CheckboxInputComponent from '../components/general/forms/CheckboxInputComponent';
+import DividerInputComponent from '../components/general/forms/DividerInputComponent';
+import LinkInputComponent from '../components/general/forms/LinkInputComponent';
+import MessageInputComponent from '../components/general/forms/MessageInputComponent';
+import RadioInputComponent from '../components/general/forms/RadioInputComponent';
+import SelectInputComponent from '../components/general/forms/SelectInputComponent';
 
-export interface Input {
-  label: string;
-  order: number;
-  type: 'select' | 'text' | 'radio';
-}
-
-export interface OptionsInput extends Input {
-  options: Array<string>;
-}
-
-export interface TextInput extends Input {}
-
-export const DEFAULT_RADIO: OptionsInput = {
-  label: 'Radio',
-  order: 0,
-  type: 'radio',
-  options: ['Option 1']
-};
-
-export const DEFAULT_TEXT: TextInput = {
+export const DEFAULT_TEXT: Input = {
   label: 'Text',
   order: 0,
   type: 'text'
 };
 
-export const DEFAULT_SELECT: OptionsInput = {
-  label: 'Select',
-  order: 0,
-  type: 'select',
-  options: ['Option 1']
-};
-
-interface FormContextType {
-  title: string;
-  setTitle: (value: string) => void;
-  description: string;
-  setDescription: (value: string) => void;
-  inputs: Array<Input>;
-  setInputs: (f: Input[] | ((draft: Input[]) => void)) => void;
-}
+export const INPUT_TYPES: TypeInputComponent[] = [
+  {
+    id: 'checkbox',
+    Component: CheckboxInputComponent,
+    label: 'Checkbox',
+    displayLabel: 'Label',
+    disableLabel: false
+  },
+  {
+    id: 'divider',
+    Component: DividerInputComponent,
+    label: 'Divider',
+    displayLabel: 'Divider',
+    disableLabel: true
+  },
+  {
+    id: 'email',
+    Component: TextInputComponent,
+    label: 'Email',
+    displayLabel: 'Label',
+    disableLabel: false
+  },
+  {
+    id: 'link',
+    Component: LinkInputComponent,
+    label: 'Link',
+    displayLabel: 'Link Text',
+    disableLabel: false
+  },
+  {
+    id: 'message',
+    Component: MessageInputComponent,
+    label: 'Message',
+    displayLabel: 'Message',
+    disableLabel: false
+  },
+  {
+    id: 'number',
+    Component: TextInputComponent,
+    label: 'Number',
+    displayLabel: 'Label',
+    disableLabel: false
+  },
+  {
+    id: 'password',
+    Component: TextInputComponent,
+    label: 'Password',
+    displayLabel: 'Label',
+    disableLabel: false
+  },
+  {
+    id: 'radio',
+    Component: RadioInputComponent,
+    label: 'Radio',
+    displayLabel: 'Radio',
+    disableLabel: true
+  },
+  {
+    id: 'select',
+    Component: SelectInputComponent,
+    label: 'Select',
+    displayLabel: 'Label',
+    disableLabel: false
+  },
+  {
+    id: 'telephone',
+    Component: TextInputComponent,
+    label: 'Telephone',
+    displayLabel: 'Label',
+    disableLabel: false
+  },
+  {
+    id: 'text',
+    Component: TextInputComponent,
+    label: 'Text',
+    displayLabel: 'Label',
+    disableLabel: false
+  }
+];
 
 const FormContext = createContext<FormContextType | undefined>(undefined);
 

@@ -1,11 +1,9 @@
-import { ChangeEvent, SyntheticEvent, useCallback, ElementType } from 'react';
+import { ChangeEvent, useCallback } from 'react';
 import {
   IconButton,
   Card,
   TextField,
-  Typography,
   Box,
-  Radio,
   FormControl,
   InputLabel,
   Select,
@@ -20,139 +18,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { useFormInput, Input, OptionsInput } from '../../../hooks/useForm';
-
-function isOptionsInput(input: Input): input is OptionsInput {
-  return (
-    (input as OptionsInput).options &&
-    Array.isArray((input as OptionsInput).options)
-  );
-}
-
-interface InputProps {
-  disabled?: boolean;
-  input: Input;
-  onChangeInput: (value: Input) => void;
-}
-
-function TextInputComponent({ disabled, input, onChangeInput }: InputProps) {
-  return <Typography>The provider will enter text.</Typography>;
-}
-
-interface OptionsInputProps extends InputProps {
-  IndicatorComponent: ElementType;
-}
-
-function OptionsInputComponent({
-  disabled,
-  input,
-  onChangeInput,
-  IndicatorComponent
-}: OptionsInputProps) {
-  if (!isOptionsInput(input)) {
-    return <Box>Expected OptionsInput</Box>;
-  }
-
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    index: number
-  ) => {
-    const nextOptions = [...input.options];
-    nextOptions.splice(index, 1, e.target.value);
-
-    onChangeInput({ ...input, options: nextOptions } as OptionsInput);
-  };
-
-  const handleAddOption = () => {
-    onChangeInput({
-      ...input,
-      options: [...input.options, `Option ${input.options.length + 1}`]
-    } as OptionsInput);
-  };
-
-  const handleDelete = (index: number) => {
-    const nextOptions = [...input.options];
-    nextOptions.splice(index, 1);
-    onChangeInput({
-      ...input,
-      options: nextOptions
-    } as OptionsInput);
-  };
-
-  return (
-    <Box>
-      {input.options.map((option, index) => (
-        <Box
-          key={index}
-          sx={{ marginBottom: '1rem', display: 'flex', alignItems: 'center' }}
-        >
-          <IndicatorComponent option={option} index={index} />
-          <TextField
-            disabled={disabled}
-            value={option}
-            onChange={(e) => handleChange(e, index)}
-            sx={{ marginLeft: '1rem' }}
-          />
-          {index > 0 && (
-            <IconButton onClick={() => handleDelete(index)} disabled={disabled}>
-              <DeleteIcon />
-            </IconButton>
-          )}
-        </Box>
-      ))}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center'
-        }}
-      >
-        <IconButton
-          color="primary"
-          size="medium"
-          onClick={handleAddOption}
-          disabled={disabled}
-        >
-          <AddIcon />
-        </IconButton>
-        <Typography sx={{ marginLeft: '1rem' }}>Add another option.</Typography>
-      </Box>
-    </Box>
-  );
-}
-
-function RadioInputComponent({ disabled, input, onChangeInput }: InputProps) {
-  return (
-    <OptionsInputComponent
-      disabled={disabled}
-      input={input}
-      onChangeInput={onChangeInput}
-      IndicatorComponent={Radio}
-    />
-  );
-}
-
-function SelectPrefix({ option, index }: { option: string; index: string }) {
-  return (
-    <Typography
-      variant="h5"
-      sx={{ marginLeft: '0.5rem', marginRight: '0.5rem' }}
-    >
-      {index + 1}.
-    </Typography>
-  );
-}
-
-function SelectInputComponent({ disabled, input, onChangeInput }: InputProps) {
-  return (
-    <OptionsInputComponent
-      disabled={disabled}
-      input={input}
-      onChangeInput={onChangeInput}
-      IndicatorComponent={SelectPrefix}
-    />
-  );
-}
+import { INPUT_TYPES, useFormInput } from '../../../hooks/useForm';
+import {
+  Input,
+  TypeInputComponent,
+  InputEvent,
+  OptionsInput
+} from '../../../@types/form';
 
 const useStyles = makeStyles((theme) => ({
   selected: {
@@ -182,38 +54,46 @@ export default function InputComponent({
   const [input, setInput] = useFormInput(order);
 
   const handleTypeChange = useCallback(
-    (
-      event: ChangeEvent<{
-        name?: string | undefined;
-        value: 'select' | 'text' | 'radio';
-        event: Event | SyntheticEvent<Element, Event>;
-      }>
-    ) => {
+    (event: ChangeEvent<InputEvent>) => {
       const type = event.target.value;
       const nextInput: Input = { ...input, type };
 
       if (type === 'radio' || type === 'select') {
         (nextInput as OptionsInput).options = ['Option 1'];
-      } else if (type !== 'text') {
+      } else if (type === 'link') {
+        (nextInput as OptionsInput).options = [''];
+      } else if (
+        !type.match(
+          new RegExp(
+            'text|checkbox|divider|email|number|password|telephone|message'
+          )
+        )
+      ) {
         throw new Error('Invalid type change.');
       }
+
+      const changedInput = INPUT_TYPES.find(
+        (item: TypeInputComponent) => item.id === type
+      );
+      if (!changedInput) {
+        throw new Error('Input is not a valid type');
+      }
+      nextInput.label = changedInput.label;
 
       setInput(nextInput);
     },
     [input, setInput]
   );
 
-  let TypeInputComponent = TextInputComponent;
-  switch (input.type) {
-    case 'select':
-      TypeInputComponent = SelectInputComponent;
-      break;
-    case 'radio':
-      TypeInputComponent = RadioInputComponent;
-      break;
-    default:
-      break;
+  const inputComponent = INPUT_TYPES.find(
+    (i: TypeInputComponent) => i.id === input.type
+  );
+
+  if (!inputComponent) {
+    throw new Error('Input is not a valid type');
   }
+
+  const TypeInputComponent = inputComponent.Component;
 
   const children = (
     <>
@@ -226,10 +106,9 @@ export default function InputComponent({
         }}
       >
         <TextField
-          disabled={disabled}
+          disabled={inputComponent.disableLabel}
           variant="outlined"
-          label="Question"
-          value={input.label}
+          label={inputComponent.displayLabel}
           onChange={(e) => setInput({ ...input, label: e.target.value })}
         />
         <FormControl variant="outlined" sx={{ marginLeft: '2rem' }}>
@@ -241,18 +120,16 @@ export default function InputComponent({
             value={input.type}
             onChange={handleTypeChange}
           >
-            <MenuItem value="text">Text</MenuItem>
-            <MenuItem value="radio">Radio</MenuItem>
-            <MenuItem value="select">Select</MenuItem>
+            {INPUT_TYPES.map((input, index) => (
+              <MenuItem value={input.id} key={index}>
+                {input.label}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </Box>
       <Box sx={{ marginTop: '1.5rem' }}>
-        <TypeInputComponent
-          disabled={disabled}
-          input={input}
-          onChangeInput={setInput}
-        />
+        <TypeInputComponent input={input} onChangeInput={setInput} />
       </Box>
     </>
   );

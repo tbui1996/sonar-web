@@ -118,7 +118,14 @@ export default function Forms() {
                         <Typography variant="body2">{form.id}</Typography>
                       </TableCell>
                       <TableCell>{form.title}</TableCell>
-                      <TableCell>{form.created}</TableCell>
+                      <TableCell>
+                        {new Date(form.created).toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

@@ -5,15 +5,12 @@ import { useHistory } from 'react-router-dom';
 
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
-import useForm, {
-  FormProvider,
-  DEFAULT_TEXT,
-  OptionsInput
-} from '../../hooks/useForm';
+import useForm, { FormProvider, DEFAULT_TEXT } from '../../hooks/useForm';
 
 import { PATH_DASHBOARD } from '../../routes/paths';
 import InputComponent from '../../components/general/forms/Input';
 import ConfirmDialog from '../../components/general/app/ConfirmDialog';
+import { OptionsInput } from '../../@types/form';
 
 function Form() {
   // select an input as active, after which the sidebar moves to it
