@@ -104,6 +104,7 @@ export default function Forms() {
                   <TableRow>
                     <TableCell>Id</TableCell>
                     <TableCell>Title</TableCell>
+                    <TableCell>Description</TableCell>
                     <TableCell>Created</TableCell>
                   </TableRow>
                 </TableHead>
@@ -118,6 +119,7 @@ export default function Forms() {
                         <Typography variant="body2">{form.id}</Typography>
                       </TableCell>
                       <TableCell>{form.title}</TableCell>
+                      <TableCell>{form.description}</TableCell>
                       <TableCell>
                         {new Date(form.created).toLocaleDateString('en-US', {
                           weekday: 'long',

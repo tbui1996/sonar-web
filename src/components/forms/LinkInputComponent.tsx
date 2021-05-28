@@ -1,6 +1,6 @@
 import { TextField, Typography } from '@material-ui/core';
 import { ChangeEvent } from 'react';
-import { InputProps, OptionsInput } from '../../../@types/form';
+import { InputProps, OptionsInput } from '../../@types/form';
 
 export default function LinkInputComponent({
   input,

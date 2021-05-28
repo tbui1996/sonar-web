@@ -1,6 +1,6 @@
 import { Typography } from '@material-ui/core';
 import OptionsInputComponent from './OptionsInputComponent';
-import { InputProps } from '../../../@types/form';
+import { InputProps } from '../../@types/form';
 
 function SelectPrefix({ option, index }: { option: string; index: string }) {
   return (

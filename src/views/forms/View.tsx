@@ -1,16 +1,35 @@
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { Typography, Box, Button } from '@material-ui/core';
+import { Typography, Box, Button, Container } from '@material-ui/core';
 
 import axios from 'axios';
 
-import type { Form } from '../../@types/form';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import type { FormApiResponse } from '../../@types/form';
 import LoadingScreen from '../../components/LoadingScreen';
+import Page from '../../components/Page';
+import FormPreviewCard from '../../components/forms/FormPreviewCard';
+import OliveHelpsMock from '../../components/olive/OliveHelpsMock';
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    width: {
+      marginBottom: '0.5rem',
+      marginTop: '0.5rem'
+    },
+    flex: {
+      display: 'flex',
+      justifyContent: 'center',
+      flexDirection: 'column'
+    }
+  })
+);
 
 export default function View() {
-  const [form, setForm] = useState<Form | undefined>();
+  const [form, setForm] = useState<FormApiResponse | undefined>();
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const classes = useStyles();
 
   const params = useParams<{ id: string }>();
 
@@ -20,7 +39,7 @@ export default function View() {
         return;
       }
 
-      const res = await axios.get<Form>(
+      const res = await axios.get<FormApiResponse>(
         `https://api.sonar.circulo.dev/forms/${params.id}`
       );
 
@@ -84,18 +103,19 @@ export default function View() {
   }
 
   return (
-    <Box
-      width="100%"
-      padding="3rem"
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Typography>{params.id}</Typography>
-      <Button disabled={sending} onClick={handleSendForm}>
-        Send
-      </Button>
-    </Box>
+    <Page title="Form View">
+      <Container maxWidth="xl" className={classes.flex}>
+        <FormPreviewCard form={form} isOliveHelps={false} />
+        <Button
+          disabled={sending}
+          onClick={handleSendForm}
+          variant="contained"
+          className={classes.width}
+        >
+          Send
+        </Button>
+        <OliveHelpsMock form={form} />
+      </Container>
+    </Page>
   );
 }

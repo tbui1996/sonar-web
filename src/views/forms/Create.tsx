@@ -1,16 +1,35 @@
 import { useState, useCallback } from 'react';
-import { Container, Card, Box, Button, TextField } from '@material-ui/core';
+import {
+  Container,
+  Card,
+  Box,
+  Button,
+  TextField,
+  Grid
+} from '@material-ui/core';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
-import useForm, { FormProvider, DEFAULT_TEXT } from '../../hooks/useForm';
+import useForm, { FormProvider } from '../../hooks/useForm';
 
 import { PATH_DASHBOARD } from '../../routes/paths';
-import InputComponent from '../../components/general/forms/Input';
+import InputComponent from '../../components/forms/Input';
 import ConfirmDialog from '../../components/general/app/ConfirmDialog';
-import { OptionsInput } from '../../@types/form';
+import { FormApiResponse, OptionsInput } from '../../@types/form';
+import { DEFAULT_TEXT } from '../../constants/formConstants';
+import FormPreviewCard from '../../components/forms/FormPreviewCard';
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    flex: {
+      flexGrow: 1,
+      maxWidth: '100%'
+    }
+  })
+);
 
 function Form() {
   // select an input as active, after which the sidebar moves to it
@@ -18,6 +37,7 @@ function Form() {
   // have a single input component that can change types
   // - if you change the type, it wipes the saved data for that input
   const history = useHistory();
+  const classes = useStyles();
   const [openConfirm, setOpenConfirm] = useState(false);
   const [selected, setSelected] = useState(0);
   const [creating, setCreating] = useState(false);
@@ -90,93 +110,122 @@ function Form() {
 
   return (
     <>
-      <Box
-        sx={{
-          minHeight: '50vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        <Card
-          sx={{
-            minWidth: '50%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1.5rem'
-          }}
-        >
-          <TextField
-            fullWidth
-            required
-            disabled={creating}
-            helperText="Enter the Title for your Form"
-            placeholder="Title"
-            variant="outlined"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            sx={{
-              marginBottom: '1rem'
-            }}
-          />
-          <TextField
-            fullWidth
-            multiline
-            disabled={creating}
-            minRows={3}
-            placeholder="Description"
-            variant="outlined"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            sx={{
-              marginBottom: '1rem'
-            }}
-          />
-        </Card>
-        <Box id="inputs" sx={{ minWidth: '50%' }}>
-          {inputs.map((input) => (
-            <Box key={input.order} sx={{ marginTop: '1rem' }}>
-              <InputComponent
-                disabled={creating}
-                order={input.order}
-                selected={selected === input.order}
-                onSelect={() => setSelected(input.order)}
-                onInsertAfter={() => handleInsertAfter(input.order)}
-                onDelete={() => handleDelete(input.order)}
-              />
-            </Box>
-          ))}
-        </Box>
-        <Card
-          sx={{
-            margin: '2rem',
-            padding: '1rem',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between'
-          }}
-        >
+      <Grid container justifyContent="space-evenly">
+        <Grid item xl={2}>
           <Box
             sx={{
+              minHeight: '20vh',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center'
             }}
           >
-            <Button
-              variant="contained"
-              onClick={() => setOpenConfirm(true)}
-              disabled={creating}
-            >
-              Create
-            </Button>
+            <FormPreviewCard
+              form={
+                {
+                  Form: {
+                    title,
+                    description
+                  },
+                  Inputs: inputs
+                } as FormApiResponse
+              }
+              isOliveHelps={false}
+            />
           </Box>
-        </Card>
-      </Box>
+        </Grid>
+        <Grid item xl={2} classes={{ root: classes.flex }}>
+          <Box
+            sx={{
+              minHeight: '50vh',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Card
+              sx={{
+                minWidth: '50%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '1.5rem',
+                width: '90%'
+              }}
+            >
+              <TextField
+                fullWidth
+                required
+                disabled={creating}
+                helperText="Enter the Title for your Form"
+                placeholder="Title"
+                variant="outlined"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                sx={{
+                  marginBottom: '1rem'
+                }}
+              />
+              <TextField
+                fullWidth
+                multiline
+                disabled={creating}
+                minRows={3}
+                placeholder="Description"
+                variant="outlined"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                sx={{
+                  marginBottom: '1rem'
+                }}
+              />
+            </Card>
+            <Box id="inputs" sx={{ minWidth: '50%', width: '80%' }}>
+              {inputs.map((input) => (
+                <Box key={input.order} sx={{ marginTop: '1rem' }}>
+                  <InputComponent
+                    disabled={creating}
+                    order={input.order}
+                    selected={selected === input.order}
+                    onSelect={() => setSelected(input.order)}
+                    onInsertAfter={() => handleInsertAfter(input.order)}
+                    onDelete={() => handleDelete(input.order)}
+                  />
+                </Box>
+              ))}
+            </Box>
+            <Card
+              sx={{
+                margin: '2rem',
+                padding: '1rem',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={() => setOpenConfirm(true)}
+                  disabled={creating}
+                >
+                  Create
+                </Button>
+              </Box>
+            </Card>
+          </Box>
+        </Grid>
+      </Grid>
       <ConfirmDialog
         open={openConfirm}
         title="Are you sure you want to create this form?"

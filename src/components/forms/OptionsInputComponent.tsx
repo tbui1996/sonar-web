@@ -2,7 +2,7 @@ import { Box, IconButton, TextField, Typography } from '@material-ui/core';
 import { ChangeEvent, ElementType } from 'react';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
-import { Input, InputProps, OptionsInput } from '../../../@types/form';
+import { Input, InputProps, OptionsInput } from '../../@types/form';
 
 export interface OptionsInputProps extends InputProps {
   IndicatorComponent: ElementType;

@@ -18,13 +18,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { INPUT_TYPES, useFormInput } from '../../../hooks/useForm';
+import { useFormInput } from '../../hooks/useForm';
 import {
   Input,
   TypeInputComponent,
   InputEvent,
   OptionsInput
-} from '../../../@types/form';
+} from '../../@types/form';
+import { INPUT_TYPES } from '../../constants/formConstants';
 
 const useStyles = makeStyles((theme) => ({
   selected: {
@@ -109,6 +110,7 @@ export default function InputComponent({
           disabled={inputComponent.disableLabel}
           variant="outlined"
           label={inputComponent.displayLabel}
+          value={input.label}
           onChange={(e) => setInput({ ...input, label: e.target.value })}
         />
         <FormControl variant="outlined" sx={{ marginLeft: '2rem' }}>

@@ -1,6 +1,6 @@
 import { Radio } from '@material-ui/core';
 import OptionsInputComponent from './OptionsInputComponent';
-import { InputProps } from '../../../@types/form';
+import { InputProps } from '../../@types/form';
 
 export default function RadioInputComponent({
   input,

@@ -1,6 +1,6 @@
 import { FormControlLabel, Checkbox, Typography } from '@material-ui/core';
 import React from 'react';
-import { InputProps } from '../../../@types/form';
+import { InputProps } from '../../@types/form';
 
 export default function CheckboxInputComponent({
   input,

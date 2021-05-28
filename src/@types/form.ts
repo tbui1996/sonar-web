@@ -21,14 +21,17 @@ export type OptionsInput = Input & {
   options: Array<string>;
 };
 
-export type TextInput = Input;
-
 export type TypeInputComponent = {
   id: string;
   Component: ({ input, onChangeInput }: InputProps) => JSX.Element;
   label: string;
   displayLabel: string;
   disableLabel: boolean;
+  Element: (props: {
+    input: OptionsInput;
+    index: number;
+    isOliveHelps: boolean;
+  }) => JSX.Element;
 };
 
 export type Form = {
@@ -36,7 +39,11 @@ export type Form = {
   title: string;
   description: string;
   created: string;
-  inputs: Array<OptionsInput | TextInput>;
+};
+
+export type FormApiResponse = {
+  Form: Form;
+  Inputs: Array<OptionsInput | Input>;
 };
 
 export type InputEvent = {
