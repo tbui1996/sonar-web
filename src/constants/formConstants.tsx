@@ -18,6 +18,7 @@ import LinkElement from '../components/forms/elements/LinkElement';
 import MessageElement from '../components/forms/elements/MessageElement';
 
 export const DEFAULT_TEXT: Input = {
+  id: 0,
   label: 'Text',
   order: 0,
   type: 'text'

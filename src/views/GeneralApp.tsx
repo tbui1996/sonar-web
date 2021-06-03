@@ -1,22 +1,36 @@
-// material
 import { Container, Grid } from '@material-ui/core';
-// hooks
-// import useAuth from '../hooks/useAuth';
-// components
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import Page from '../components/Page';
 import {
   AppModalities,
   AppAreaInstalled,
   AppTotalDownloads,
   AppTotalInstalled,
-  AppCurrentDownload,
   AppTotalActiveUsers
 } from '../components/general/app';
+import StyledPieChart from '../components/charts/StyledPieChart';
+import { FormCount } from '../@types/form';
 
 // ----------------------------------------------------------------------
 
 export default function GeneralApp() {
   // const { user } = useAuth();
+  const [formCount, setFormCount] = useState<FormCount>();
+
+  useEffect(() => {
+    async function execute() {
+      await axios
+        .get<FormCount>(`https://api.sonar.circulo.dev/forms/count`)
+        .then((res) => {
+          setFormCount(res.data);
+        });
+    }
+
+    execute().catch((e) => {
+      console.log(e);
+    });
+  }, []);
 
   return (
     <Page title="Dashboard: App | Minimal-UI">
@@ -35,7 +49,11 @@ export default function GeneralApp() {
           </Grid>
 
           <Grid item xs={12} md={6} lg={4}>
-            <AppCurrentDownload />
+            <StyledPieChart
+              data={[80, 120, 79, 414, formCount?.count || 0]}
+              labels={['Note', 'Message', 'RX', 'Broadcast', 'Forms']}
+              title="Modality Utilization"
+            />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>

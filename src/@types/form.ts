@@ -1,6 +1,7 @@
 import { SyntheticEvent } from 'react';
 
 export type Input = {
+  id: number;
   label: string;
   order: number;
   type:
@@ -44,6 +45,48 @@ export type Form = {
 export type FormApiResponse = {
   Form: Form;
   Inputs: Array<OptionsInput | Input>;
+};
+
+export type OliveHelpsProps = {
+  form: FormApiResponse;
+};
+
+export type FormDiscard = {
+  id: number;
+  formSentId: number;
+};
+
+export type InputSubmission = {
+  id: number;
+  formSubmissionId: number;
+  inputId: number;
+  response: string;
+};
+
+export type FormApiSubmitResponse = {
+  discards: Array<FormDiscard>;
+  submissions: Array<Array<InputSubmission>>;
+};
+
+export type FormCount = {
+  count: number;
+};
+
+export type FormElementProps = {
+  input: OptionsInput;
+  index: number;
+  isOliveHelps: boolean;
+};
+
+export type FormPreviewProps = {
+  form: FormApiResponse;
+  isOliveHelps: boolean;
+  isFormPreview?: boolean;
+};
+
+export type FormResponseTableProps = {
+  inputs: Array<OptionsInput | Input>;
+  submits: Array<Array<InputSubmission>> | undefined;
 };
 
 export type InputEvent = {

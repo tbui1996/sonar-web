@@ -1,19 +1,19 @@
 import { FormControl, Typography } from '@material-ui/core';
 import React from 'react';
-import { OptionsInput } from '../../../@types/form';
+import { FormElementProps } from '../../../@types/form';
 
-export default function MessageElement(props: {
-  input: OptionsInput;
-  index: number;
-  isOliveHelps: boolean;
-}) {
+export default function MessageElement({
+  input,
+  index,
+  isOliveHelps
+}: FormElementProps) {
   return (
     <FormControl>
       <Typography
-        id={`message-${props.index}`}
-        variant={props.isOliveHelps ? 'caption' : 'body2'}
+        id={`message-${index}`}
+        variant={isOliveHelps ? 'caption' : 'body2'}
       >
-        {props.input.label}
+        {input.label}
       </Typography>
     </FormControl>
   );

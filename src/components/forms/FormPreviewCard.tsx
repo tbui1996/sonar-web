@@ -4,7 +4,11 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import { Divider, FormGroup, Theme } from '@material-ui/core';
-import { FormApiResponse, Input, OptionsInput } from '../../@types/form';
+import {
+  FormElementProps,
+  FormPreviewProps,
+  OptionsInput
+} from '../../@types/form';
 import { INPUT_TYPES } from '../../constants/formConstants';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,12 +35,7 @@ const useStylesNone = makeStyles({
   }
 });
 
-function FormInput(props: {
-  input: Input | OptionsInput;
-  index: number;
-  isOliveHelps: boolean;
-}) {
-  const input = props.input as OptionsInput;
+function FormInput({ input, index, isOliveHelps }: FormElementProps) {
   const elem = INPUT_TYPES.find((elem) => elem.id === input.type);
 
   if (!elem) {
@@ -45,18 +44,18 @@ function FormInput(props: {
 
   return (
     <elem.Element
-      input={input}
-      index={props.index}
-      isOliveHelps={props.isOliveHelps}
+      input={input as OptionsInput}
+      index={index}
+      isOliveHelps={isOliveHelps}
     />
   );
 }
 
-export default function FormPreviewCard(props: {
-  form: FormApiResponse;
-  isOliveHelps: boolean;
-  isFormPreview?: boolean;
-}) {
+export default function FormPreviewCard({
+  form,
+  isOliveHelps,
+  isFormPreview
+}: FormPreviewProps) {
   const classes = useStyles();
   const classesNone = useStylesNone();
 
@@ -64,29 +63,29 @@ export default function FormPreviewCard(props: {
     <Card
       className={classes.root}
       variant="outlined"
-      sx={{ position: props.isFormPreview ? 'fixed' : 'inherit' }}
+      sx={{ position: isFormPreview ? 'fixed' : 'inherit' }}
     >
-      <CardContent className={props.isOliveHelps ? classes.content : ''}>
+      <CardContent className={isOliveHelps ? classes.content : ''}>
         <Typography
-          variant={props.isOliveHelps ? 'subtitle1' : 'h6'}
-          classes={props.isOliveHelps ? { root: classes.padding } : {}}
+          variant={isOliveHelps ? 'subtitle1' : 'h6'}
+          classes={isOliveHelps ? { root: classes.padding } : {}}
         >
-          {props.form.Form.title}
+          {form.Form.title}
         </Typography>
         <Divider />
         <Typography
-          variant={props.isOliveHelps ? 'caption' : 'subtitle1'}
-          classes={props.isOliveHelps ? { root: classes.padding } : {}}
+          variant={isOliveHelps ? 'caption' : 'subtitle1'}
+          classes={isOliveHelps ? { root: classes.padding } : {}}
         >
-          {props.form.Form.description}
+          {form.Form.description}
         </Typography>
-        <FormGroup classes={props.isOliveHelps ? classesNone : classes}>
-          {props.form.Inputs.map((input, index) => (
+        <FormGroup classes={isOliveHelps ? classesNone : classes}>
+          {form.Inputs.map((input, index) => (
             <FormInput
-              input={input}
+              input={input as OptionsInput}
               index={index}
               key={index}
-              isOliveHelps={props.isOliveHelps}
+              isOliveHelps={isOliveHelps}
             />
           ))}
         </FormGroup>

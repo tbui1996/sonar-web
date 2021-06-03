@@ -1,16 +1,13 @@
 import { merge } from 'lodash';
 import ReactApexChart from 'react-apexcharts';
-// material
 import {
   useTheme,
   experimentalStyled as styled
 } from '@material-ui/core/styles';
 import { Card, CardHeader } from '@material-ui/core';
-// utils
-import { fNumber } from '../../../utils/formatNumber';
-//
-import { BaseOptionChart } from '../../charts';
-
+import { fNumber } from '../../utils/formatNumber';
+import BaseOptionChart from './BaseOptionChart';
+import { StyledPieChartProps } from '../../@types/chart';
 // ----------------------------------------------------------------------
 
 const CHART_HEIGHT = 392;
@@ -33,10 +30,11 @@ const ChartWrapperStyle = styled('div')(({ theme }) => ({
 }));
 
 // ----------------------------------------------------------------------
-
-const CHART_DATA = [80, 120, 79, 414];
-
-export default function AppCurrentDownload() {
+export default function StyledPieChart({
+  labels,
+  data,
+  title
+}: StyledPieChartProps) {
   const theme = useTheme();
 
   const chartOptions = merge(BaseOptionChart(), {
@@ -46,7 +44,7 @@ export default function AppCurrentDownload() {
       theme.palette.primary.main,
       theme.palette.primary.dark
     ],
-    labels: ['Note', 'Message', 'RX', 'Broadcast'],
+    labels,
     stroke: { colors: [theme.palette.background.paper] },
     legend: { floating: true, horizontalAlign: 'center' },
     tooltip: {
@@ -80,11 +78,11 @@ export default function AppCurrentDownload() {
 
   return (
     <Card>
-      <CardHeader title="Modality Utilization" />
+      <CardHeader title={title} />
       <ChartWrapperStyle dir="ltr">
         <ReactApexChart
           type="donut"
-          series={CHART_DATA}
+          series={data}
           options={chartOptions}
           height={280}
         />

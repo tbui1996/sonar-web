@@ -3,32 +3,30 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { NativeSelect } from '@material-ui/core';
-import { OptionsInput } from '../../../@types/form';
+import { FormElementProps } from '../../../@types/form';
 import { BootstrapInput } from '../../../constants/formConstants';
 
-export default function SelectElement(props: {
-  input: OptionsInput;
-  index: number;
-  isOliveHelps: boolean;
-}) {
+export default function SelectElement({
+  input,
+  index,
+  isOliveHelps
+}: FormElementProps) {
   return (
     <FormControl variant="outlined">
-      {!props.isOliveHelps && (
-        <InputLabel htmlFor={`form-select-${props.index}`}>
-          {props.input.label}
-        </InputLabel>
+      {!isOliveHelps && (
+        <InputLabel htmlFor={`form-select-${index}`}>{input.label}</InputLabel>
       )}
       <NativeSelect
         disabled={true}
         inputProps={{
-          name: props.input.type,
-          id: `form-select-${props.index}`
+          name: input.type,
+          id: `form-select-${index}`
         }}
-        input={props.isOliveHelps ? <BootstrapInput /> : <Select />}
-        value={props.isOliveHelps ? props.input.options[0] : ''}
+        input={isOliveHelps ? <BootstrapInput /> : <Select />}
+        value={isOliveHelps ? input.options[0] : ''}
       >
         <option aria-label="None" value="" />
-        {props.input.options.map((opt, index) => (
+        {input.options.map((opt, index) => (
           <option value={opt} key={index}>
             {opt}
           </option>

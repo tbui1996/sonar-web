@@ -1,5 +1,4 @@
 export { default as AppAreaInstalled } from './AppAreaInstalled';
-export { default as AppCurrentDownload } from './AppCurrentDownload';
 export { default as AppFeatured } from './AppFeatured';
 export { default as AppNewInvoice } from './AppNewInvoice';
 export { default as AppTopAuthors } from './AppTopAuthors';

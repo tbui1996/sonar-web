@@ -1,27 +1,27 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import { FormControl } from '@material-ui/core';
-import { OptionsInput } from '../../../@types/form';
+import { FormElementProps } from '../../../@types/form';
 import { BootstrapInput } from '../../../constants/formConstants';
 
-export default function TextElement(props: {
-  input: OptionsInput;
-  index: number;
-  isOliveHelps: boolean;
-}) {
+export default function TextElement({
+  input,
+  index,
+  isOliveHelps
+}: FormElementProps) {
   return (
     <FormControl>
-      {props.isOliveHelps && (
+      {isOliveHelps && (
         <BootstrapInput
-          id={`text-field-${props.index}`}
+          id={`text-field-${index}`}
           disabled={true}
-          value={props.input.label}
+          value={input.label}
         />
       )}
-      {!props.isOliveHelps && (
+      {!isOliveHelps && (
         <TextField
-          id={`text-field-${props.index}`}
-          label={props.input.label}
+          id={`text-field-${index}`}
+          label={input.label}
           variant="outlined"
           disabled={true}
         />

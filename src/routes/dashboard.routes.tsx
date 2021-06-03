@@ -5,7 +5,6 @@ import { PATH_DASHBOARD } from './paths';
 import AuthGuard from '../guards/AuthGuard';
 // layouts
 import DashboardLayout from '../layouts/dashboard';
-
 // ----------------------------------------------------------------------
 
 const DashboardRoutes = {

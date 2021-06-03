@@ -1,17 +1,30 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { Typography, Box, Button, Container } from '@material-ui/core';
+import {
+  Typography,
+  Box,
+  Button,
+  Container,
+  Grid,
+  AppBar,
+  Tabs,
+  Tab
+} from '@material-ui/core';
 
 import axios from 'axios';
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import type { FormApiResponse } from '../../@types/form';
 import LoadingScreen from '../../components/LoadingScreen';
 import Page from '../../components/Page';
 import FormPreviewCard from '../../components/forms/FormPreviewCard';
 import OliveHelpsMock from '../../components/olive/OliveHelpsMock';
+import { FormApiSubmitResponse } from '../../@types/form';
+import FormResponseTable from '../../components/forms/FormResponseTable';
+import StyledPieChart from '../../components/charts/StyledPieChart';
+import { a11yProps, TabPanel } from '../../components/TabPanel';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     width: {
       marginBottom: '0.5rem',
@@ -21,15 +34,34 @@ const useStyles = makeStyles(() =>
       display: 'flex',
       justifyContent: 'center',
       flexDirection: 'column'
+    },
+    root: {
+      flexGrow: 1
+    },
+    justifyEven: {
+      justifyContent: 'space-evenly'
+    },
+    flexGrowWidth: {
+      flexGrow: 1,
+      maxWidth: '100%'
+    },
+    backgroundColor: {
+      backgroundColor: '#F4F6F8'
     }
   })
 );
 
 export default function View() {
   const [form, setForm] = useState<FormApiResponse | undefined>();
+  const [response, setResponse] = useState<FormApiSubmitResponse | undefined>();
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [value, setValue] = useState(0);
   const classes = useStyles();
+
+  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setValue(newValue);
+  };
 
   const params = useParams<{ id: string }>();
 
@@ -39,11 +71,17 @@ export default function View() {
         return;
       }
 
-      const res = await axios.get<FormApiResponse>(
+      const formRes = await axios.get<FormApiResponse>(
         `https://api.sonar.circulo.dev/forms/${params.id}`
       );
 
-      setForm(res.data);
+      setForm(formRes.data);
+
+      const submitRes = await axios.get<FormApiSubmitResponse>(
+        `https://api.sonar.circulo.dev/forms/${params.id}/response`
+      );
+
+      setResponse(submitRes.data);
     }
 
     if (!params.id) {
@@ -102,20 +140,61 @@ export default function View() {
     );
   }
 
+  const discards = response?.discards?.length || 0;
+  const submitted = response?.submissions?.length || 0;
+
   return (
     <Page title="Form View">
-      <Container maxWidth="xl" className={classes.flex}>
-        <FormPreviewCard form={form} isOliveHelps={false} />
-        <Button
-          disabled={sending}
-          onClick={handleSendForm}
-          variant="contained"
-          className={classes.width}
-        >
-          Send
-        </Button>
-        <OliveHelpsMock form={form} />
-      </Container>
+      <div className={classes.root}>
+        <AppBar position="static" classes={{ root: classes.backgroundColor }}>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="forms tabs"
+            classes={{ flexContainer: classes.justifyEven }}
+          >
+            <Tab label="Form Preview" {...a11yProps(0)} sx={{ flexGrow: 1 }} />
+            <Tab label="Form Response" {...a11yProps(1)} sx={{ flexGrow: 1 }} />
+          </Tabs>
+        </AppBar>
+      </div>
+      <TabPanel value={value} index={0}>
+        <Container maxWidth="xl" className={classes.flex}>
+          <FormPreviewCard form={form} isOliveHelps={false} />
+          <Button
+            disabled={sending}
+            onClick={handleSendForm}
+            variant="contained"
+            className={classes.width}
+          >
+            Send
+          </Button>
+          <OliveHelpsMock form={form} />
+        </Container>
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <Grid container spacing={2}>
+          <Grid item xl={3} lg={3} sx={{ flexGrow: 1, maxWidth: '400px' }}>
+            <StyledPieChart
+              data={[submitted, discards]}
+              labels={['Submitted', 'Discarded']}
+              title="Forms Sent"
+            />
+          </Grid>
+          <Grid
+            item
+            xl={3}
+            lg={9}
+            sx={{ flexGrow: 1, overflowY: 'scroll' }}
+            classes={{ root: classes.flexGrowWidth }}
+          >
+            <FormResponseTable
+              inputs={form.Inputs}
+              submits={response?.submissions}
+            />
+          </Grid>
+        </Grid>
+      </TabPanel>
     </Page>
   );
 }

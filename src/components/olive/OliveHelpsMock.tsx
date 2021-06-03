@@ -8,7 +8,7 @@ import { IconButton } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import { SidenoteIcon } from './svg/SidenoteIcon';
 import { LoopLibraryIcon } from './svg/LoopLibraryIcon';
-import { FormApiResponse } from '../../@types/form';
+import { OliveHelpsProps } from '../../@types/form';
 import FormPreviewCard from '../forms/FormPreviewCard';
 import { OliveLogoIcon } from './svg/OliveLogo';
 
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function OliveHelpsMock(props: { form?: FormApiResponse }) {
+export default function OliveHelpsMock({ form }: OliveHelpsProps) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
@@ -111,9 +111,7 @@ export default function OliveHelpsMock(props: { form?: FormApiResponse }) {
         </div>
         <Divider />
         <div className={classes.flex}>
-          {props.form && (
-            <FormPreviewCard form={props.form} isOliveHelps={true} />
-          )}
+          {form && <FormPreviewCard form={form} isOliveHelps={true} />}
         </div>
         <div className={classes.flex} />
         <Divider className={classes.icon} />
