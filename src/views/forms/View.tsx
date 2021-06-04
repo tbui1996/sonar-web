@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: '100%'
     },
     backgroundColor: {
-      backgroundColor: '#F4F6F8'
+      backgroundColor: theme.palette.background.paper
     }
   })
 );

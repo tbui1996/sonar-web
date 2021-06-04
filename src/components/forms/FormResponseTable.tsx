@@ -28,6 +28,12 @@ export default function FormResponseTable({
           <TableRow>
             <TableCell>Submission ID</TableCell>
             {inputs
+              .filter(
+                (input) =>
+                  input.type !== 'divider' &&
+                  input.type !== 'link' &&
+                  input.type !== 'message'
+              )
               .sort((a, b) => a.id - b.id)
               .map((item: Input, index: number) => (
                 <TableCell key={index}>{item.label}</TableCell>
@@ -39,7 +45,8 @@ export default function FormResponseTable({
             <TableRow key={index}>
               <TableCell key={index}>{s[index].formSubmissionId}</TableCell>
               {s
-                .sort((a, b) => a.id - b.id)
+                .filter((input) => input.response)
+                .sort((a, b) => a.inputId - b.inputId)
                 .map((resp, index) => (
                   <>
                     <TableCell key={index}>{resp.response}</TableCell>
