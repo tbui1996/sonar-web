@@ -43,7 +43,7 @@ export default function FormResponseTable({
         <TableBody>
           {submits?.map((s, index) => (
             <TableRow key={index}>
-              <TableCell key={index}>{s[index].formSubmissionId}</TableCell>
+              <TableCell key={index}>{s[0].formSubmissionId}</TableCell>
               {s
                 .filter((input) => input.response)
                 .sort((a, b) => a.inputId - b.inputId)
