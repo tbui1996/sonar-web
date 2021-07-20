@@ -47,6 +47,12 @@ export const PATH_DASHBOARD = {
       root: path(ROOTS_DASHBOARD, '/forms'),
       create: path(ROOTS_DASHBOARD, '/forms/create'),
       view: path(ROOTS_DASHBOARD, '/forms/:id')
+    },
+    support: {
+      root: path(ROOTS_DASHBOARD, '/support/chat'),
+      chat: {
+        root: path(ROOTS_DASHBOARD, '/support/chat')
+      }
     }
   },
   user: {

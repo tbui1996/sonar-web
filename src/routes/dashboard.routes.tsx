@@ -67,6 +67,16 @@ const DashboardRoutes = {
     },
     {
       exact: true,
+      path: PATH_DASHBOARD.modalities.support.root,
+      component: lazy(() => import('../views/support/chat/Root'))
+    },
+    {
+      exact: true,
+      path: PATH_DASHBOARD.modalities.support.chat.root,
+      component: lazy(() => import('../views/support/chat/Root'))
+    },
+    {
+      exact: true,
       path: PATH_DASHBOARD.user.account,
       component: lazy(() => import('../views/UserAccount'))
     },

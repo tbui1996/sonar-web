@@ -83,6 +83,11 @@ const sidebarConfig = [
         title: 'Forms',
         href: PATH_DASHBOARD.modalities.forms.root,
         icon: ICONS.blog
+      },
+      {
+        title: 'Support',
+        href: PATH_DASHBOARD.modalities.support.chat.root,
+        icon: ICONS.user
       }
     ]
   }
