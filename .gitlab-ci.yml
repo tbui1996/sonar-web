@@ -1,0 +1,104 @@
+# Global Variables
+variables:
+  TF_ROOT: tf/
+  TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/develop
+
+# Base States
+stages:
+  - init
+  - analyze
+  - build
+  - deploy
+
+# Terraform
+init_tf:
+  stage: init
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "**/*.tf"
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: always
+  image:
+    name: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+  script:
+    - cd ${TF_ROOT}
+    - gitlab-terraform validate
+  variables:
+    AWS_ACCOUNT_ID: ${DEV_AWS_ACCOUNT_ID}
+    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
+  cache:
+    key: "${TF_ROOT}"
+    paths:
+      - ${TF_ROOT}/.terraform/
+      - ${TF_ROOT}/.terraform.lock.hcl
+
+build_terraform:
+  stage: build
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "**/*.tf"
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: always
+  image:
+    name: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+  script:
+    - cd ${TF_ROOT}
+    - gitlab-terraform plan
+    - gitlab-terraform plan-json
+  variables:
+    AWS_ACCOUNT_ID: ${DEV_AWS_ACCOUNT_ID}
+    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
+  cache:
+    key: "${TF_ROOT}"
+    paths:
+      - ${TF_ROOT}/.terraform/
+      - ${TF_ROOT}/.terraform.lock.hcl
+  artifacts:
+    paths:
+      - ${TF_ROOT}/plan.cache
+    reports:
+      terraform: ${TF_ROOT}/plan.json
+
+build_web:
+  stage: build
+  image:
+    name: node:latest
+  script:
+    - yarn install --prefer-offline
+    - yarn build
+  cache:
+    key: "node_modules"
+    paths:
+      - node_modules
+  artifacts:
+    paths:
+      - build
+
+deploy_develop:
+  stage: deploy
+  dependencies:
+    - build_web
+    - build_terraform
+  image:
+    name: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+  script:
+    - cd ${TF_ROOT}
+    - gitlab-terraform apply
+  variables:
+    AWS_ACCOUNT_ID: ${DEV_AWS_ACCOUNT_ID}
+    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
+    TF_VAR_zone_id: ${DEV_HOSTED_ZONE_ID}
+    TF_VAR_domain_name: circulo.dev
+    TF_VAR_environment: development
+  when: manual
+  environment:
+    name: development
+    url: https://circulo.dev
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH == "develop"
