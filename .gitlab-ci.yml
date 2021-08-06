@@ -25,10 +25,11 @@ init_tf:
     - cd ${TF_ROOT}
     - gitlab-terraform validate
   variables:
-    AWS_ACCOUNT_ID: ${DEV_AWS_ACCOUNT_ID}
-    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
-    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
-    TF_VAR_zone_id: ${DEV_HOSTED_ZONE_ID}
+    AWS_ACCOUNT_ID: "$DEV_AWS_ACCOUNT_ID"
+    AWS_ACCESS_KEY_ID: "$DEV_AWS_ACCESS_KEY_ID"
+    AWS_SECRET_ACCESS_KEY: "$DEV_AWS_SECRET_ACCESS_KEY"
+    AWS_DEFAULT_REGION: us-east-1
+    TF_VAR_zone_id: "$DEV_HOSTED_ZONE_ID"
     TF_VAR_domain_name: circulo.dev
     TF_VAR_environment: development
   cache:
@@ -52,10 +53,11 @@ build_terraform:
     - gitlab-terraform plan
     - gitlab-terraform plan-json
   variables:
-    AWS_ACCOUNT_ID: ${DEV_AWS_ACCOUNT_ID}
-    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
-    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
-    TF_VAR_zone_id: ${DEV_HOSTED_ZONE_ID}
+    AWS_ACCOUNT_ID: "$DEV_AWS_ACCOUNT_ID"
+    AWS_ACCESS_KEY_ID: "$DEV_AWS_ACCESS_KEY_ID"
+    AWS_SECRET_ACCESS_KEY: "$DEV_AWS_SECRET_ACCESS_KEY"
+    AWS_DEFAULT_REGION: us-east-1
+    TF_VAR_zone_id: "$DEV_HOSTED_ZONE_ID"
     TF_VAR_domain_name: circulo.dev
     TF_VAR_environment: development
   cache:
@@ -95,10 +97,11 @@ deploy_develop:
     - cd ${TF_ROOT}
     - gitlab-terraform apply
   variables:
-    AWS_ACCOUNT_ID: ${DEV_AWS_ACCOUNT_ID}
-    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
-    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
-    TF_VAR_zone_id: ${DEV_HOSTED_ZONE_ID}
+    AWS_ACCOUNT_ID: "$DEV_AWS_ACCOUNT_ID"
+    AWS_ACCESS_KEY_ID: "$DEV_AWS_ACCESS_KEY_ID"
+    AWS_SECRET_ACCESS_KEY: "$DEV_AWS_SECRET_ACCESS_KEY"
+    AWS_DEFAULT_REGION: us-east-1
+    TF_VAR_zone_id: "$DEV_HOSTED_ZONE_ID"
     TF_VAR_domain_name: circulo.dev
     TF_VAR_environment: development
   when: manual
