@@ -13,7 +13,7 @@ resource "aws_cloudfront_distribution" "cdn" {
     }
   }
 
-  enable              = true
+  enabled             = true
   is_ipv6_enabled     = true
   comment             = "CDN for Sonar Internal Web App"
   default_root_object = "index.html"
