@@ -1,3 +1,3 @@
 locals {
-  mime_type = jsondecode(file("${path.root}/mime.json"))
+  mime_types = jsondecode(file("${path.root}/mime.json"))
 }

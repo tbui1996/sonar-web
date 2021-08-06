@@ -24,7 +24,7 @@ resource "aws_route53_record" "web_route53" {
 
   alias {
     name                   = aws_cloudfront_distribution.cdn.domain_name
-    zone_id                = aws_cloudfront_distribution.cnd.hosted_zone_id
+    zone_id                = aws_cloudfront_distribution.cdn.hosted_zone_id
     evaluate_target_health = false
   }
 }
