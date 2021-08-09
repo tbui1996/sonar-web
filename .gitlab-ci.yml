@@ -8,6 +8,7 @@ stages:
   - init
   - analyze
   - build
+  - plan
   - deploy
 
 # Terraform
@@ -38,9 +39,24 @@ init_tf:
       - ${TF_ROOT}/.terraform/
       - ${TF_ROOT}/.terraform.lock.hcl
 
-build_terraform:
+build_web:
   stage: build
-  needs: 
+  image:
+    name: node:latest
+  script:
+    - yarn install --prefer-offline
+    - yarn build
+  cache:
+    key: "node_modules"
+    paths:
+      - node_modules
+  artifacts:
+    paths:
+      - build
+
+plan_terraform:
+  stage: plan
+  dependencies: 
     - build_web
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
@@ -74,21 +90,6 @@ build_terraform:
       - ${TF_ROOT}/plan.cache
     reports:
       terraform: ${TF_ROOT}/plan.json
-
-build_web:
-  stage: build
-  image:
-    name: node:latest
-  script:
-    - yarn install --prefer-offline
-    - yarn build
-  cache:
-    key: "node_modules"
-    paths:
-      - node_modules
-  artifacts:
-    paths:
-      - build
 
 deploy_develop:
   stage: deploy
