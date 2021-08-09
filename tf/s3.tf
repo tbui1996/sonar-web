@@ -36,5 +36,5 @@ resource "aws_s3_bucket_object" "web_s3_bucket_object" {
   key          = each.value
   source       = "${path.root}/../build/${each.value}"
   etag         = filemd5("${path.root}/../build/${each.value}")
-  content_type = lookup(local.mime_types, regex("\\.[^.]+$", each.value), null)
+  content_type = lookup(local.mime_types, regex("(\\.[^.]+$)|(_redirects)", each.value), null)
 }

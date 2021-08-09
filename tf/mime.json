@@ -3,6 +3,7 @@
   ".html": "text/html",
   ".js": "text/javascript",
   ".json": "application/json",
-  ".ico": "image/x-icon"
+  ".ico": "image/x-icon",
+  "_redirects": "text/plain"
 }
 
