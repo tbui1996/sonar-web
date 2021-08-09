@@ -94,6 +94,8 @@ deploy_develop:
   image:
     name: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
   script:
+    - ls
+    - ls build
     - cd ${TF_ROOT}
     - gitlab-terraform apply
   variables:
