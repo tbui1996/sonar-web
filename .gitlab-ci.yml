@@ -40,7 +40,7 @@ init_tf:
 
 build_terraform:
   stage: build
-  dependencies:
+  needs: 
     - build_web
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
@@ -51,6 +51,8 @@ build_terraform:
   image:
     name: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
   script:
+    - ls
+    - ls build
     - cd ${TF_ROOT}
     - gitlab-terraform plan
     - gitlab-terraform plan-json
