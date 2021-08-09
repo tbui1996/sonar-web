@@ -40,6 +40,8 @@ init_tf:
 
 build_terraform:
   stage: build
+  dependencies:
+    - build_web
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
