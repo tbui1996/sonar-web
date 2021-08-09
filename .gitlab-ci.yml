@@ -95,7 +95,7 @@ deploy_develop:
   stage: deploy
   dependencies:
     - build_web
-    - build_terraform
+    - plan_terraform
   image:
     name: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
   script:
