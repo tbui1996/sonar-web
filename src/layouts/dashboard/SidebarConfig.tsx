@@ -86,7 +86,7 @@ const sidebarConfig = [
       },
       {
         title: 'Support',
-        href: PATH_DASHBOARD.modalities.support.chat.root,
+        href: PATH_DASHBOARD.modalities.support.root,
         icon: ICONS.user
       }
     ]

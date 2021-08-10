@@ -49,9 +49,12 @@ export const PATH_DASHBOARD = {
       view: path(ROOTS_DASHBOARD, '/forms/:id')
     },
     support: {
-      root: path(ROOTS_DASHBOARD, '/support/chat'),
-      chat: {
-        root: path(ROOTS_DASHBOARD, '/support/chat')
+      root: path(ROOTS_DASHBOARD, '/support'),
+      demo_only_chat: {
+        root: path(ROOTS_DASHBOARD, '/support/demo_only_chat')
+      },
+      demo_only_pending_chat: {
+        root: path(ROOTS_DASHBOARD, '/support/demo_only_pending_chat')
       }
     }
   },
