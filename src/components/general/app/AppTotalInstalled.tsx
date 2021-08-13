@@ -38,7 +38,7 @@ export default function AppTotalInstalled() {
   const theme = useTheme();
 
   const chartOptions = {
-    colors: [theme.palette.error.main],
+    colors: [theme.palette.primary.main],
     chart: { sparkline: { enabled: true } },
     plotOptions: { bar: { columnWidth: '68%', borderRadius: 2 } },
     labels: ['1', '2', '3', '4', '5', '6', '7', '8'],

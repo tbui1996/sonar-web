@@ -7,8 +7,8 @@ export default function Logo(props: BoxProps) {
     <Box
       component="img"
       alt="logo"
-      src="/static/brand/circulo_single.svg"
-      height={40}
+      src="/static/brand/circulo_full_name_logo.svg"
+      height={60}
       {...props}
     />
   );

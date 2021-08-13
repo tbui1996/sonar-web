@@ -46,12 +46,9 @@ export default function Page500() {
             There was an error, please try again later.
           </Typography>
 
-          <Box
-            component="img"
-            alt="500"
-            src="/static/illustrations/illustration_500.svg"
-            sx={{ width: '100%', maxHeight: 240, my: { xs: 5, sm: 10 } }}
-          />
+          <Box sx={{ width: '100%', maxHeight: 240, my: { xs: 5, sm: 10 } }}>
+            <Typography variant="h1">500</Typography>
+          </Box>
 
           <Button
             to="/"

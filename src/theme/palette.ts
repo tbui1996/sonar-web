@@ -50,18 +50,18 @@ declare module '@material-ui/core' {
 
 // SETUP COLORS
 const PRIMARY = {
-  lighter: '#C8FACD',
-  light: '#5BE584',
-  main: '#00AB55',
-  dark: '#007B55',
-  darker: '#005249'
+  lighter: '#f9baac',
+  light: '#f7a694',
+  main: '#f37f65',
+  dark: '#ef5836',
+  darker: '#ed441e'
 };
 const SECONDARY = {
-  lighter: '#D6E4FF',
-  light: '#84A9FF',
-  main: '#3366FF',
-  dark: '#1939B7',
-  darker: '#091A7A'
+  lighter: '#6674c3',
+  light: '#5463bc',
+  main: '#3E4C9F',
+  dark: '#303a7a',
+  darker: '#293268'
 };
 const INFO = {
   lighter: '#D0F2FF',
@@ -71,25 +71,25 @@ const INFO = {
   darker: '#04297A'
 };
 const SUCCESS = {
-  lighter: '#E9FCD4',
-  light: '#AAF27F',
-  main: '#54D62C',
-  dark: '#229A16',
-  darker: '#08660D'
+  lighter: '#4bd786',
+  light: '#36d278',
+  main: '#27ae60',
+  dark: '#1e8449',
+  darker: '#19703e'
 };
 const WARNING = {
-  lighter: '#FFF7CD',
-  light: '#FFE16A',
-  main: '#FFC107',
-  dark: '#B78103',
-  darker: '#7A4F01'
+  lighter: '#f7df93',
+  light: '#f5d77c',
+  main: '#f2c94c',
+  dark: '#efbb1c',
+  darker: '#e1ae10'
 };
 const ERROR = {
-  lighter: '#FFE7D9',
-  light: '#FFA48D',
-  main: '#FF4842',
-  dark: '#B72136',
-  darker: '#7A0C2E'
+  lighter: '#d38783',
+  light: '#cc7570',
+  main: '#bf514a',
+  dark: '#9e3e38',
+  darker: '#8b3731'
 };
 const GREY = {
   100: '#F9FAFB',
@@ -142,15 +142,15 @@ const COMMON = {
 const palette = {
   light: {
     ...COMMON,
-    text: { primary: GREY[800], secondary: GREY[600], disabled: GREY[500] },
-    background: { paper: '#fff', default: '#fff', neutral: GREY[200] },
-    action: { active: GREY[600], ...COMMON.action }
+    text: { primary: '#242832', secondary: '#474F63', disabled: '#9CA4B8' },
+    background: { paper: '#FFFBF4', default: '#FFFBF4', neutral: '#FFFBF4' },
+    action: { active: '#474F63', ...COMMON.action }
   },
   dark: {
     ...COMMON,
-    text: { primary: '#fff', secondary: GREY[500], disabled: GREY[600] },
-    background: { paper: GREY[800], default: GREY[900], neutral: GREY[500_16] },
-    action: { active: GREY[500], ...COMMON.action }
+    text: { primary: '#FFFBF4', secondary: '#FFF6E9', disabled: '#CED2DC' },
+    background: { paper: '#242832', default: '#242832', neutral: '#474F63' },
+    action: { active: '#FFF6E9', ...COMMON.action }
   }
 };
 

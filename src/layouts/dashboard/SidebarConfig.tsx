@@ -47,11 +47,6 @@ const sidebarConfig = [
         title: 'dashboard',
         href: PATH_DASHBOARD.general.app,
         icon: ICONS.dashboard
-      },
-      {
-        title: 'analytics',
-        href: PATH_DASHBOARD.general.analytics,
-        icon: ICONS.analytics
       }
     ]
   },
@@ -60,24 +55,9 @@ const sidebarConfig = [
     subheader: 'modalities',
     items: [
       {
-        title: 'Note',
-        href: PATH_DASHBOARD.modalities.note,
-        icon: ICONS.animate
-      },
-      {
-        title: 'Message',
-        href: PATH_DASHBOARD.modalities.message,
-        icon: ICONS.chat
-      },
-      {
         title: 'Broadcast',
         href: PATH_DASHBOARD.modalities.broadcast,
         icon: ICONS.mail
-      },
-      {
-        title: 'Datasheet',
-        href: PATH_DASHBOARD.modalities.datasheet,
-        icon: ICONS.elements
       },
       {
         title: 'Forms',

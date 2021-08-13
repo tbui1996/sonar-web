@@ -39,9 +39,8 @@ export default function StyledPieChart({
 
   const chartOptions = merge(BaseOptionChart(), {
     colors: [
-      theme.palette.primary.lighter,
-      theme.palette.primary.light,
       theme.palette.primary.main,
+      theme.palette.secondary.main,
       theme.palette.primary.dark
     ],
     labels,

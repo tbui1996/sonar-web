@@ -32,24 +32,6 @@ const AppModalities = () => {
         <TableContainer sx={{ minWidth: 720 }}>
           <Table>
             <TableBody>
-              <TableRow key="note">
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    className={classes.linkButton}
-                    startIcon={<AddIcon />}
-                  >
-                    Note
-                  </Button>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="h5">
-                    Add a quick note triggered by a keyword/sensor
-                  </Typography>
-                </TableCell>
-              </TableRow>
               <TableRow key="broadcast">
                 <TableCell>
                   <Button
@@ -58,6 +40,7 @@ const AppModalities = () => {
                     size="large"
                     className={classes.linkButton}
                     startIcon={<AddIcon />}
+                    href="/dashboard/broadcast"
                   >
                     Broadcast
                   </Button>
@@ -68,7 +51,7 @@ const AppModalities = () => {
                   </Typography>
                 </TableCell>
               </TableRow>
-              <TableRow key="message">
+              <TableRow key="forms">
                 <TableCell>
                   <Button
                     variant="contained"
@@ -76,17 +59,18 @@ const AppModalities = () => {
                     size="large"
                     className={classes.linkButton}
                     startIcon={<AddIcon />}
+                    href="/dashboard/forms"
                   >
-                    Message
+                    Forms
                   </Button>
                 </TableCell>
                 <TableCell>
                   <Typography variant="h5">
-                    Send a message to a provider
+                    Send a form to a provider
                   </Typography>
                 </TableCell>
               </TableRow>
-              <TableRow key="datasheet">
+              <TableRow key="support">
                 <TableCell>
                   <Button
                     variant="contained"
@@ -94,13 +78,14 @@ const AppModalities = () => {
                     size="large"
                     className={classes.linkButton}
                     startIcon={<AddIcon />}
+                    href="/dashboard/support"
                   >
-                    Datasheet
+                    Support
                   </Button>
                 </TableCell>
                 <TableCell>
                   <Typography variant="h5">
-                    Add a spreadsheet of searchable data
+                    Respond to or start a support chat with a provider
                   </Typography>
                 </TableCell>
               </TableRow>

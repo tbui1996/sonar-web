@@ -5,8 +5,8 @@ import { experimentalStyled as styled } from '@material-ui/core/styles';
 import { Box, Button, Link, Container, Typography } from '@material-ui/core';
 import { PATH_AUTH } from '../../routes/paths';
 import Page from '../../components/Page';
-import Logo from '../../components/Logo';
 import { VerifyCodeForm } from '../../components/authentication/verify-code';
+import Logo from '../../components/Logo';
 
 // ----------------------------------------------------------------------
 

@@ -4,18 +4,16 @@ import {
   Box,
   Card,
   // Link,
-  Alert,
   Hidden,
-  Tooltip,
   Container,
   Typography
 } from '@material-ui/core';
 // import { PATH_AUTH } from '../../routes/paths';
 import useAuth from '../../hooks/useAuth';
 import Page from '../../components/Page';
-import Logo from '../../components/Logo';
 import { LoginForm } from '../../components/authentication/login';
 import AuthWithSocial from '../../components/authentication/AuthWithSocial';
+import Logo from '../../components/Logo';
 
 // ----------------------------------------------------------------------
 
@@ -43,11 +41,12 @@ const HeaderStyle = styled('header')(({ theme }) => ({
 
 const SectionStyle = styled(Card)(({ theme }) => ({
   width: '100%',
-  maxWidth: 464,
+  maxWidth: 500,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
-  margin: theme.spacing(2, 0, 2, 2)
+  margin: theme.spacing(2, 0, 2, 2),
+  padding: '0.35em'
 }));
 
 const ContentStyle = styled('div')(({ theme }) => ({
@@ -93,21 +92,9 @@ export default function Login() {
                 Enter your details below.
               </Typography>
             </Box>
-            <Tooltip title={method === 'firebase' ? 'Firebase' : 'JWT'}>
-              <Box
-                component="img"
-                src="/static/brand/circulo_single.svg"
-                sx={{ width: 32, height: 32 }}
-              />
-            </Tooltip>
           </Box>
 
           {method === 'firebase' && <AuthWithSocial />}
-
-          <Alert severity="info" sx={{ mb: 5 }}>
-            This is an early alpha version of Sonar. Functionality may be
-            unstable.
-          </Alert>
 
           <LoginForm />
         </ContentStyle>

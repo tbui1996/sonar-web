@@ -36,12 +36,12 @@ export default function Settings() {
       >
         <Tooltip title="Settings">
           <MFab
-            color="warning"
+            color="primary"
             size="medium"
             onClick={handleOpenSettings}
             sx={{
-              color: (theme) => theme.palette.warning.contrastText,
-              background: (theme) => theme.palette.gradients.warning
+              color: (theme) => theme.palette.primary.lighter,
+              background: (theme) => theme.palette.primary.dark
             }}
           >
             <SvgIconStyle

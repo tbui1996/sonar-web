@@ -52,13 +52,9 @@ export default function Page404() {
               you’ve mistyped the URL? Be sure to check your spelling.
             </Typography>
 
-            <Box
-              component={motion.img}
-              variants={varBounceIn}
-              alt="404"
-              src="/static/illustrations/illustration_404.svg"
-              sx={{ width: '100%', maxHeight: 240, my: { xs: 5, sm: 10 } }}
-            />
+            <Box sx={{ width: '100%', maxHeight: 240, my: { xs: 5, sm: 10 } }}>
+              <Typography variant="h1">404</Typography>
+            </Box>
 
             <Button
               to="/"

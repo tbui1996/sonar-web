@@ -2,8 +2,7 @@ import { motion } from 'framer-motion';
 // material
 import { alpha, experimentalStyled as styled } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
-//
-import Logo from './Logo';
+import LoadingLogo from './LoadingLogo';
 
 // ----------------------------------------------------------------------
 
@@ -30,7 +29,7 @@ export default function LoadingScreen() {
           repeat: Infinity
         }}
       >
-        <Logo sx={{ height: 64 }} />
+        <LoadingLogo sx={{ height: 84 }} />
       </motion.div>
 
       <Box
