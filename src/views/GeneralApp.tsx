@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import Page from '../components/Page';
 import {
   AppModalities,
-  AppAreaInstalled,
   AppTotalDownloads,
   AppTotalInstalled,
   AppTotalActiveUsers
@@ -50,14 +49,10 @@ export default function GeneralApp() {
 
           <Grid item xs={12} md={6} lg={4}>
             <StyledPieChart
-              data={[80, 120, 79, 414, formCount?.count || 0]}
-              labels={['Note', 'Message', 'RX', 'Broadcast', 'Forms']}
+              data={[50, 10, formCount?.count || 0]}
+              labels={['Broadcast', 'Chat', 'Forms']}
               title="Modality Utilization"
             />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={8}>
-            <AppAreaInstalled />
           </Grid>
 
           <Grid item xs={12} lg={8}>
