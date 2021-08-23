@@ -36,7 +36,7 @@ export default function Forms() {
   useEffect(() => {
     async function execute() {
       const res = await axios.get<Array<Form>>(
-        'https://api.sonar.circulo.dev/forms'
+        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/forms`
       );
 
       if (!res.data || !Array.isArray(res.data)) {

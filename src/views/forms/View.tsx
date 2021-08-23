@@ -72,13 +72,13 @@ export default function View() {
       }
 
       const formRes = await axios.get<FormApiResponse>(
-        `https://api.sonar.circulo.dev/forms/${params.id}`
+        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/forms/${params.id}`
       );
 
       setForm(formRes.data);
 
       const submitRes = await axios.get<FormApiSubmitResponse>(
-        `https://api.sonar.circulo.dev/forms/${params.id}/response`
+        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/forms/${params.id}/response`
       );
 
       setResponse(submitRes.data);
@@ -106,7 +106,9 @@ export default function View() {
     setSending(true);
 
     await axios
-      .post(`https://api.sonar.circulo.dev/forms/${params.id}/send`)
+      .post(
+        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/forms/${params.id}/send`
+      )
       .catch((e) => {
         console.log(e);
       });

@@ -20,7 +20,9 @@ export default function GeneralApp() {
   useEffect(() => {
     async function execute() {
       await axios
-        .get<FormCount>(`https://api.sonar.circulo.dev/forms/count`)
+        .get<FormCount>(
+          `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/forms/count`
+        )
         .then((res) => {
           setFormCount(res.data);
         });

@@ -50,7 +50,7 @@ export default function Broadcast() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const getProviders = () =>
     axios({
-      url: 'https://api.sonar.circulo.dev/router/users'
+      url: `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/router/users`
     })
       .then((response) => setProviders(response.data))
       .catch((err) => console.error(err));
@@ -81,7 +81,7 @@ export default function Broadcast() {
     setSending(true);
     axios({
       method: 'post',
-      url: 'https://api.sonar.circulo.dev/router/broadcast',
+      url: `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/router/broadcast`,
       headers: {
         'Content-Type': 'application/json'
       },

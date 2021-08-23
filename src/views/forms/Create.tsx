@@ -80,7 +80,7 @@ function Form() {
     setOpenConfirm(false);
     setCreating(true);
     const res = await axios
-      .post('https://api.sonar.circulo.dev/forms', {
+      .post(`https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/forms`, {
         title,
         description,
         inputs: inputs.map((item) => {
