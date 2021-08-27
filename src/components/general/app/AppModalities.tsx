@@ -89,6 +89,25 @@ const AppModalities = () => {
                   </Typography>
                 </TableCell>
               </TableRow>
+              <TableRow key="users">
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    className={classes.linkButton}
+                    startIcon={<AddIcon />}
+                    href="/dashboard/users"
+                  >
+                    User Roles
+                  </Button>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="h5">
+                    Manage permissions for an Olive Helps user
+                  </Typography>
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>

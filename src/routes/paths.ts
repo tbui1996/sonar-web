@@ -56,6 +56,9 @@ export const PATH_DASHBOARD = {
       demo_only_pending_chat: {
         root: path(ROOTS_DASHBOARD, '/support/demo_only_pending_chat')
       }
+    },
+    users: {
+      root: path(ROOTS_DASHBOARD, '/users')
     }
   },
   user: {
