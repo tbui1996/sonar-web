@@ -72,6 +72,11 @@ const DashboardRoutes = {
     },
     {
       exact: true,
+      path: PATH_DASHBOARD.modalities.users.root,
+      component: lazy(() => import('../views/users/Root'))
+    },
+    {
+      exact: true,
       path: PATH_DASHBOARD.modalities.support.demo_only_chat.root,
       component: lazy(() => import('../views/support/demo_only_chat/Root'))
     },
