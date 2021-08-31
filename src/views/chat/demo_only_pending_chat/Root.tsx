@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
-  Box,
   Paper,
-  Card,
   Grid,
   Container,
   Divider,
@@ -20,14 +18,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import SendIcon from '@material-ui/icons/Send';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import Page from '../../../components/Page';
-import HeaderDashboard from '../../../components/HeaderDashboard';
-import { PATH_DASHBOARD } from '../../../routes/paths';
 import {
   PendingChatSession,
   Message,
   SessionID
 } from '../../../@types/support';
-import LoadingScreen from '../../../components/LoadingScreen';
 
 const useStyles = makeStyles({
   table: {
@@ -227,74 +222,41 @@ export default function Chat() {
   return (
     <Page title="Support | Sonar">
       <Container maxWidth="xl">
-        <HeaderDashboard
-          heading="Support"
-          links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Support' },
-            { name: 'Pending Chat' }
-          ]}
-        />
-        <Card
-          sx={{
-            minHeight: '50vh',
-            paddingTop: '2rem',
-            paddingBottom: '2rem',
-            paddingLeft: '1rem',
-            paddingRight: '1rem',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}
-        >
-          {pendingChatSessions.length === 0 && (
-            <Box
-              width="100%"
-              display="flex"
-              padding="3rem"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <LoadingScreen />
-            </Box>
-          )}
-          {pendingChatSessions.length > 0 && (
-            <Grid container component={Paper} className={classes.chatSection}>
-              <Grid item xs={3} className={classes.borderColor}>
-                <List>{getListOfProviders(pendingChatSessions)}</List>
-              </Grid>
-              <Grid item xs={9}>
-                <List className={classes.messageArea}>
-                  {getMessages(messages)}
-                </List>
-                <Divider sx={{ my: 3 }} />
-                <Grid container style={{ padding: '20px' }}>
-                  <Grid item xs={11}>
-                    <TextField
-                      id="outlined-basic-email"
-                      label="Type Here"
-                      fullWidth
-                      onChange={handleMessageTextInput}
-                    />
-                  </Grid>
-                  <Grid item xs={1} style={{ paddingLeft: '20px' }}>
-                    <Fab
-                      color="primary"
-                      aria-label="add"
-                      onClick={sendMessage}
-                      disabled={
-                        readyState !== ReadyState.OPEN || !selectedChatSession
-                      }
-                    >
-                      <SendIcon />
-                    </Fab>
-                  </Grid>
+        {pendingChatSessions.length > 0 && (
+          <Grid container component={Paper} className={classes.chatSection}>
+            <Grid item xs={3} className={classes.borderColor}>
+              <List>{getListOfProviders(pendingChatSessions)}</List>
+            </Grid>
+            <Grid item xs={9}>
+              <List className={classes.messageArea}>
+                {getMessages(messages)}
+              </List>
+              <Divider sx={{ my: 3 }} />
+              <Grid container style={{ padding: '20px' }}>
+                <Grid item xs={11}>
+                  <TextField
+                    id="outlined-basic-email"
+                    label="Type Here"
+                    fullWidth
+                    onChange={handleMessageTextInput}
+                  />
+                </Grid>
+                <Grid item xs={1} style={{ paddingLeft: '20px' }}>
+                  <Fab
+                    color="primary"
+                    aria-label="add"
+                    onClick={sendMessage}
+                    disabled={
+                      readyState !== ReadyState.OPEN || !selectedChatSession
+                    }
+                  >
+                    <SendIcon />
+                  </Fab>
                 </Grid>
               </Grid>
             </Grid>
-          )}
-        </Card>
+          </Grid>
+        )}
       </Container>
     </Page>
   );
