@@ -81,7 +81,7 @@ const getMessages = (messages: Message[]) =>
     </ListItem>
   ));
 
-const socketUrl = 'wss://ws-sonar-internal.sonar.circulo.dev';
+const socketUrl = `wss://ws-sonar-internal.${process.env.REACT_APP_BASE_API_DOMAIN}`;
 
 export default function Chat() {
   const classes = useStyles();
@@ -107,7 +107,7 @@ export default function Chat() {
 
     axios
       .post(
-        'https://api.sonar.circulo.dev/support/assign_pending_chat_session',
+        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/assign_pending_chat_session`,
         data
       )
       .then(({ data }) =>
@@ -155,7 +155,7 @@ export default function Chat() {
 
   const getPendingChatSessions = () =>
     axios({
-      url: 'https://api.sonar.circulo.dev/support/pending_chat_sessions'
+      url: `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/pending_chat_sessions`
     })
       .then((response) => setPendingChatSessions(response.data))
       .catch((err) => console.error(err));

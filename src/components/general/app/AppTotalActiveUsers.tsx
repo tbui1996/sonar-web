@@ -40,7 +40,7 @@ export default function AppTotalActiveUsers() {
 
   const [numConnected, setNumConnected] = useState<number>(0);
   const { lastMessage, readyState } = useWebSocket(
-    'wss://ws-sonar-internal.sonar.circulo.dev',
+    `wss://ws-sonar-internal.${process.env.REACT_APP_BASE_API_DOMAIN}`,
     {
       shouldReconnect: () => true
     }
