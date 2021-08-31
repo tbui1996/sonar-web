@@ -67,25 +67,13 @@ const DashboardRoutes = {
     },
     {
       exact: true,
-      path: PATH_DASHBOARD.modalities.support.root,
-      component: lazy(() => import('../views/support/Root'))
+      path: PATH_DASHBOARD.modalities.chat.root,
+      component: lazy(() => import('../views/chat/Root'))
     },
     {
       exact: true,
       path: PATH_DASHBOARD.modalities.users.root,
       component: lazy(() => import('../views/users/Root'))
-    },
-    {
-      exact: true,
-      path: PATH_DASHBOARD.modalities.support.demo_only_chat.root,
-      component: lazy(() => import('../views/support/demo_only_chat/Root'))
-    },
-    {
-      exact: true,
-      path: PATH_DASHBOARD.modalities.support.demo_only_pending_chat.root,
-      component: lazy(
-        () => import('../views/support/demo_only_pending_chat/Root')
-      )
     },
     {
       exact: true,

@@ -1,5 +1,4 @@
 // ----------------------------------------------------------------------
-
 export type Contact = {
   id: string;
   name: string;
@@ -62,4 +61,9 @@ export type SendMessage = {
   attachments: string[];
   createdAt: Date;
   senderId: string;
+};
+
+export type AccordionProps = {
+  patientInfo?: undefined;
+  providerName?: string | null;
 };

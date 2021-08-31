@@ -65,8 +65,8 @@ const sidebarConfig = [
         icon: ICONS.blog
       },
       {
-        title: 'Support',
-        href: PATH_DASHBOARD.modalities.support.root,
+        title: 'Chat',
+        href: PATH_DASHBOARD.modalities.chat.root,
         icon: ICONS.chat
       },
       {
