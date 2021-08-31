@@ -77,7 +77,7 @@ const getMessages = (messages: Message[]) =>
     </ListItem>
   ));
 
-const socketUrl = 'wss://ws-sonar-internal.sonar.circulo.dev';
+const socketUrl = `wss://ws-sonar-internal.${process.env.REACT_APP_BASE_API_DOMAIN}`;
 
 export default function Chat() {
   const classes = useStyles();
@@ -126,7 +126,7 @@ export default function Chat() {
 
   const getProviders = () =>
     axios({
-      url: 'https://api.sonar.circulo.dev/router/connected_users'
+      url: `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/router/connected_users`
     })
       .then((response) => setProviders(response.data))
       .catch((err) => console.error(err));
@@ -137,7 +137,10 @@ export default function Chat() {
 
   const getChatSession = (data: ChatSessionRequest): Promise<string | void> =>
     axios
-      .post('https://api.sonar.circulo.dev/support/chat_session', data)
+      .post(
+        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/chat_session`,
+        data
+      )
       .then((response) => setChatSession(response?.data?.id))
       .catch((err) => console.error(err));
 
