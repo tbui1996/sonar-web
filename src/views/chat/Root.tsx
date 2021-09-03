@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   Card,
   Container,
@@ -8,12 +7,7 @@ import {
   Input,
   InputAdornment,
   List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Paper,
   TextField,
-  Tooltip,
   Typography
 } from '@material-ui/core';
 import AttachFileOutlinedIcon from '@material-ui/icons/AttachFileOutlined';
@@ -22,168 +16,237 @@ import SendIcon from '@material-ui/icons/Send';
 import SearchIcon from '@material-ui/icons/Search';
 import { ChangeEvent, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Icon } from '@iconify/react';
-import closeFill from '@iconify/icons-eva/close-fill';
-import { useSnackbar, VariantType } from 'notistack';
 import { InsertEmoticon } from '@material-ui/icons';
 import InsertPhotoOutlinedIcon from '@material-ui/icons/InsertPhotoOutlined';
+import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
+import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
+import { Pagination } from '@material-ui/lab';
+import { makeStyles } from '@material-ui/core/styles';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import LoadingScreen from '../../components/LoadingScreen';
-import { ChatSessionRequest, Message, Provider } from '../../@types/support';
-import { MIconButton } from '../../components/@material-extend';
+import { ChatSession, Message, SessionID } from '../../@types/support';
 import MyAvatar from '../../components/MyAvatar';
 import AccordionSidebar from '../../components/chat/AccordionSidebar';
-
-const getAvatar = (provider: Provider): string =>
-  provider.email[0].toUpperCase();
-
-const getDisplayName = (provider: Provider | null): string => {
-  if (!provider) {
-    return 'Unknown';
-  }
-
-  const name = provider.email.split('@')[0];
-
-  const firstLetter = name.substr(0, 1).toUpperCase();
-  const restOfName = name.slice(1, name.length);
-
-  return `${firstLetter}${restOfName}`;
-};
-
-const getMessages = (messages: Message[], providerName: string) =>
-  messages.map((message, index) => (
-    <ListItem key={index}>
-      <Grid
-        container
-        direction="column"
-        flexWrap="nowrap"
-        alignItems={message.sender === 'sonar' ? 'flex-end' : 'flex-start'}
-      >
-        <Grid item xs={12}>
-          <ListItemText
-            secondary={
-              message.sender === 'sonar'
-                ? message.timestamp
-                : `${providerName}, ${message.timestamp}`
-            }
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Paper
-            elevation={0}
-            sx={{
-              background: (theme) =>
-                message.sender === 'sonar'
-                  ? theme.palette.primary.lighter
-                  : theme.palette.grey[300],
-              maxWidth: '375px'
-            }}
-          >
-            <ListItemText
-              primary={message.message}
-              sx={{ padding: '10px', color: '#242832' }}
-            />
-          </Paper>
-        </Grid>
-      </Grid>
-    </ListItem>
-  ));
+import NotificationMessage from '../../utils/notificationMessage';
+import MessageList from '../../components/chat/MessageList';
+import { User, Users } from '../../@types/users';
+import useInterval from '../../hooks/useInterval';
+import {
+  getDisplayName,
+  UserListItem
+} from '../../components/chat/UserListItem';
 
 const socketUrl = `wss://ws-sonar-internal.${process.env.REACT_APP_BASE_API_DOMAIN}`;
 
+const useStyles = makeStyles({
+  justify: {
+    justifyContent: 'center'
+  }
+});
+
 export default function Chat() {
-  const [providers, setProviders] = useState<Provider[]>([]);
-  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(
-    null
-  );
+  const [loading, setLoading] = useState(false);
+  // const [providers, setProviders] = useState<Provider[]>([]);
   const [messageTextInput, setMessageTextInput] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [chatSession, setChatSession] = useState<string>('');
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const [page, setPage] = useState(0);
+  const rowsPerPage = 6;
+  const INTERVAL = 120000;
+  const [selectedChatSession, setSelectedChatSession] = useState<ChatSession>();
+  const [users, setUsers] = useState<Users>();
+  const [user, setUser] = useState<User>();
+  const [pendingChatSessions, setPendingChatSessions] = useState<ChatSession[]>(
+    []
+  );
+  const classes = useStyles();
 
-  const notificationMessage = (message: string, variant: VariantType) => {
-    enqueueSnackbar(message, {
-      variant,
-      action: (key) => (
-        <MIconButton size="small" onClick={() => closeSnackbar(key)}>
-          <Icon icon={closeFill} />
-        </MIconButton>
-      )
-    });
-  };
+  function getResource<T>(type: string, url: string) {
+    return axios
+      .get<T>(url)
+      .then((response) => {
+        if (!response.data) {
+          throw new Error(`Unable to get data for ${type}`);
+        }
 
-  const getListOfProviders = (providers: Provider[]) =>
-    providers.map((provider) => (
-      <Tooltip title={provider.email} key={provider.id} placement="right-start">
-        <ListItem
-          button
-          selected={
-            selectedProvider !== null && selectedProvider.id === provider.id
-          }
-          onClick={() => {
-            if (selectedProvider?.id === provider.id) {
-              setSelectedProvider(null);
-            } else {
-              setSelectedProvider(provider);
-              getChatSession({
-                internalUserID: 'sonar',
-                userID: provider.id
-              }).then((sessionID) => {
-                if (sessionID) {
-                  setChatSession(sessionID);
+        return response.data;
+      })
+      .catch((err) => err);
+  }
+
+  function mapMessageTimestamp(message: Message) {
+    const localItem = message;
+    localItem.createdTimestamp = new Date(
+      parseInt(localItem.createdTimestamp, 10) * 1000
+    ).toLocaleTimeString();
+    return localItem;
+  }
+
+  async function assignSessionToUser(chatSession: ChatSession) {
+    const data: SessionID = {
+      sessionID: chatSession.ID,
+      internalUserID: 'sonar'
+    };
+
+    const res = await axios.post<Message[]>(
+      `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/assign_pending_chat_session`,
+      data
+    );
+
+    const messages = res.data.map((item: Message) => mapMessageTimestamp(item));
+    setMessages(messages);
+  }
+
+  async function getMessageBySessionId(chatSessionId: string) {
+    const res = await axios.get<Message[]>(
+      `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/messages/${chatSessionId}`
+    );
+
+    const messages = res.data.map((item: Message) => mapMessageTimestamp(item));
+    setMessages(messages);
+  }
+
+  function getChatSessions(
+    pendingChats: ChatSession[],
+    activeChats: ChatSession[],
+    users: User[] | undefined
+  ) {
+    const allSessions = pendingChats
+      .filter((item) => item !== undefined)
+      .map((item) => {
+        item.pending = true;
+        item.open = true;
+        return item;
+      })
+      .concat(activeChats.filter((item) => item !== undefined));
+
+    const lastMessage = (session: ChatSession) => {
+      const filteredMessages = messages.filter(
+        (item) => item.sessionID === session.ID
+      );
+      if (filteredMessages) {
+        return filteredMessages.length === 1
+          ? filteredMessages[0]
+          : filteredMessages[messages.length - 1];
+      }
+
+      return undefined;
+    };
+
+    return (
+      allSessions
+        // eslint-disable-next-line no-nested-ternary
+        .sort((x, y) => y.createdTimestamp - x.createdTimestamp)
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        .map((session, index) => {
+          const foundUser = users?.find((user) => user.sub === session.userID);
+          return (
+            <UserListItem
+              key={index}
+              userDetails={foundUser}
+              selected={
+                selectedChatSession !== undefined &&
+                session.ID === selectedChatSession.ID
+              }
+              onClickCallback={async () => {
+                setUser(foundUser);
+
+                if (session.pending) {
+                  await assignSessionToUser(session);
+                  const pendingChats = pendingChatSessions;
+                  const indexOfChat = pendingChats.findIndex(
+                    (item) => item.ID === session.ID
+                  );
+
+                  pendingChats[indexOfChat].pending = false;
+                  pendingChats[indexOfChat].internalUserID = 'sonar';
+                  pendingChats[indexOfChat].open = true;
+
+                  const copyOfIndex = pendingChats[indexOfChat];
+                  pendingChats.splice(indexOfChat, 1);
+
+                  setPendingChatSessions(pendingChats);
+                  setChatSessions([copyOfIndex, ...chatSessions]);
+                  setSelectedChatSession(copyOfIndex);
+                } else {
+                  await getMessageBySessionId(session.ID);
+                  setSelectedChatSession(session);
                 }
-              });
-            }
-          }}
-        >
-          <ListItemIcon>
-            <Avatar sx={{ width: '48px', height: '48px' }}>
-              {getAvatar(provider)}
-            </Avatar>
-          </ListItemIcon>
-          <ListItemText primary={getDisplayName(provider)}>
-            <Typography
-              variant="subtitle2"
-              sx={{ fontWeight: '600', fontSize: '14px', lineHeight: '22px' }}
-            >
-              {getDisplayName(provider)}
-            </Typography>
-          </ListItemText>
-        </ListItem>
-      </Tooltip>
-    ));
-
-  const getProviders = () =>
-    axios({
-      url: `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/router/connected_users`
-    })
-      .then((response) => setProviders(response.data))
-      .catch((err) => console.error(err));
+              }}
+              open={session.open}
+              lastMessage={lastMessage(session)}
+            />
+          );
+        })
+    );
+  }
 
   useEffect(() => {
-    getProviders();
+    setLoading(true);
+    Promise.all([
+      getResource<ChatSession[]>(
+        'Pending Chat Sessions',
+        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/pending_chat_sessions`
+      ),
+      getResource<ChatSession[]>(
+        'Active Chat Sessions',
+        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/sessions`
+      ),
+      getResource(
+        'Users',
+        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/users/user_list`
+      )
+      // TODO: get providers so that we can start a chat session from frontend && determining online / offline
+    ])
+      .then((values) => {
+        setPendingChatSessions(values[0]);
+        setChatSessions(values[1]);
+        setUsers(values[2]);
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
-  const getChatSession = (data: ChatSessionRequest): Promise<string | void> =>
-    axios
-      .post(
-        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/chat_session`,
-        data
-      )
-      .then((response) => setChatSession(response?.data?.id))
-      .catch((err) => console.error(err));
+  useInterval(async () => {
+    const res = await getResource<ChatSession[]>(
+      'Pending Chat Sessions',
+      `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/pending_chat_sessions`
+    );
+
+    if (res.length > 0) {
+      const pendingChats = res as ChatSession[];
+      pendingChats.forEach((item) => {
+        if (pendingChatSessions && pendingChatSessions.length > 0) {
+          const foundSession = pendingChatSessions.find(
+            (p) => p.ID === item.ID
+          );
+
+          if (!foundSession) {
+            setPendingChatSessions([item, ...pendingChatSessions]);
+          }
+        } else {
+          setPendingChatSessions(pendingChats);
+        }
+      });
+    }
+  }, INTERVAL /* 1000 120000 */);
 
   const { sendJsonMessage, readyState } = useWebSocket(socketUrl, {
     onMessage: (event) => {
-      const { sender, timestamp, message } = JSON.parse(event.data);
+      const { sender, timestamp, message, session } = JSON.parse(event.data);
       setMessages([
         ...messages,
         {
-          sender,
-          timestamp: new Date(timestamp * 1000).toLocaleTimeString(),
-          message
+          senderID: sender,
+          createdTimestamp: new Date(timestamp * 1000).toLocaleTimeString(),
+          message,
+          sessionID: session
         }
       ]);
     },
@@ -197,12 +260,12 @@ export default function Chat() {
 
   const sendMessage = async () => {
     if (messageTextInput === '') {
-      notificationMessage('Please include message text', 'error');
+      NotificationMessage('Please include message text', 'error');
       return;
     }
 
-    if (!selectedProvider?.id) {
-      notificationMessage('You have not selected a provider', 'error');
+    if (!selectedChatSession?.ID) {
+      NotificationMessage('You have not selected a chat', 'error');
       return;
     }
 
@@ -211,7 +274,7 @@ export default function Chat() {
       payload: {
         type: 'chat',
         message: JSON.stringify({
-          session: chatSession,
+          session: selectedChatSession.ID,
           sender: 'sonar',
           message: messageTextInput
         })
@@ -221,9 +284,10 @@ export default function Chat() {
     setMessages([
       ...messages,
       {
-        sender: 'sonar',
-        timestamp: new Date().toLocaleTimeString(),
-        message: messageTextInput
+        senderID: 'sonar',
+        createdTimestamp: new Date().toLocaleTimeString(),
+        message: messageTextInput,
+        sessionID: selectedChatSession.ID
       }
     ]);
 
@@ -248,10 +312,11 @@ export default function Chat() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            alignItems: 'center'
+            alignItems: 'center',
+            overflow: 'unset'
           }}
         >
-          {providers.length === 0 && (
+          {loading && (
             <Box
               width="100%"
               display="flex"
@@ -262,12 +327,16 @@ export default function Chat() {
               <LoadingScreen />
             </Box>
           )}
-          {providers.length > 0 && (
+          {!loading && (
             <Grid container sx={{ flexGrow: 1 }}>
               <Grid
                 item
                 xs={3}
-                sx={{ borderRight: '1px solid rgba(145, 158, 171, 0.24)' }}
+                sx={{
+                  borderRight: '1px solid rgba(145, 158, 171, 0.24)',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
               >
                 <MyAvatar
                   sx={{ margin: '.8em', width: '48px', height: '48px' }}
@@ -293,11 +362,30 @@ export default function Chat() {
                 </div>
                 <div
                   style={{
-                    height: '100%',
-                    marginTop: '.8em'
+                    marginTop: '.8em',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    flexGrow: 1
                   }}
                 >
-                  <List>{getListOfProviders(providers)}</List>
+                  <List sx={{ flexGrow: 1 }}>
+                    {getChatSessions(
+                      pendingChatSessions,
+                      chatSessions,
+                      users?.users || undefined
+                    )}
+                  </List>
+                  <Pagination
+                    classes={{ ul: classes.justify }}
+                    count={Math.ceil(
+                      (pendingChatSessions.length + chatSessions.length) /
+                        rowsPerPage
+                    )}
+                    onChange={(event, value) => setPage(value - 1)}
+                    page={page}
+                    shape="rounded"
+                    size="small"
+                  />
                 </div>
               </Grid>
               <Grid container item xs={9}>
@@ -326,11 +414,11 @@ export default function Chat() {
                             fontWeight: '600'
                           }}
                         >
-                          {selectedProvider
-                            ? getDisplayName(selectedProvider)
-                            : 'Please Select a Provider'}
+                          {selectedChatSession
+                            ? getDisplayName(user)
+                            : 'Please Select a Chat'}
                         </Typography>
-                        {selectedProvider && (
+                        {user && (
                           <Typography
                             variant="body2"
                             sx={{
@@ -339,24 +427,16 @@ export default function Chat() {
                               color: '#637381'
                             }}
                           >
-                            Circulo
+                            {user.organization}
                           </Typography>
                         )}
                       </div>
                     </div>
-                    <div
-                      style={{
-                        flexGrow: 1,
-                        borderBottom: '1px solid rgba(145, 158, 171, 0.24)'
-                      }}
-                    >
-                      <List>
-                        {getMessages(
-                          messages,
-                          getDisplayName(selectedProvider)
-                        )}
-                      </List>
-                    </div>
+                    <MessageList
+                      chatSession={selectedChatSession}
+                      messages={messages}
+                      providerName={user?.firstName || 'Unknown'}
+                    />
                     <div>
                       <Input
                         sx={{ padding: '10px' }}
@@ -379,8 +459,8 @@ export default function Chat() {
                               onClick={sendMessage}
                               disabled={
                                 readyState !== ReadyState.OPEN ||
-                                !selectedProvider ||
-                                !chatSession
+                                !user ||
+                                !selectedChatSession
                               }
                             >
                               <SendIcon />
@@ -409,7 +489,32 @@ export default function Chat() {
                         justifyContent: 'center'
                       }}
                     >
-                      <Typography variant="body2">Status: No Status</Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center'
+                        }}
+                      >
+                        Status: {!selectedChatSession && 'No Status'}
+                        {selectedChatSession &&
+                          selectedChatSession.open &&
+                          'Open'}
+                        {selectedChatSession &&
+                          !selectedChatSession.open &&
+                          'Closed'}
+                        {selectedChatSession && selectedChatSession.open && (
+                          <WarningRoundedIcon
+                            sx={{ color: '#FF4842', marginLeft: '5px' }}
+                          />
+                        )}
+                        {selectedChatSession && !selectedChatSession.open && (
+                          <CheckCircleRoundedIcon
+                            sx={{ color: '#00AB55', marginLeft: '5px' }}
+                          />
+                        )}
+                      </Typography>
                     </div>
                     <div
                       style={{
@@ -418,13 +523,7 @@ export default function Chat() {
                         width: '100%'
                       }}
                     >
-                      <AccordionSidebar
-                        providerName={
-                          selectedProvider
-                            ? getDisplayName(selectedProvider)
-                            : null
-                        }
-                      />
+                      <AccordionSidebar providerName={getDisplayName(user)} />
                     </div>
                   </div>
                 </Grid>

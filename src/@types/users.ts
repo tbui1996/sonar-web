@@ -5,9 +5,9 @@ export type Users = {
 
 export interface User {
   email: string;
-  firstName: string;
-  lastName: string;
-  organization: string;
+  firstName: string | null;
+  lastName: string | null;
+  organization: string | null;
   group: string;
   sub: string;
 }
