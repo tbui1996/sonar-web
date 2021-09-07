@@ -3,30 +3,26 @@ import {
   Card,
   Container,
   Grid,
-  IconButton,
-  Input,
   InputAdornment,
   List,
-  TextField,
-  Typography
+  Pagination,
+  TextField
 } from '@material-ui/core';
-import AttachFileOutlinedIcon from '@material-ui/icons/AttachFileOutlined';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
-import SendIcon from '@material-ui/icons/Send';
 import SearchIcon from '@material-ui/icons/Search';
 import { ChangeEvent, useEffect, useState } from 'react';
 import axios from 'axios';
-import { InsertEmoticon } from '@material-ui/icons';
-import InsertPhotoOutlinedIcon from '@material-ui/icons/InsertPhotoOutlined';
-import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
-import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
-import { Pagination } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import LoadingScreen from '../../components/LoadingScreen';
-import { ChatSession, Message, SessionID } from '../../@types/support';
+import {
+  ChatSession,
+  ChatSessionUpdateRequest,
+  Message,
+  SessionID
+} from '../../@types/support';
 import MyAvatar from '../../components/MyAvatar';
 import AccordionSidebar from '../../components/chat/AccordionSidebar';
 import NotificationMessage from '../../utils/notificationMessage';
@@ -37,6 +33,9 @@ import {
   getDisplayName,
   UserListItem
 } from '../../components/chat/UserListItem';
+import ChatStatus from '../../components/chat/ChatStatus';
+import ChatHeader from '../../components/chat/ChatHeader';
+import ChatMessageBar from '../../components/chat/ChatMessageBar';
 
 const socketUrl = `wss://ws-sonar-internal.${process.env.REACT_APP_BASE_API_DOMAIN}`;
 
@@ -48,6 +47,7 @@ const useStyles = makeStyles({
 
 export default function Chat() {
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
   // const [providers, setProviders] = useState<Provider[]>([]);
   const [messageTextInput, setMessageTextInput] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -95,15 +95,53 @@ export default function Chat() {
       data
     );
 
-    const messages = res.data.map((item: Message) => mapMessageTimestamp(item));
-    setMessages(messages);
+    if (res.data) {
+      const messages = res.data.map((item: Message) =>
+        mapMessageTimestamp(item)
+      );
+      setMessages(messages);
+    }
   }
+
+  const setOpenClose = (
+    status: 'open' | 'close',
+    session: ChatSession | undefined
+  ) => {
+    if (!session) {
+      return;
+    }
+
+    const sessionsCopy = chatSessions;
+    const theSessionIndex = sessionsCopy.findIndex(
+      (item) => item.ID === session.ID
+    );
+
+    if (theSessionIndex === -1) {
+      return;
+    }
+
+    const theSession = sessionsCopy[theSessionIndex];
+    theSession.chatOpen = status !== 'close';
+    sessionsCopy.splice(theSessionIndex, 1);
+
+    axios
+      .post(
+        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/chat_session_update`,
+        {
+          open: theSession.chatOpen,
+          id: theSession.ID
+        } as ChatSessionUpdateRequest
+      )
+      .then((res) => {
+        setChatSessions([...sessionsCopy, theSession]);
+      })
+      .catch((err) => console.log(err));
+  };
 
   async function getMessageBySessionId(chatSessionId: string) {
     const res = await axios.get<Message[]>(
       `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/messages/${chatSessionId}`
     );
-
     const messages = res.data.map((item: Message) => mapMessageTimestamp(item));
     setMessages(messages);
   }
@@ -114,13 +152,12 @@ export default function Chat() {
     users: User[] | undefined
   ) {
     const allSessions = pendingChats
-      .filter((item) => item !== undefined)
       .map((item) => {
         item.pending = true;
-        item.open = true;
+        item.chatOpen = true;
         return item;
       })
-      .concat(activeChats.filter((item) => item !== undefined));
+      .concat(activeChats);
 
     const lastMessage = (session: ChatSession) => {
       const filteredMessages = messages.filter(
@@ -152,6 +189,7 @@ export default function Chat() {
               }
               onClickCallback={async () => {
                 setUser(foundUser);
+                setOpen(false);
 
                 if (session.pending) {
                   await assignSessionToUser(session);
@@ -162,7 +200,7 @@ export default function Chat() {
 
                   pendingChats[indexOfChat].pending = false;
                   pendingChats[indexOfChat].internalUserID = 'sonar';
-                  pendingChats[indexOfChat].open = true;
+                  pendingChats[indexOfChat].chatOpen = true;
 
                   const copyOfIndex = pendingChats[indexOfChat];
                   pendingChats.splice(indexOfChat, 1);
@@ -175,7 +213,7 @@ export default function Chat() {
                   setSelectedChatSession(session);
                 }
               }}
-              open={session.open}
+              open={session.chatOpen}
               lastMessage={lastMessage(session)}
             />
           );
@@ -397,78 +435,23 @@ export default function Chat() {
                       height: '100%'
                     }}
                   >
-                    <div
-                      style={{
-                        height: '70px',
-                        borderBottom: '1px solid rgba(145, 158, 171, 0.24)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      <div style={{ marginLeft: '1em' }}>
-                        <Typography
-                          variant="subtitle2"
-                          sx={{
-                            fontSize: '14px',
-                            fontWeight: '600'
-                          }}
-                        >
-                          {selectedChatSession
-                            ? getDisplayName(user)
-                            : 'Please Select a Chat'}
-                        </Typography>
-                        {user && (
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              fontSize: '14px',
-                              fontWeight: '500',
-                              color: '#637381'
-                            }}
-                          >
-                            {user.organization}
-                          </Typography>
-                        )}
-                      </div>
-                    </div>
+                    <ChatHeader chatSession={selectedChatSession} user={user} />
                     <MessageList
                       chatSession={selectedChatSession}
                       messages={messages}
                       providerName={user?.firstName || 'Unknown'}
                     />
-                    <div>
-                      <Input
-                        sx={{ padding: '10px' }}
-                        fullWidth
-                        value={messageTextInput}
-                        id="message-input"
-                        placeholder="Type a message"
-                        onChange={handleMessageTextInput}
-                        type="text"
-                        startAdornment={
-                          <InputAdornment>
-                            <InsertEmoticon sx={{ marginRight: '10px' }} />
-                          </InputAdornment>
-                        }
-                        endAdornment={
-                          <InputAdornment position="end">
-                            <InsertPhotoOutlinedIcon />
-                            <AttachFileOutlinedIcon />
-                            <IconButton
-                              onClick={sendMessage}
-                              disabled={
-                                readyState !== ReadyState.OPEN ||
-                                !user ||
-                                !selectedChatSession
-                              }
-                            >
-                              <SendIcon />
-                            </IconButton>
-                          </InputAdornment>
-                        }
-                      />
-                    </div>
+                    <ChatMessageBar
+                      changeCallback={handleMessageTextInput}
+                      textInput={messageTextInput}
+                      sendCallback={sendMessage}
+                      disabled={
+                        readyState !== ReadyState.OPEN ||
+                        !user ||
+                        !selectedChatSession ||
+                        !selectedChatSession.chatOpen
+                      }
+                    />
                   </div>
                 </Grid>
                 <Grid container item xs={3}>
@@ -479,43 +462,12 @@ export default function Chat() {
                       width: '100%'
                     }}
                   >
-                    <div
-                      style={{
-                        height: '70px',
-                        width: '100%',
-                        borderBottom: '1px solid rgba(145, 158, 171, 0.24)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center'
-                        }}
-                      >
-                        Status: {!selectedChatSession && 'No Status'}
-                        {selectedChatSession &&
-                          selectedChatSession.open &&
-                          'Open'}
-                        {selectedChatSession &&
-                          !selectedChatSession.open &&
-                          'Closed'}
-                        {selectedChatSession && selectedChatSession.open && (
-                          <WarningRoundedIcon
-                            sx={{ color: '#FF4842', marginLeft: '5px' }}
-                          />
-                        )}
-                        {selectedChatSession && !selectedChatSession.open && (
-                          <CheckCircleRoundedIcon
-                            sx={{ color: '#00AB55', marginLeft: '5px' }}
-                          />
-                        )}
-                      </Typography>
-                    </div>
+                    <ChatStatus
+                      chatSession={selectedChatSession}
+                      callback={setOpenClose}
+                      open={open}
+                      onChange={() => setOpen(!open)}
+                    />
                     <div
                       style={{
                         borderLeft: '1px solid rgba(145, 158, 171, 0.24)',

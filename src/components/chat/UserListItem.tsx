@@ -3,7 +3,8 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Tooltip
+  Tooltip,
+  Typography
 } from '@material-ui/core';
 import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
@@ -57,10 +58,13 @@ function UserListItem({
           <ListItemText primary={getDisplayName(userDetails)} />
           {lastMessage && (
             <ListItemText
+              disableTypography
               secondary={
-                lastMessage && lastMessage.senderID === 'sonar'
-                  ? `You: ${lastMessage.message}`
-                  : `${userDetails?.firstName}: ${lastMessage.message}`
+                <Typography noWrap variant="body2">
+                  {lastMessage && lastMessage.senderID === 'sonar'
+                    ? `You: ${lastMessage.message}`
+                    : `${userDetails?.firstName}: ${lastMessage.message}`}
+                </Typography>
               }
               classes={{ secondary: classes.secondary }}
             />

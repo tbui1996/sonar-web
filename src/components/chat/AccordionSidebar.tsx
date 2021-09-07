@@ -6,15 +6,24 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import GroupIcon from '@material-ui/icons/Group';
+import { makeStyles } from '@material-ui/core/styles';
 import { AccordionProps } from '../../@types/chat';
+
+const useStyles = makeStyles({
+  root: {
+    boxShadow: 'none !important'
+  }
+});
 
 export default function AccordionSidebar({
   patientInfo,
   providerName
 }: AccordionProps) {
+  const classes = useStyles();
+
   return (
     <>
-      <Accordion square>
+      <Accordion square classes={{ root: classes.root }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
@@ -26,7 +35,7 @@ export default function AccordionSidebar({
           <Typography variant="body2">Nothing here yet</Typography>
         </AccordionDetails>
       </Accordion>
-      <Accordion square>
+      <Accordion square classes={{ root: classes.root }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
@@ -46,7 +55,7 @@ export default function AccordionSidebar({
           )}
         </AccordionDetails>
       </Accordion>
-      <Accordion square>
+      <Accordion square classes={{ root: classes.root }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
