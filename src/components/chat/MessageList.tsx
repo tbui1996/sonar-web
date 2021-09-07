@@ -21,7 +21,7 @@ export default function MessageList({
       style={{
         flexGrow: 1,
         borderBottom: '1px solid rgba(145, 158, 171, 0.24)',
-        maxHeight: '600px',
+        maxHeight: '700px',
         overflowY: 'scroll'
       }}
     >

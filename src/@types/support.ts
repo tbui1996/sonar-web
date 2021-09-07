@@ -22,7 +22,7 @@ export type ChatSession = {
   userID: string;
   createdTimestamp: number;
   internalUserID: string | undefined;
-  open: boolean | undefined;
+  chatOpen: boolean | undefined;
   pending: boolean | undefined;
 };
 
@@ -43,4 +43,9 @@ export type MessageListProps = {
 export type SessionID = {
   sessionID: string;
   internalUserID: string;
+};
+
+export type ChatSessionUpdateRequest = {
+  id: string;
+  open: boolean;
 };

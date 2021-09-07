@@ -1,4 +1,8 @@
 // ----------------------------------------------------------------------
+import { ChangeEvent } from 'react';
+import { ChatSession } from './support';
+import { User } from './users';
+
 export type Contact = {
   id: string;
   name: string;
@@ -66,4 +70,26 @@ export type SendMessage = {
 export type AccordionProps = {
   patientInfo?: undefined;
   providerName?: string | null;
+};
+
+export type ChatStatusProps = {
+  chatSession: ChatSession | undefined;
+  callback: (
+    status: 'open' | 'close',
+    session: ChatSession | undefined
+  ) => void;
+  open: boolean;
+  onChange: () => void;
+};
+
+export type ChatHeaderProps = {
+  chatSession: ChatSession | undefined;
+  user: User | undefined;
+};
+
+export type ChatMessageProps = {
+  changeCallback: (e: ChangeEvent<HTMLInputElement>) => void;
+  textInput: string;
+  sendCallback: () => void;
+  disabled: boolean;
 };
