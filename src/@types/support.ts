@@ -24,6 +24,7 @@ export type ChatSession = {
   internalUserID: string | undefined;
   chatOpen: boolean | undefined;
   pending: boolean | undefined;
+  topic: string | undefined;
 };
 
 export type UserListProps = {
@@ -36,7 +37,7 @@ export type UserListProps = {
 
 export type MessageListProps = {
   chatSession: ChatSession | undefined;
-  providerName: string;
+  providerName: string | undefined;
   messages: Message[];
 };
 

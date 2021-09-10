@@ -10,18 +10,32 @@ import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
 import { makeStyles } from '@material-ui/core/styles';
 import { UserListProps } from '../../@types/support';
-import { User } from '../../@types/users';
 
 const useStyles = makeStyles({
   secondary: {
     color: '#637381'
   },
   padding: {
-    padding: '15px'
+    padding: '15px',
+    overflow: 'hidden'
+  },
+  typographyName: {
+    fontWeight: 600,
+    fontStyle: 'normal',
+    fontSize: '14px',
+    lineHeight: '22px',
+    color: '#212B36'
+  },
+  typographyMessage: {
+    fontWeight: 500,
+    fontStyle: 'normal',
+    fontSize: '14px',
+    lineHeight: '22px',
+    color: '#637381'
   }
 });
 
-function UserListItem({
+export default function UserListItem({
   userDetails,
   selected,
   onClickCallback,
@@ -54,19 +68,33 @@ function UserListItem({
             {!open && <CheckCircleRoundedIcon sx={{ color: '#00AB55' }} />}
           </Avatar>
         </ListItemIcon>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <ListItemText primary={getDisplayName(userDetails)} />
+        <div style={{ minWidth: '0' }}>
+          <ListItemText
+            disableTypography
+            primary={
+              <Typography
+                noWrap
+                variant="subtitle2"
+                classes={{ root: classes.typographyName }}
+              >
+                {userDetails?.displayName || 'Unknown'}
+              </Typography>
+            }
+          />
           {lastMessage && (
             <ListItemText
               disableTypography
               secondary={
-                <Typography noWrap variant="body2">
+                <Typography
+                  noWrap
+                  variant="body2"
+                  classes={{ root: classes.typographyMessage }}
+                >
                   {lastMessage && lastMessage.senderID === 'sonar'
                     ? `You: ${lastMessage.message}`
-                    : `${userDetails?.firstName}: ${lastMessage.message}`}
+                    : `${userDetails?.displayName}: ${lastMessage.message}`}
                 </Typography>
               }
-              classes={{ secondary: classes.secondary }}
             />
           )}
         </div>
@@ -74,13 +102,3 @@ function UserListItem({
     </Tooltip>
   );
 }
-
-function getDisplayName(user: User | undefined): string {
-  if (!user) {
-    return 'Unknown';
-  }
-
-  return `${user.firstName || 'Unknown'} ${user.lastName || ''}`;
-}
-
-export { UserListItem, getDisplayName };

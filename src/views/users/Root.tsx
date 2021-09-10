@@ -35,6 +35,7 @@ import { PATH_DASHBOARD } from '../../routes/paths';
 import LoadingScreen from '../../components/LoadingScreen';
 import { User, Users } from '../../@types/users';
 import { MIconButton } from '../../components/@material-extend';
+import mapUserDisplayName from '../../utils/mapUserDisplayName';
 
 const useStyles = makeStyles({
   paginationRoot: {
@@ -129,7 +130,11 @@ export default function UserRoles() {
         console.log('Expected users to exist and be an array');
       }
 
-      setUsers(res.data);
+      const users = mapUserDisplayName(res.data.users);
+      setUsers({
+        paginationToken: res.data.paginationToken,
+        users
+      });
     }
 
     setLoading(true);
@@ -205,15 +210,14 @@ export default function UserRoles() {
                           >
                             <Avatar sx={{ marginRight: '5%' }}>
                               {user.firstName
-                                ? user.firstName.substr(0, 1)
-                                : 'U'}
-                              {user.lastName ? user.lastName.substr(0, 1) : 'U'}
+                                ? user.firstName.substr(0, 1).toUpperCase()
+                                : user.email.substr(0, 1).toUpperCase()}
+                              {user.firstName &&
+                                user.lastName &&
+                                `${user.lastName.substr(0, 1).toUpperCase()}`}
                             </Avatar>
                             <Typography variant="body1">
-                              <strong>
-                                {user.firstName ? user.firstName : 'Unknown'}{' '}
-                                {user.lastName ? user.lastName : 'Unknown'}
-                              </strong>
+                              <strong>{user.displayName}</strong>
                             </Typography>
                           </TableCell>
                           <TableCell>
