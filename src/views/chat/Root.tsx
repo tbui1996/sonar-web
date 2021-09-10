@@ -29,13 +29,11 @@ import NotificationMessage from '../../utils/notificationMessage';
 import MessageList from '../../components/chat/MessageList';
 import { User, Users } from '../../@types/users';
 import useInterval from '../../hooks/useInterval';
-import {
-  getDisplayName,
-  UserListItem
-} from '../../components/chat/UserListItem';
+import UserListItem from '../../components/chat/UserListItem';
 import ChatStatus from '../../components/chat/ChatStatus';
 import ChatHeader from '../../components/chat/ChatHeader';
 import ChatMessageBar from '../../components/chat/ChatMessageBar';
+import mapUserDisplayName from '../../utils/mapUserDisplayName';
 
 const socketUrl = `wss://ws-sonar-internal.${process.env.REACT_APP_BASE_API_DOMAIN}`;
 
@@ -232,16 +230,21 @@ export default function Chat() {
         'Active Chat Sessions',
         `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/sessions`
       ),
-      getResource(
+      getResource<Users>(
         'Users',
         `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/users/user_list`
       )
       // TODO: get providers so that we can start a chat session from frontend && determining online / offline
     ])
       .then((values) => {
-        setPendingChatSessions(values[0]);
-        setChatSessions(values[1]);
-        setUsers(values[2]);
+        setPendingChatSessions(values[0] || ([] as ChatSession[]));
+        setChatSessions(values[1] || ([] as ChatSession[]));
+
+        const users = values[2];
+        if (users && users.users) {
+          users.users = mapUserDisplayName(users.users);
+          setUsers(users);
+        }
       })
       .catch((e) => {
         console.log(e);
@@ -439,7 +442,7 @@ export default function Chat() {
                     <MessageList
                       chatSession={selectedChatSession}
                       messages={messages}
-                      providerName={user?.firstName || 'Unknown'}
+                      providerName={user?.displayName}
                     />
                     <ChatMessageBar
                       changeCallback={handleMessageTextInput}
@@ -475,7 +478,7 @@ export default function Chat() {
                         width: '100%'
                       }}
                     >
-                      <AccordionSidebar providerName={getDisplayName(user)} />
+                      <AccordionSidebar providerName={user?.displayName} />
                     </div>
                   </div>
                 </Grid>

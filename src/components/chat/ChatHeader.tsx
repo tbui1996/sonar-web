@@ -1,5 +1,4 @@
 import { Typography } from '@material-ui/core';
-import { getDisplayName } from './UserListItem';
 import { ChatHeaderProps } from '../../@types/chat';
 
 export default function ChatHeader({ chatSession, user }: ChatHeaderProps) {
@@ -21,7 +20,7 @@ export default function ChatHeader({ chatSession, user }: ChatHeaderProps) {
             fontWeight: '600'
           }}
         >
-          {chatSession ? getDisplayName(user) : 'Please Select a Chat'}
+          {chatSession ? user?.displayName : 'Please Select a Chat'}
         </Typography>
         {user && (
           <Typography

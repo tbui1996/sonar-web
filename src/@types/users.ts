@@ -10,4 +10,5 @@ export interface User {
   organization: string | null;
   group: string;
   sub: string;
+  displayName: string;
 }
