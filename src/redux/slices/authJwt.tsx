@@ -1,10 +1,13 @@
-import jwtDecode from 'jwt-decode';
 import { createSlice } from '@reduxjs/toolkit';
+import Auth from '@aws-amplify/auth';
+import { Hub } from '@aws-amplify/core';
 import { store } from '../store';
 // utils
 import axios from '../../utils/axios';
 // @types
 import { User } from '../../@types/account';
+import { CognitoUser } from '../../@types/cognito';
+import { Session } from '../../@types/authenticatedSession';
 
 // ----------------------------------------------------------------------
 
@@ -59,12 +62,6 @@ const slice = createSlice({
       state.user = action.payload.user;
     },
 
-    // REGISTER
-    registerSuccess(state, action) {
-      state.isAuthenticated = true;
-      state.user = action.payload.user;
-    },
-
     // LOGOUT
     logoutSuccess(state) {
       state.isAuthenticated = false;
@@ -78,73 +75,82 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
-const isValidToken = (accessToken: string) => {
-  if (!accessToken) {
-    return false;
-  }
-  const decoded = jwtDecode<{ exp: number }>(accessToken);
-  const currentTime = Date.now() / 1000;
-
-  return decoded.exp > currentTime;
-};
-
-const setSession = (accessToken: string | null) => {
-  if (accessToken) {
+function setSession(session: Session | null) {
+  if (session) {
+    const { accessToken, idToken, refreshToken } = session;
     localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('idToken', idToken);
+    localStorage.setItem('refreshToken', refreshToken);
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
-  } else {
-    localStorage.removeItem('accessToken');
-    delete axios.defaults.headers.common.Authorization;
+    return;
   }
-};
+
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('idToken');
+  localStorage.removeItem('refreshToken');
+  delete axios.defaults.headers.common.Authorization;
+}
+
+async function getSession(): Promise<Session> {
+  // https://docs.amplify.aws/lib/auth/manageusers/q/platform/js/#retrieve-current-authenticated-user
+  // Auth.currentSession - This method will automatically refresh the accessToken and idToken if tokens
+  //   are expired and a valid refreshToken presented. So you can use this method to refresh the session if needed.
+  const currentSession = await Auth.currentSession();
+
+  const session = {
+    idToken: currentSession.getIdToken().getJwtToken(),
+    accessToken: currentSession.getAccessToken().getJwtToken(),
+    refreshToken: currentSession.getRefreshToken().getToken()
+  };
+
+  return session;
+}
 
 // ----------------------------------------------------------------------
 
-export function login({
-  email,
-  password
-}: {
-  email: string;
-  password: string;
-}) {
-  return async () => {
-    const { dispatch } = store;
-    const response = await axios.post('/api/account/login', {
-      email,
-      password
-    });
-    const { accessToken, user } = response.data;
-    setSession(accessToken);
-    dispatch(slice.actions.loginSuccess({ user }));
+function getUser({
+  username: id,
+  signInUserSession: {
+    idToken: {
+      payload: { name: displayName, email }
+    }
+  }
+}: CognitoUser): User {
+  return {
+    ...unAuthUser,
+    id,
+    displayName,
+    email
   };
 }
 
 // ----------------------------------------------------------------------
 
-export function register({
-  email,
-  password,
-  firstName,
-  lastName
-}: {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-}) {
+// https://docs.amplify.aws/lib/utilities/hub/q/platform/js/
+// Hub will listen to auth events and allow us to handle accordingly
+Hub.listen('auth', ({ payload: { event, data } }) => {
+  const { dispatch } = store;
+  switch (event) {
+    case 'signIn':
+      setSession(data.signInUserSession.accessToken.jwtToken);
+      dispatch(slice.actions.loginSuccess({ user: getUser(data) }));
+      break;
+    case 'signOut':
+      dispatch(slice.actions.logoutSuccess());
+      break;
+    case 'signIn_failure':
+      console.error('user sign in failed');
+      break;
+    case 'tokenRefresh_failure':
+      console.error('token refresh failed');
+  }
+});
+
+// ----------------------------------------------------------------------
+
+export function login() {
   return async () => {
-    const { dispatch } = store;
-
-    const response = await axios.post('/api/account/register', {
-      email,
-      password,
-      firstName,
-      lastName
-    });
-    const { accessToken, user } = response.data;
-
-    window.localStorage.setItem('accessToken', accessToken);
-    dispatch(slice.actions.registerSuccess({ user }));
+    await Auth.federatedSignIn({ customProvider: 'Okta' });
   };
 }
 
@@ -152,9 +158,8 @@ export function register({
 
 export function logout() {
   return async () => {
-    const { dispatch } = store;
     setSession(null);
-    dispatch(slice.actions.logoutSuccess());
+    await Auth.signOut();
   };
 }
 
@@ -167,28 +172,22 @@ export function getInitialize() {
     dispatch(slice.actions.startLoading());
 
     try {
-      const accessToken = window.localStorage.getItem('accessToken');
+      const session = await getSession();
+      setSession(session);
 
-      if (accessToken && isValidToken(accessToken)) {
-        setSession(accessToken);
+      const cognitoUser: CognitoUser = await Auth.currentUserPoolUser();
 
-        const response = await axios.get('/api/account/my-account');
-        dispatch(
-          slice.actions.getInitialize({
-            isAuthenticated: true,
-            user: response.data.user
-          })
-        );
-      } else {
-        dispatch(
-          slice.actions.getInitialize({
-            isAuthenticated: false,
-            user: unAuthUser
-          })
-        );
-      }
+      dispatch(
+        slice.actions.getInitialize({
+          isAuthenticated: true,
+          user: getUser(cognitoUser)
+        })
+      );
     } catch (error) {
-      console.error(error);
+      if (error !== 'No current user') {
+        console.error(error);
+      }
+
       dispatch(
         slice.actions.getInitialize({
           isAuthenticated: false,

@@ -30,7 +30,7 @@ interface InitialState extends Omit<User, 'password' | 'id' | 'role'> {
 export default function AccountGeneral() {
   const isMountedRef = useIsMountedRef();
   const { enqueueSnackbar } = useSnackbar();
-  const { user, updateProfile } = useAuth();
+  const { user } = useAuth();
 
   const UpdateUserSchema = Yup.object().shape({
     displayName: Yup.string().required('Name is required')
@@ -55,7 +55,8 @@ export default function AccountGeneral() {
     validationSchema: UpdateUserSchema,
     onSubmit: async (values, { setErrors, setSubmitting }) => {
       try {
-        await updateProfile({ ...values });
+        // Revisit if there's a need to update user profile
+        // await updateProfile({ ...values });
         enqueueSnackbar('Update success', { variant: 'success' });
         if (isMountedRef.current) {
           setSubmitting(false);

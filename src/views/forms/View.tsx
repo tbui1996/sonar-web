@@ -11,8 +11,6 @@ import {
   Tab
 } from '@material-ui/core';
 
-import axios from 'axios';
-
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import type { FormApiResponse } from '../../@types/form';
 import LoadingScreen from '../../components/LoadingScreen';
@@ -23,6 +21,7 @@ import { FormApiSubmitResponse } from '../../@types/form';
 import FormResponseTable from '../../components/forms/FormResponseTable';
 import StyledPieChart from '../../components/charts/StyledPieChart';
 import { a11yProps, TabPanel } from '../../components/TabPanel';
+import axios from '../../utils/axios';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -71,14 +70,12 @@ export default function View() {
         return;
       }
 
-      const formRes = await axios.get<FormApiResponse>(
-        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/forms/${params.id}`
-      );
+      const formRes = await axios.get<FormApiResponse>(`/forms/${params.id}`);
 
       setForm(formRes.data);
 
       const submitRes = await axios.get<FormApiSubmitResponse>(
-        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/forms/${params.id}/response`
+        `/forms/${params.id}/response`
       );
 
       setResponse(submitRes.data);
@@ -105,13 +102,9 @@ export default function View() {
 
     setSending(true);
 
-    await axios
-      .post(
-        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/forms/${params.id}/send`
-      )
-      .catch((e) => {
-        console.log(e);
-      });
+    await axios.post(`/forms/${params.id}/send`).catch((e) => {
+      console.log(e);
+    });
 
     setSending(false);
   }, [params]);

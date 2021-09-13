@@ -11,7 +11,6 @@ import {
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import SearchIcon from '@material-ui/icons/Search';
 import { ChangeEvent, useEffect, useState } from 'react';
-import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -34,6 +33,7 @@ import ChatStatus from '../../components/chat/ChatStatus';
 import ChatHeader from '../../components/chat/ChatHeader';
 import ChatMessageBar from '../../components/chat/ChatMessageBar';
 import mapUserDisplayName from '../../utils/mapUserDisplayName';
+import axios from '../../utils/axios';
 
 const socketUrl = `wss://ws-sonar-internal.${process.env.REACT_APP_BASE_API_DOMAIN}`;
 
@@ -89,7 +89,7 @@ export default function Chat() {
     };
 
     const res = await axios.post<Message[]>(
-      `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/assign_pending_chat_session`,
+      `/support/assign_pending_chat_session`,
       data
     );
 
@@ -123,13 +123,10 @@ export default function Chat() {
     sessionsCopy.splice(theSessionIndex, 1);
 
     axios
-      .post(
-        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/chat_session_update`,
-        {
-          open: theSession.chatOpen,
-          id: theSession.ID
-        } as ChatSessionUpdateRequest
-      )
+      .post(`/support/chat_session_update`, {
+        open: theSession.chatOpen,
+        id: theSession.ID
+      } as ChatSessionUpdateRequest)
       .then((res) => {
         setChatSessions([...sessionsCopy, theSession]);
       })
@@ -138,7 +135,7 @@ export default function Chat() {
 
   async function getMessageBySessionId(chatSessionId: string) {
     const res = await axios.get<Message[]>(
-      `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/messages/${chatSessionId}`
+      `/support/messages/${chatSessionId}`
     );
     const messages = res.data.map((item: Message) => mapMessageTimestamp(item));
     setMessages(messages);
@@ -224,16 +221,10 @@ export default function Chat() {
     Promise.all([
       getResource<ChatSession[]>(
         'Pending Chat Sessions',
-        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/pending_chat_sessions`
+        `/support/pending_chat_sessions`
       ),
-      getResource<ChatSession[]>(
-        'Active Chat Sessions',
-        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/sessions`
-      ),
-      getResource<Users>(
-        'Users',
-        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/users/user_list`
-      )
+      getResource<ChatSession[]>('Active Chat Sessions', `/support/sessions`),
+      getResource('Users', `/users/user_list`)
       // TODO: get providers so that we can start a chat session from frontend && determining online / offline
     ])
       .then((values) => {
@@ -257,7 +248,7 @@ export default function Chat() {
   useInterval(async () => {
     const res = await getResource<ChatSession[]>(
       'Pending Chat Sessions',
-      `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/support/pending_chat_sessions`
+      `/support/pending_chat_sessions`
     );
 
     if (res.length > 0) {

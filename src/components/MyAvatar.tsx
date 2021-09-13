@@ -10,11 +10,9 @@ import createAvatar from '../utils/createAvatar';
 export default function MyAvatar({ ...other }: MAvatarProps) {
   const { user } = useAuth();
 
-  if (!user.photoURL) return null;
-
   return (
     <MAvatar
-      src={user.photoURL}
+      src={user.photoURL || ''}
       alt={user.displayName}
       color={user.photoURL ? 'default' : createAvatar(user.displayName).color}
       {...other}

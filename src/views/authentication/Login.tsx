@@ -1,18 +1,10 @@
 import { Link as RouterLink } from 'react-router-dom';
 import { experimentalStyled as styled } from '@material-ui/core/styles';
-import {
-  Box,
-  Card,
-  // Link,
-  Hidden,
-  Container,
-  Typography
-} from '@material-ui/core';
+import { Card, Hidden, Container, Typography } from '@material-ui/core';
 // import { PATH_AUTH } from '../../routes/paths';
+import { LoadingButton } from '@material-ui/lab';
 import useAuth from '../../hooks/useAuth';
 import Page from '../../components/Page';
-import { LoginForm } from '../../components/authentication/login';
-import AuthWithSocial from '../../components/authentication/AuthWithSocial';
 import Logo from '../../components/Logo';
 
 // ----------------------------------------------------------------------
@@ -62,7 +54,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Login() {
-  const { method } = useAuth();
+  const { login } = useAuth();
 
   return (
     <RootStyle title="Login">
@@ -83,20 +75,15 @@ export default function Login() {
 
       <Container maxWidth="sm">
         <ContentStyle>
-          <Box sx={{ mb: 5, display: 'flex', alignItems: 'center' }}>
-            <Box sx={{ flexGrow: 1 }}>
-              <Typography variant="h4" gutterBottom>
-                Sign in to Circulo Sonar
-              </Typography>
-              <Typography sx={{ color: 'text.secondary' }}>
-                Enter your details below.
-              </Typography>
-            </Box>
-          </Box>
-
-          {method === 'firebase' && <AuthWithSocial />}
-
-          <LoginForm />
+          <LoadingButton
+            onClick={login}
+            fullWidth
+            size="large"
+            type="submit"
+            variant="contained"
+          >
+            Sign in with Okta
+          </LoadingButton>
         </ContentStyle>
       </Container>
     </RootStyle>

@@ -6,6 +6,8 @@ import { PersistGate } from 'redux-persist/lib/integration/react';
 // material
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
 import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
+// auth
+import { Amplify } from '@aws-amplify/core';
 // redux
 import { store, persistor } from './redux/store';
 // routes
@@ -25,6 +27,25 @@ import JwtProvider from './components/authentication/JwtProvider';
 // import FirebaseProvider from './components/authentication/FirebaseProvider';
 
 // ----------------------------------------------------------------------
+
+// We are using the Auth package from Amplify because it abstracts all the OAuth handshaking and session/token management.
+// This configuration points Amplify at our internals user pool.
+// This configuration needs to be at a top level of the app, and then useAuth() will expose an auth context to be used anywhere
+// in the app to get the session tokens or get basic user info.
+Amplify.configure({
+  Auth: {
+    region: process.env.REACT_APP_COGNITO_REGION,
+    userPoolId: process.env.REACT_APP_COGNITO_USER_POOL_ID,
+    userPoolWebClientId: process.env.REACT_APP_COGNITO_USER_POOL_WEB_CLIENT_ID,
+    oauth: {
+      domain: process.env.REACT_APP_COGNITO_DOMAIN,
+      scope: ['email', 'openid', 'profile'],
+      redirectSignIn: process.env.REACT_APP_COGNITO_REDIRECT_SIGNIN,
+      redirectSignOut: process.env.REACT_APP_COGNITO_REDIRECT_SIGNOUT,
+      responseType: 'code'
+    }
+  }
+});
 
 const history = createBrowserHistory();
 

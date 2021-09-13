@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import {
   Autocomplete,
   Button,
@@ -14,6 +13,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import { Icon } from '@iconify/react';
 import closeFill from '@iconify/icons-eva/close-fill';
+import axios from '../utils/axios';
 import ConfirmDialog from '../components/general/app/ConfirmDialog';
 import Page from '../components/Page';
 import HeaderDashboard from '../components/HeaderDashboard';
@@ -50,7 +50,7 @@ export default function Broadcast() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const getProviders = () =>
     axios({
-      url: `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/router/users`
+      url: `/router/users`
     })
       .then((response) => setProviders(response.data))
       .catch((err) => console.error(err));
@@ -81,7 +81,7 @@ export default function Broadcast() {
     setSending(true);
     axios({
       method: 'post',
-      url: `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/router/broadcast`,
+      url: `/router/broadcast`,
       headers: {
         'Content-Type': 'application/json'
       },
