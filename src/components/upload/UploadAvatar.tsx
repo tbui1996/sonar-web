@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Icon } from '@iconify/react';
 import { useDropzone } from 'react-dropzone';
 import { useCallback, useState } from 'react';
@@ -17,6 +16,7 @@ import {
 } from '@material-ui/core';
 import { SxProps } from '@material-ui/system';
 // utils
+import axios from '../../utils/axios';
 import { fData } from '../../utils/formatNumber';
 // hooks
 import useIsMountedRef from '../../hooks/useIsMountedRef';

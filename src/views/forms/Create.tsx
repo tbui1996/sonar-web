@@ -7,7 +7,6 @@ import {
   TextField,
   Grid
 } from '@material-ui/core';
-import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -21,6 +20,7 @@ import ConfirmDialog from '../../components/general/app/ConfirmDialog';
 import { FormApiResponse, OptionsInput } from '../../@types/form';
 import { DEFAULT_TEXT } from '../../constants/formConstants';
 import FormPreviewCard from '../../components/forms/FormPreviewCard';
+import axios from '../../utils/axios';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -80,7 +80,7 @@ function Form() {
     setOpenConfirm(false);
     setCreating(true);
     const res = await axios
-      .post(`https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/forms`, {
+      .post(`/forms`, {
         title,
         description,
         inputs: inputs.map((item) => {

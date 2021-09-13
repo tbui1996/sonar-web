@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
 
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import {
@@ -20,6 +19,7 @@ import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import LoadingScreen from '../../components/LoadingScreen';
+import axios from '../../utils/axios';
 
 type Form = {
   id: string;
@@ -35,9 +35,7 @@ export default function Forms() {
 
   useEffect(() => {
     async function execute() {
-      const res = await axios.get<Array<Form>>(
-        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/forms`
-      );
+      const res = await axios.get<Array<Form>>(`/forms`);
 
       if (!res.data || !Array.isArray(res.data)) {
         console.log('Expected forms to exist and be an array');

@@ -1,5 +1,5 @@
 import { Container, Grid } from '@material-ui/core';
-import axios from 'axios';
+
 import { useEffect, useState } from 'react';
 import Page from '../components/Page';
 import {
@@ -10,6 +10,7 @@ import {
 } from '../components/general/app';
 import StyledPieChart from '../components/charts/StyledPieChart';
 import { FormCount } from '../@types/form';
+import axios from '../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -19,13 +20,9 @@ export default function GeneralApp() {
 
   useEffect(() => {
     async function execute() {
-      await axios
-        .get<FormCount>(
-          `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/forms/count`
-        )
-        .then((res) => {
-          setFormCount(res.data);
-        });
+      await axios.get<FormCount>(`/forms/count`).then((res) => {
+        setFormCount(res.data);
+      });
     }
 
     execute().catch((e) => {

@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 // import bellFill from '@iconify/icons-eva/bell-fill';
 // import shareFill from '@iconify/icons-eva/share-fill';
 import { useDispatch, useSelector } from 'react-redux';
-import roundVpnKey from '@iconify/icons-ic/round-vpn-key';
 // import roundReceipt from '@iconify/icons-ic/round-receipt';
 import roundAccountBox from '@iconify/icons-ic/round-account-box';
 // material
@@ -24,9 +23,8 @@ import { PATH_DASHBOARD } from '../routes/paths';
 import Page from '../components/Page';
 import HeaderDashboard from '../components/HeaderDashboard';
 import {
-  AccountGeneral,
+  AccountGeneral
   // AccountNotifications,
-  AccountChangePassword
 } from '../components/user/account';
 
 // ----------------------------------------------------------------------
@@ -67,11 +65,6 @@ export default function UserAccount() {
       value: 'general',
       icon: <Icon icon={roundAccountBox} width={20} height={20} />,
       component: <AccountGeneral />
-    },
-    {
-      value: 'change_password',
-      icon: <Icon icon={roundVpnKey} width={20} height={20} />,
-      component: <AccountChangePassword />
     }
   ];
 

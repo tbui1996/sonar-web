@@ -1,5 +1,4 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
 
 import {
   Box,
@@ -28,6 +27,7 @@ import {
 import EditIcon from '@material-ui/icons/Edit';
 import { Icon } from '@iconify/react';
 import closeFill from '@iconify/icons-eva/close-fill';
+// import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -36,6 +36,7 @@ import LoadingScreen from '../../components/LoadingScreen';
 import { User, Users } from '../../@types/users';
 import { MIconButton } from '../../components/@material-extend';
 import mapUserDisplayName from '../../utils/mapUserDisplayName';
+import axios from '../../utils/axios';
 
 const useStyles = makeStyles({
   paginationRoot: {
@@ -81,13 +82,10 @@ export default function UserRoles() {
     if (users && user) {
       setUpdating(true);
       const res = await axios
-        .put(
-          `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/users/group_assign`,
-          {
-            username: user.email,
-            group: user.group
-          }
-        )
+        .put(`/users/group_assign`, {
+          username: user.email,
+          group: user.group
+        })
         .catch((e) => {
           console.log(e);
         });
@@ -122,9 +120,10 @@ export default function UserRoles() {
 
   useEffect(() => {
     async function execute() {
-      const res = await axios.get<Users>(
-        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/users/user_list`
-      );
+      const res = await axios.get('/users/user_list');
+      // const res = await axios.get<Users>(
+      //   `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/users/user_list`
+      // );
 
       if (!res.data) {
         console.log('Expected users to exist and be an array');

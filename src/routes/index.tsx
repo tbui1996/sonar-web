@@ -121,27 +121,6 @@ const routes: RouteItem[] = [
   },
   {
     exact: true,
-    guard: GuestGuard,
-    path: PATH_AUTH.register,
-    component: lazy(() => import('../views/authentication/Register'))
-  },
-  {
-    exact: true,
-    path: PATH_AUTH.registerUnprotected,
-    component: lazy(() => import('../views/authentication/Register'))
-  },
-  {
-    exact: true,
-    path: PATH_AUTH.resetPassword,
-    component: lazy(() => import('../views/authentication/ResetPassword'))
-  },
-  {
-    exact: true,
-    path: PATH_AUTH.verify,
-    component: lazy(() => import('../views/authentication/VerifyCode'))
-  },
-  {
-    exact: true,
     path: PATH_PAGE.page404,
     component: lazy(() => import('../views/Page404'))
   },
