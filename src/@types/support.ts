@@ -10,6 +10,7 @@ export type Message = {
   createdTimestamp: string;
   message: string;
   sessionID: string;
+  fileID: string | null;
 };
 
 export type ChatSessionRequest = {
@@ -37,8 +38,8 @@ export type UserListProps = {
 
 export type MessageListProps = {
   chatSession: ChatSession | undefined;
-  providerName: string | undefined;
   messages: Message[];
+  user: User;
 };
 
 export type SessionID = {
