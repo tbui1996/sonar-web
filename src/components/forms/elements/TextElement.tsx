@@ -7,7 +7,8 @@ import { BootstrapInput } from '../../../constants/formConstants';
 export default function TextElement({
   input,
   index,
-  isOliveHelps
+  isOliveHelps,
+  response
 }: FormElementProps) {
   return (
     <FormControl>
@@ -21,9 +22,10 @@ export default function TextElement({
       {!isOliveHelps && (
         <TextField
           id={`text-field-${index}`}
-          label={input.label}
+          label={response?.response ? '' : input.label}
           variant="outlined"
           disabled={true}
+          value={response?.response}
         />
       )}
     </FormControl>

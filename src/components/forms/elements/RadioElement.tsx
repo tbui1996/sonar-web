@@ -27,14 +27,18 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function RadioElement({
   input,
   index,
-  isOliveHelps
+  isOliveHelps,
+  response
 }: FormElementProps) {
   const classes = useStyles();
-
   return (
     <FormControl>
-      <RadioGroup aria-label={input.label} name={`radio-${index}`}>
-        {input.options.map((value, index) => (
+      <RadioGroup
+        aria-label={input.label}
+        name={`radio-${index}`}
+        value={response?.response || ''}
+      >
+        {input.options.map((option, index) => (
           <FormControlLabel
             classes={{
               label: isOliveHelps ? classes.padding : '',
@@ -44,10 +48,10 @@ export default function RadioElement({
               isOliveHelps ? (
                 <BootstrapInput type="radio" disabled={true} />
               ) : (
-                <Radio disabled={true} />
+                <Radio disabled={true} value={option} />
               )
             }
-            label={value}
+            label={option}
             key={index}
           />
         ))}

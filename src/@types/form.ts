@@ -32,6 +32,7 @@ export type TypeInputComponent = {
     input: OptionsInput;
     index: number;
     isOliveHelps: boolean;
+    response?: InputSubmission;
   }) => JSX.Element;
 };
 
@@ -76,12 +77,14 @@ export type FormElementProps = {
   input: OptionsInput;
   index: number;
   isOliveHelps: boolean;
+  response?: InputSubmission;
 };
 
 export type FormPreviewProps = {
   form: FormApiResponse;
   isOliveHelps: boolean;
   isFormPreview?: boolean;
+  submissionResponses?: InputSubmission[];
 };
 
 export type FormResponseTableProps = {
