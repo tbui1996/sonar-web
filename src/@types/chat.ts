@@ -2,6 +2,7 @@
 import { ChangeEvent } from 'react';
 import { ChatSession } from './support';
 import { User } from './users';
+import axios from '../utils/axios';
 
 export type Contact = {
   id: string;
@@ -88,8 +89,24 @@ export type ChatHeaderProps = {
 };
 
 export type ChatMessageProps = {
-  changeCallback: (e: ChangeEvent<HTMLInputElement>) => void;
-  textInput: string;
-  sendCallback: () => void;
+  onChangeText: (e: ChangeEvent<HTMLInputElement>) => void;
+  messageText: string;
   disabled: boolean;
+  messageSending: boolean;
+  onChangeFile: (event: ChangeEvent<HTMLInputElement>) => void;
+  onClickSend: () => void;
+  onDeleteFile: () => void;
+  file: File | undefined;
+};
+
+export type FileUploadResponse = {
+  fileID: string | null;
+};
+
+export type WebsocketMessage = {
+  sender: string;
+  timestamp: number;
+  message: string;
+  session: string;
+  file: string | null;
 };

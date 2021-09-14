@@ -34,6 +34,7 @@ import ChatHeader from '../../components/chat/ChatHeader';
 import ChatMessageBar from '../../components/chat/ChatMessageBar';
 import mapUserDisplayName from '../../utils/mapUserDisplayName';
 import axios from '../../utils/axios';
+import { FileUploadResponse, WebsocketMessage } from '../../@types/chat';
 
 const socketUrl = `wss://ws-sonar-internal.${process.env.REACT_APP_BASE_API_DOMAIN}`;
 
@@ -48,6 +49,8 @@ export default function Chat() {
   const [open, setOpen] = useState(false);
   // const [providers, setProviders] = useState<Provider[]>([]);
   const [messageTextInput, setMessageTextInput] = useState<string>('');
+  const [messageSending, setMessageSending] = useState(false);
+  const [file, setFile] = useState<File>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [page, setPage] = useState(0);
@@ -271,14 +274,17 @@ export default function Chat() {
 
   const { sendJsonMessage, readyState } = useWebSocket(socketUrl, {
     onMessage: (event) => {
-      const { sender, timestamp, message, session } = JSON.parse(event.data);
+      const socketMessage: WebsocketMessage = JSON.parse(event.data);
       setMessages([
         ...messages,
         {
-          senderID: sender,
-          createdTimestamp: new Date(timestamp * 1000).toLocaleTimeString(),
-          message,
-          sessionID: session
+          senderID: socketMessage.sender,
+          createdTimestamp: new Date(
+            socketMessage.timestamp * 1000
+          ).toLocaleTimeString(),
+          message: socketMessage.message,
+          sessionID: socketMessage.session,
+          fileID: socketMessage.file === '' ? null : socketMessage.file
         }
       ]);
     },
@@ -286,18 +292,63 @@ export default function Chat() {
     shouldReconnect: (closeEvent) => true
   });
 
-  const handleMessageTextInput = (e: ChangeEvent<HTMLInputElement>) => {
+  const onChangeMessage = (e: ChangeEvent<HTMLInputElement>) => {
     setMessageTextInput(e.currentTarget.value);
   };
 
-  const sendMessage = async () => {
-    if (messageTextInput === '') {
-      NotificationMessage('Please include message text', 'error');
+  const onChangeFile = (event: ChangeEvent<HTMLInputElement>) => {
+    const { files } = event.target;
+
+    if (files === null) {
       return;
     }
 
+    if (files.length <= 0) {
+      return;
+    }
+
+    const file = files[0];
+    setFile(file);
+    setMessageTextInput(file.name);
+  };
+
+  const onClickSend = async () => {
+    setMessageSending(true);
+    if (file === undefined) {
+      onSendMessage(null);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file-upload', file, file.name);
+
+    const res = await axios.post<FileUploadResponse>(
+      // TODO: Replace sonar user in SONAR-322
+      `/cloud/file_upload?username=sonar&chatId=${selectedChatSession!.ID}`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+
+    onSendMessage(res.data.fileID);
+  };
+
+  const onDeleteFile = () => {
+    setFile(undefined);
+    setMessageTextInput('');
+  };
+
+  const onSendMessage = async (fileID: string | null) => {
     if (!selectedChatSession?.ID) {
       NotificationMessage('You have not selected a chat', 'error');
+      return;
+    }
+
+    if (messageTextInput === '' && fileID === null) {
+      NotificationMessage('Please include message text', 'error');
       return;
     }
 
@@ -308,7 +359,8 @@ export default function Chat() {
         message: JSON.stringify({
           session: selectedChatSession.ID,
           sender: 'sonar',
-          message: messageTextInput
+          message: messageTextInput,
+          file: fileID
         })
       }
     };
@@ -319,13 +371,17 @@ export default function Chat() {
         senderID: 'sonar',
         createdTimestamp: new Date().toLocaleTimeString(),
         message: messageTextInput,
-        sessionID: selectedChatSession.ID
+        sessionID: selectedChatSession.ID,
+        fileID
       }
     ]);
 
     setMessageTextInput('');
 
     sendJsonMessage(message);
+
+    setFile(undefined);
+    setMessageSending(false);
   };
 
   return (
@@ -433,18 +489,23 @@ export default function Chat() {
                     <MessageList
                       chatSession={selectedChatSession}
                       messages={messages}
-                      providerName={user?.displayName}
+                      user={user!}
                     />
                     <ChatMessageBar
-                      changeCallback={handleMessageTextInput}
-                      textInput={messageTextInput}
-                      sendCallback={sendMessage}
+                      onChangeText={onChangeMessage}
+                      messageText={messageTextInput}
                       disabled={
                         readyState !== ReadyState.OPEN ||
                         !user ||
                         !selectedChatSession ||
-                        !selectedChatSession.chatOpen
+                        !selectedChatSession.chatOpen ||
+                        messageSending
                       }
+                      messageSending={messageSending}
+                      file={file}
+                      onChangeFile={onChangeFile}
+                      onClickSend={onClickSend}
+                      onDeleteFile={onDeleteFile}
                     />
                   </div>
                 </Grid>
