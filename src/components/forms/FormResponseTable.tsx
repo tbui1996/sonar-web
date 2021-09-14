@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -7,6 +7,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import { useHistory, useParams } from 'react-router-dom';
 import { FormResponseTableProps, Input } from '../../@types/form';
 
 const useStyles = makeStyles({
@@ -20,6 +21,17 @@ export default function FormResponseTable({
   submits
 }: FormResponseTableProps) {
   const classes = useStyles();
+  const history = useHistory();
+  const params = useParams<{ id: string }>();
+
+  const handleClick = useCallback(
+    (formSubmissionId: number) => {
+      history.push(
+        `/dashboard/forms/${params.id}/response/${formSubmissionId}`
+      );
+    },
+    [history, params]
+  );
 
   return (
     <TableContainer component={Paper}>
@@ -35,25 +47,33 @@ export default function FormResponseTable({
                   input.type !== 'message'
               )
               .sort((a, b) => a.id - b.id)
-              .map((item: Input, index: number) => (
-                <TableCell key={index}>{item.label}</TableCell>
+              .map((item: Input) => (
+                <TableCell key={item.id}>{item.label}</TableCell>
               ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {submits?.map((s, index) => (
-            <TableRow key={index}>
-              <TableCell key={index}>{s[0].formSubmissionId}</TableCell>
-              {s
-                .filter((input) => input.response)
-                .sort((a, b) => a.inputId - b.inputId)
-                .map((resp, index) => (
-                  <>
-                    <TableCell key={index}>{resp.response}</TableCell>
-                  </>
-                ))}
-            </TableRow>
-          ))}
+          {submits?.map((submitItem) => {
+            const [firstSubmission] = submitItem;
+            const { id, inputId, formSubmissionId } = firstSubmission;
+            return (
+              <TableRow
+                key={id}
+                hover
+                onClick={() => handleClick(formSubmissionId)}
+              >
+                <TableCell key={inputId}>{formSubmissionId}</TableCell>
+                {submitItem
+                  .filter((input) => input.response)
+                  .sort((a, b) => a.inputId - b.inputId)
+                  .map((resp) => (
+                    <>
+                      <TableCell key={resp.id}>{resp.response}</TableCell>
+                    </>
+                  ))}
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </TableContainer>

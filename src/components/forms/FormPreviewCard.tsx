@@ -7,7 +7,8 @@ import { Divider, FormGroup, Theme } from '@material-ui/core';
 import {
   FormElementProps,
   FormPreviewProps,
-  OptionsInput
+  OptionsInput,
+  InputSubmission
 } from '../../@types/form';
 import { INPUT_TYPES } from '../../constants/formConstants';
 
@@ -35,7 +36,7 @@ const useStylesNone = makeStyles({
   }
 });
 
-function FormInput({ input, index, isOliveHelps }: FormElementProps) {
+function FormInput({ input, index, isOliveHelps, response }: FormElementProps) {
   const elem = INPUT_TYPES.find((elem) => elem.id === input.type);
 
   if (!elem) {
@@ -47,6 +48,7 @@ function FormInput({ input, index, isOliveHelps }: FormElementProps) {
       input={input as OptionsInput}
       index={index}
       isOliveHelps={isOliveHelps}
+      response={response}
     />
   );
 }
@@ -54,7 +56,8 @@ function FormInput({ input, index, isOliveHelps }: FormElementProps) {
 export default function FormPreviewCard({
   form,
   isOliveHelps,
-  isFormPreview
+  isFormPreview,
+  submissionResponses
 }: FormPreviewProps) {
   const classes = useStyles();
   const classesNone = useStylesNone();
@@ -80,14 +83,20 @@ export default function FormPreviewCard({
           {form.Form.description}
         </Typography>
         <FormGroup classes={isOliveHelps ? classesNone : classes}>
-          {form.Inputs.map((input, index) => (
-            <FormInput
-              input={input as OptionsInput}
-              index={index}
-              key={index}
-              isOliveHelps={isOliveHelps}
-            />
-          ))}
+          {form.Inputs.map((input, index) => {
+            const submission = submissionResponses?.find(
+              (response: InputSubmission) => response.inputId === input.id
+            );
+            return (
+              <FormInput
+                input={input as OptionsInput}
+                index={index}
+                key={index}
+                isOliveHelps={isOliveHelps}
+                response={submission}
+              />
+            );
+          })}
         </FormGroup>
       </CardContent>
     </Card>

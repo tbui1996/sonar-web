@@ -42,7 +42,8 @@ export const PATH_DASHBOARD = {
     forms: {
       root: path(ROOTS_DASHBOARD, '/forms'),
       create: path(ROOTS_DASHBOARD, '/forms/create'),
-      view: path(ROOTS_DASHBOARD, '/forms/:id')
+      view: path(ROOTS_DASHBOARD, '/forms/:id'),
+      response: path(ROOTS_DASHBOARD, '/forms/:id/response/:formSubmissionId')
     },
     chat: {
       root: path(ROOTS_DASHBOARD, '/chat')

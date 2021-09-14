@@ -9,7 +9,8 @@ import { BootstrapInput } from '../../../constants/formConstants';
 export default function SelectElement({
   input,
   index,
-  isOliveHelps
+  isOliveHelps,
+  response
 }: FormElementProps) {
   return (
     <FormControl variant="outlined">
@@ -23,7 +24,7 @@ export default function SelectElement({
           id: `form-select-${index}`
         }}
         input={isOliveHelps ? <BootstrapInput /> : <Select />}
-        value={isOliveHelps ? input.options[0] : ''}
+        value={isOliveHelps ? input.options[0] : response?.response || ''}
       >
         <option aria-label="None" value="" />
         {input.options.map((opt, index) => (

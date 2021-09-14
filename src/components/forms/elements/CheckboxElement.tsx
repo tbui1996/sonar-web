@@ -17,9 +17,11 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function CheckboxElement({
   input,
   index,
-  isOliveHelps
+  isOliveHelps,
+  response
 }: FormElementProps) {
   const classes = useStyles();
+  const isChecked = response?.response === 'Yes';
   return (
     <FormControlLabel
       classes={{
@@ -29,7 +31,11 @@ export default function CheckboxElement({
         isOliveHelps ? (
           <BootstrapInput type="checkbox" disabled={true} />
         ) : (
-          <Checkbox name={`checkbox-${index}`} disabled={true} />
+          <Checkbox
+            name={`checkbox-${index}`}
+            disabled={true}
+            checked={isChecked}
+          />
         )
       }
       label={input.label}
