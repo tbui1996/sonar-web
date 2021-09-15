@@ -39,8 +39,11 @@ export default function AppTotalActiveUsers() {
   const theme = useTheme();
 
   const [numConnected, setNumConnected] = useState<number>(0);
+
   const { lastMessage, readyState } = useWebSocket(
-    `wss://ws-sonar-internal.${process.env.REACT_APP_BASE_API_DOMAIN}`,
+    `wss://ws-sonar-internal.${
+      process.env.REACT_APP_BASE_API_DOMAIN
+    }?authorization=${localStorage.getItem('accessToken')}`,
     {
       shouldReconnect: () => true
     }

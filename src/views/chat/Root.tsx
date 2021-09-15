@@ -35,8 +35,7 @@ import ChatMessageBar from '../../components/chat/ChatMessageBar';
 import mapUserDisplayName from '../../utils/mapUserDisplayName';
 import axios from '../../utils/axios';
 import { FileUploadResponse, WebsocketMessage } from '../../@types/chat';
-
-const socketUrl = `wss://ws-sonar-internal.${process.env.REACT_APP_BASE_API_DOMAIN}`;
+import useAuth from '../../hooks/useAuth';
 
 const useStyles = makeStyles({
   justify: {
@@ -45,6 +44,8 @@ const useStyles = makeStyles({
 });
 
 export default function Chat() {
+  const auth = useAuth();
+  const internalUserID = auth.user.id;
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   // const [providers, setProviders] = useState<Provider[]>([]);
@@ -88,7 +89,7 @@ export default function Chat() {
   async function assignSessionToUser(chatSession: ChatSession) {
     const data: SessionID = {
       sessionID: chatSession.ID,
-      internalUserID: 'sonar'
+      internalUserID
     };
 
     const res = await axios.post<Message[]>(
@@ -197,7 +198,7 @@ export default function Chat() {
                   );
 
                   pendingChats[indexOfChat].pending = false;
-                  pendingChats[indexOfChat].internalUserID = 'sonar';
+                  pendingChats[indexOfChat].internalUserID = internalUserID;
                   pendingChats[indexOfChat].chatOpen = true;
 
                   const copyOfIndex = pendingChats[indexOfChat];
@@ -272,6 +273,10 @@ export default function Chat() {
     }
   }, INTERVAL /* 1000 120000 */);
 
+  const socketUrl = `wss://ws-sonar-internal.${
+    process.env.REACT_APP_BASE_API_DOMAIN
+  }?authorization=${localStorage.getItem('accessToken')}`;
+
   const { sendJsonMessage, readyState } = useWebSocket(socketUrl, {
     onMessage: (event) => {
       const socketMessage: WebsocketMessage = JSON.parse(event.data);
@@ -323,8 +328,9 @@ export default function Chat() {
     formData.append('file-upload', file, file.name);
 
     const res = await axios.post<FileUploadResponse>(
-      // TODO: Replace sonar user in SONAR-322
-      `/cloud/file_upload?username=sonar&chatId=${selectedChatSession!.ID}`,
+      `/cloud/file_upload?username=${internalUserID}&chatId=${
+        selectedChatSession!.ID
+      }`,
       formData,
       {
         headers: {
@@ -358,7 +364,7 @@ export default function Chat() {
         type: 'chat',
         message: JSON.stringify({
           session: selectedChatSession.ID,
-          sender: 'sonar',
+          sender: internalUserID,
           message: messageTextInput,
           file: fileID
         })
@@ -368,7 +374,7 @@ export default function Chat() {
     setMessages([
       ...messages,
       {
-        senderID: 'sonar',
+        senderID: internalUserID,
         createdTimestamp: new Date().toLocaleTimeString(),
         message: messageTextInput,
         sessionID: selectedChatSession.ID,

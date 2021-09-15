@@ -12,6 +12,7 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
 import { Message, MessageListProps } from '../../@types/support';
 import LoadingScreen from '../LoadingScreen';
+import useAuth from '../../hooks/useAuth';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -49,6 +50,8 @@ export default function MessageList({
   user,
   messages
 }: MessageListProps) {
+  const auth = useAuth();
+  const internalUserID = auth.user.id;
   const classes = useStyles();
   const messagesEndRef = useRef(null);
   const scrollToBottom = () => {
@@ -61,17 +64,15 @@ export default function MessageList({
       return 'center';
     }
 
-    return message.senderID === 'sonar' ? 'flex-end' : 'flex-start';
+    return message.senderID === internalUserID ? 'flex-end' : 'flex-start';
   };
 
   const getPaperStyling = (message: Message) => {
-    // TODO: SONAR-322
-    if (message.fileID === null && message.senderID === 'sonar') {
+    if (message.fileID === null && message.senderID === internalUserID) {
       return { root: classes.paperRootInternal };
     }
 
-    // TODO: SONAR-322
-    if (message.fileID === null && message.senderID !== 'sonar') {
+    if (message.fileID === null && message.senderID !== internalUserID) {
       return { root: classes.paperRootExternal };
     }
 
@@ -94,13 +95,14 @@ export default function MessageList({
     return {};
   };
 
-  // TODO: SONAR-322
   const getFileMessage = (message: Message) =>
     `${
-      message.senderID === `sonar` ? 'You' : `${user.displayName}`
+      message.senderID === internalUserID ? 'You' : `${user.displayName}`
     } sent a file${
       message.fileID !== null ? `: [${message.message}]` : ' '
-    } to ${message.senderID === `sonar` ? `${user.displayName}` : 'You'}`;
+    } to ${
+      message.senderID === internalUserID ? `${user.displayName}` : 'You'
+    }`;
 
   useEffect(scrollToBottom, [chatSession, messages]);
 
@@ -128,7 +130,7 @@ export default function MessageList({
                   <Grid item xs={12}>
                     <ListItemText
                       secondary={
-                        message.senderID === 'sonar'
+                        message.senderID === internalUserID
                           ? message.createdTimestamp
                           : `${user.displayName}, ${message.createdTimestamp}`
                       }
