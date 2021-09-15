@@ -10,6 +10,7 @@ import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
 import { makeStyles } from '@material-ui/core/styles';
 import { UserListProps } from '../../@types/support';
+import useAuth from '../../hooks/useAuth';
 
 const useStyles = makeStyles({
   secondary: {
@@ -42,6 +43,8 @@ export default function UserListItem({
   open,
   lastMessage
 }: UserListProps) {
+  const auth = useAuth();
+  const internalUserID = auth.user.id;
   const classes = useStyles();
 
   return (
@@ -90,7 +93,7 @@ export default function UserListItem({
                   variant="body2"
                   classes={{ root: classes.typographyMessage }}
                 >
-                  {lastMessage && lastMessage.senderID === 'sonar'
+                  {lastMessage && lastMessage.senderID === internalUserID
                     ? `You: ${lastMessage.message}`
                     : `${userDetails?.displayName}: ${lastMessage.message}`}
                 </Typography>

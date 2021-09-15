@@ -19,6 +19,7 @@ import Page from '../components/Page';
 import HeaderDashboard from '../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../routes/paths';
 import { MLinearProgress, MIconButton } from '../components/@material-extend';
+import useAuth from '../hooks/useAuth';
 
 const useStyles = makeStyles(() => ({
   button: {
@@ -39,6 +40,8 @@ interface Provider {
 }
 
 export default function Broadcast() {
+  const auth = useAuth();
+  const internalUserID = auth.user.id;
   const classes = useStyles();
 
   const [message, setMessage] = useState<string>('');
@@ -86,7 +89,7 @@ export default function Broadcast() {
         'Content-Type': 'application/json'
       },
       data: JSON.stringify({
-        sender: 'sonar',
+        sender: internalUserID,
         message,
         recipients: getRecipients()
       })
