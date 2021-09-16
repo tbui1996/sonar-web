@@ -122,3 +122,23 @@ export type InputProps = {
   input: Input;
   onChangeInput: (value: Input) => void;
 };
+
+export type FormPDFProps = {
+  submissionId: string;
+  form: FormApiResponse;
+  submissionResponses: InputSubmission[];
+}
+
+export type InputPDFProps = Input & {
+  options?: Array<string>;
+};
+
+export type RadioFormPDFProps = {
+  input: InputPDFProps;
+  response?: string;
+};
+
+export type CheckboxFormPDFProps = {
+  label: string;
+  response?: string;
+};
