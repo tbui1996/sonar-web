@@ -39,10 +39,6 @@ build_web:
   image:
     name: node:latest
   script:
-    # Build Image
-    - yarn install --prefer-offline
-    - yarn build
-
     # Construct .env file
     - echo REACT_APP_API_DOMAIN=${BASE_API_DOMAIN} >> .env
     - echo REACT_APP_COGNITO_REGION=${COGNITO_REGION} >> .env
@@ -51,6 +47,10 @@ build_web:
     - echo REACT_APP_COGNITO_REDIRECT_SIGNIN=${BASE_API_DOMAIN}/dashboard/app >> .env
     - echo REACT_APP_COGNITO_REDIRECT_SIGNOUT=${BASE_API_DOMAIN} >> .env
     - echo REACT_APP_COGNITO_DOMAIN=${COGNITO_DOMAIN} >> .env
+
+    # Build Application
+    - yarn install --prefer-offline
+    - yarn build
   cache:
     key: "node_modules"
     paths:
