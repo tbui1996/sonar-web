@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { useEffect, useRef } from 'react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import { Message, MessageListProps } from '../../@types/support';
 import LoadingScreen from '../LoadingScreen';
 import useAuth from '../../hooks/useAuth';
@@ -28,16 +28,13 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: '375px'
     },
     paperRootSystem: {
-      background: '#E9FCD4'
+      background: '#D0F2FF'
     },
     textColorFile: {
-      color: '#08660D',
+      color: '#04297A',
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'center'
-    },
-    textColor: {
-      color: '#212B36'
     },
     gridRootItemFile: {
       width: '80%'
@@ -80,11 +77,11 @@ export default function MessageList({
   };
 
   const getTextStyling = (message: Message) => {
-    if (message.fileID === null) {
-      return { root: classes.textColor };
+    if (message.fileID !== null) {
+      return { root: classes.textColorFile };
     }
 
-    return { root: classes.textColorFile };
+    return {};
   };
 
   const getGridStyling = (message: Message) => {
@@ -148,8 +145,8 @@ export default function MessageList({
                         >
                           {message.fileID !== null && (
                             <>
-                              <CheckCircleRoundedIcon
-                                sx={{ color: '#00AB55', marginRight: '2%' }}
+                              <InfoRoundedIcon
+                                sx={{ color: '#1890FF', marginRight: '2%' }}
                               />{' '}
                               {`${message.createdTimestamp}:`}
                               <strong
