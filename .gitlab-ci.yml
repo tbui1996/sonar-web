@@ -25,14 +25,9 @@ init_tf:
   script:
     - cd ${TF_ROOT}
     - gitlab-terraform validate
-  variables:
-    AWS_ACCOUNT_ID: "$DEV_AWS_ACCOUNT_ID"
-    AWS_ACCESS_KEY_ID: "$DEV_AWS_ACCESS_KEY_ID"
-    AWS_SECRET_ACCESS_KEY: "$DEV_AWS_SECRET_ACCESS_KEY"
-    AWS_DEFAULT_REGION: us-east-1
-    TF_VAR_zone_id: "$DEV_HOSTED_ZONE_ID"
-    TF_VAR_domain_name: circulo.dev
-    TF_VAR_environment: development
+  environment:
+    name: development
+    action: prepare
   cache:
     key: "${TF_ROOT}"
     paths:
@@ -44,12 +39,25 @@ build_web:
   image:
     name: node:latest
   script:
+    # Construct .env file
+    - echo REACT_APP_API_DOMAIN=${BASE_API_DOMAIN} >> .env
+    - echo REACT_APP_COGNITO_REGION=${COGNITO_REGION} >> .env
+    - echo REACT_APP_COGNITO_USER_POOL_ID=${COGNITO_USER_POOL_ID} >> .env
+    - echo REACT_APP_COGNITO_USER_POOL_WEB_CLIENT_ID=${COGNITO_USER_POOL_WEB_CLIENT_ID} >> .env
+    - echo REACT_APP_COGNITO_REDIRECT_SIGNIN=${BASE_API_DOMAIN}/dashboard/app >> .env
+    - echo REACT_APP_COGNITO_REDIRECT_SIGNOUT=${BASE_API_DOMAIN} >> .env
+    - echo REACT_APP_COGNITO_DOMAIN=${COGNITO_DOMAIN} >> .env
+
+    # Build Application
     - yarn install --prefer-offline
     - yarn build
   cache:
     key: "node_modules"
     paths:
       - node_modules
+  environment:
+    name: development
+    action: prepare
   artifacts:
     paths:
       - build
@@ -67,8 +75,6 @@ plan_terraform:
   image:
     name: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
   script:
-    - ls
-    - ls build
     - cd ${TF_ROOT}
     - gitlab-terraform plan
     - gitlab-terraform plan-json
@@ -85,6 +91,9 @@ plan_terraform:
     paths:
       - ${TF_ROOT}/.terraform/
       - ${TF_ROOT}/.terraform.lock.hcl
+  environment:
+    name: development
+    action: prepare
   artifacts:
     paths:
       - ${TF_ROOT}/plan.cache
@@ -99,8 +108,6 @@ deploy_develop:
   image:
     name: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
   script:
-    - ls
-    - ls build
     - cd ${TF_ROOT}
     - gitlab-terraform apply
   variables:
