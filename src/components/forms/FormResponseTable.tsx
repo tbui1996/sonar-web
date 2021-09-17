@@ -1,18 +1,31 @@
-import React, { useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { DataGrid, GridColDef, GridRowData } from '@mui/x-data-grid';
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
+import { Box } from '@material-ui/core';
 import { useHistory, useParams } from 'react-router-dom';
 import { FormResponseTableProps, Input } from '../../@types/form';
 
 const useStyles = makeStyles({
   table: {
-    minWidth: 650
+    minWidth: 650,
+    '& .MuiDataGrid-columnHeaderTitle, & .MuiDataGrid-cell': {
+      whiteSpace: 'normal',
+      lineHeight: '1.5!important',
+      maxHeight: 'fit-content!important',
+      minHeight: 'auto!important',
+      display: 'flex',
+      alignItems: 'center'
+    },
+
+    '& .MuiDataGrid-columnHeaderWrapper': {
+      maxHeight: 'none!important',
+      flex: '1 0 auto'
+    },
+
+    '& .MuiDataGrid-cell': {
+      overflowWrap: 'anywhere',
+      padding: '18px'
+    }
   }
 });
 
@@ -20,9 +33,56 @@ export default function FormResponseTable({
   inputs,
   submits
 }: FormResponseTableProps) {
+  const [columns, setColumns] = useState<GridColDef[]>();
+  const [rows, setRows] = useState<Array<GridRowData>>();
   const classes = useStyles();
   const history = useHistory();
   const params = useParams<{ id: string }>();
+
+  useEffect(() => {
+    const data = inputs
+      .filter(
+        (input) =>
+          input.type !== 'divider' &&
+          input.type !== 'link' &&
+          input.type !== 'message'
+      )
+      .sort((a, b) => a.id - b.id)
+      .map((item: Input) => ({
+        field: item.id.toString(),
+        headerName: item.label,
+        flex: item.type === 'email' ? 1.5 : 1,
+        sortable: false
+      }));
+
+    data.unshift({
+      field: 'id',
+      headerName: 'ID',
+      flex: 0.5,
+      sortable: false
+    });
+    setColumns(data);
+  }, [inputs]);
+
+  useEffect(() => {
+    const rowsData = submits?.map((submitItem) => {
+      const [firstSubmission] = submitItem;
+      let row = { id: firstSubmission.formSubmissionId };
+      submitItem
+        .filter((input) => input.response)
+        .sort((a, b) => a.inputId - b.inputId)
+        .forEach((resp) => {
+          row = {
+            ...row,
+            [resp.inputId.toString() as string]: resp.response
+          };
+        });
+
+      return row;
+    });
+
+    setRows(rowsData);
+  }, [submits]);
 
   const handleClick = useCallback(
     (formSubmissionId: number) => {
@@ -34,48 +94,17 @@ export default function FormResponseTable({
   );
 
   return (
-    <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="form response table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Submission ID</TableCell>
-            {inputs
-              .filter(
-                (input) =>
-                  input.type !== 'divider' &&
-                  input.type !== 'link' &&
-                  input.type !== 'message'
-              )
-              .sort((a, b) => a.id - b.id)
-              .map((item: Input) => (
-                <TableCell key={item.id}>{item.label}</TableCell>
-              ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {submits?.map((submitItem) => {
-            const [firstSubmission] = submitItem;
-            const { id, inputId, formSubmissionId } = firstSubmission;
-            return (
-              <TableRow
-                key={id}
-                hover
-                onClick={() => handleClick(formSubmissionId)}
-              >
-                <TableCell key={inputId}>{formSubmissionId}</TableCell>
-                {submitItem
-                  .filter((input) => input.response)
-                  .sort((a, b) => a.inputId - b.inputId)
-                  .map((resp) => (
-                    <>
-                      <TableCell key={resp.id}>{resp.response}</TableCell>
-                    </>
-                  ))}
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Box>
+      {columns && (
+        <DataGrid
+          rows={rows || []}
+          columns={columns}
+          className={classes.table}
+          onRowClick={(param) => handleClick(param.row.id)}
+          disableColumnMenu
+          autoHeight
+        />
+      )}
+    </Box>
   );
 }
