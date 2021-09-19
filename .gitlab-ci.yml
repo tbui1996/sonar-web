@@ -40,7 +40,7 @@ build_web:
     name: node:latest
   script:
     # Construct .env file
-    - echo REACT_APP_API_DOMAIN=${BASE_API_DOMAIN} >> .env
+    - echo REACT_APP_BASE_API_DOMAIN=${BASE_API_DOMAIN} >> .env
     - echo REACT_APP_COGNITO_REGION=${COGNITO_REGION} >> .env
     - echo REACT_APP_COGNITO_USER_POOL_ID=${COGNITO_USER_POOL_ID} >> .env
     - echo REACT_APP_COGNITO_USER_POOL_WEB_CLIENT_ID=${COGNITO_USER_POOL_WEB_CLIENT_ID} >> .env
