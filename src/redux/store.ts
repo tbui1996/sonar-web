@@ -7,6 +7,7 @@ import { rootPersistConfig, rootReducer } from './rootReducer';
 
 const store = configureStore({
   reducer: persistReducer(rootPersistConfig, rootReducer),
+  // adds thunk middleware by default
   middleware: getDefaultMiddleware({
     serializableCheck: false,
     immutableCheck: false

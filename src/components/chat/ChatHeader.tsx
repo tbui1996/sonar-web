@@ -1,7 +1,7 @@
 import { Typography } from '@material-ui/core';
 import { ChatHeaderProps } from '../../@types/chat';
 
-export default function ChatHeader({ chatSession, user }: ChatHeaderProps) {
+export default function ChatHeader({ session }: ChatHeaderProps) {
   return (
     <div
       style={{
@@ -20,9 +20,9 @@ export default function ChatHeader({ chatSession, user }: ChatHeaderProps) {
             fontWeight: '600'
           }}
         >
-          {chatSession ? user?.displayName : 'Please Select a Chat'}
+          {session?.user?.displayName || 'Please Select a Chat'}
         </Typography>
-        {user && (
+        {session?.user && (
           <Typography
             variant="body2"
             sx={{
@@ -31,7 +31,7 @@ export default function ChatHeader({ chatSession, user }: ChatHeaderProps) {
               color: '#637381'
             }}
           >
-            {user.organization}
+            {session?.user?.organization}
           </Typography>
         )}
       </div>

@@ -4,13 +4,17 @@ import {
   ListItemIcon,
   ListItemText,
   Tooltip,
-  Typography
+  Typography,
+  Box
 } from '@material-ui/core';
 import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
 import { makeStyles } from '@material-ui/core/styles';
+import formatDistanceStrict from 'date-fns/formatDistanceStrict';
+
 import { UserListProps } from '../../@types/support';
 import useAuth from '../../hooks/useAuth';
+import { MTimelineDot } from '../@material-extend';
 
 const useStyles = makeStyles({
   secondary: {
@@ -37,26 +41,34 @@ const useStyles = makeStyles({
 });
 
 export default function UserListItem({
-  userDetails,
-  selected,
-  onClickCallback,
-  open,
-  lastMessage
+  session,
+  isActive,
+  onOpenChat
 }: UserListProps) {
   const auth = useAuth();
   const internalUserID = auth.user.id;
   const classes = useStyles();
 
+  let lastMessageText = '';
+  if (session.lastMessageSenderID) {
+    if (session.lastMessageSenderID === internalUserID) {
+      lastMessageText = `You: ${session.lastMessagePreview}`;
+    } else {
+      // lastMessageText = `${session.user?.displayName}: ${session.lastMessagePreview}`;
+      lastMessageText = `${session.lastMessagePreview}`;
+    }
+  }
+
   return (
     <Tooltip
-      title={userDetails?.email || 'No Email'}
-      key={userDetails?.sub}
+      title={session.user?.email || 'No Email'}
+      key={session.user?.sub}
       placement="right-start"
     >
       <ListItem
         button
-        selected={selected}
-        onClick={onClickCallback}
+        selected={isActive}
+        onClick={onOpenChat}
         classes={{ root: classes.padding }}
       >
         <ListItemIcon>
@@ -64,43 +76,71 @@ export default function UserListItem({
             sx={{
               width: '48px',
               height: '48px',
-              backgroundColor: open ? '#ffd7c0' : '#cceedd'
+              backgroundColor: session.chatOpen ? '#ffd7c0' : '#cceedd'
             }}
           >
-            {open && <WarningRoundedIcon sx={{ color: '#FF4842' }} />}
-            {!open && <CheckCircleRoundedIcon sx={{ color: '#00AB55' }} />}
+            {session.chatOpen && (
+              <WarningRoundedIcon sx={{ color: '#FF4842' }} />
+            )}
+            {!session.chatOpen && (
+              <CheckCircleRoundedIcon sx={{ color: '#00AB55' }} />
+            )}
           </Avatar>
         </ListItemIcon>
-        <div style={{ minWidth: '0' }}>
-          <ListItemText
-            disableTypography
-            primary={
+        <ListItemText
+          disableTypography
+          primary={
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'space-between'
+              }}
+            >
               <Typography
                 noWrap
                 variant="subtitle2"
                 classes={{ root: classes.typographyName }}
               >
-                {userDetails?.displayName || 'Unknown'}
+                {session.user?.displayName || 'Unknown'}
               </Typography>
-            }
-          />
-          {lastMessage && (
-            <ListItemText
-              disableTypography
-              secondary={
+              {session.lastMessageTimestamp && (
+                <Typography noWrap variant="caption">
+                  {formatDistanceStrict(
+                    Date.now(),
+                    session.lastMessageTimestamp * 1000
+                  )}
+                </Typography>
+              )}
+            </Box>
+          }
+          secondary={
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexDirection: 'row'
+              }}
+            >
+              {lastMessageText ? (
                 <Typography
                   noWrap
                   variant="body2"
                   classes={{ root: classes.typographyMessage }}
                 >
-                  {lastMessage && lastMessage.senderID === internalUserID
-                    ? `You: ${lastMessage.message}`
-                    : `${userDetails?.displayName}: ${lastMessage.message}`}
+                  {lastMessageText}
                 </Typography>
-              }
-            />
-          )}
-        </div>
+              ) : (
+                <Box />
+              )}
+              {session.hasUnreadMessages && <MTimelineDot color="secondary" />}
+            </Box>
+          }
+        />
       </ListItem>
     </Tooltip>
   );

@@ -29,10 +29,12 @@ export default function ChatMessageBar({
         fullWidth
         value={messageText}
         id="message-input"
-        placeholder="Type a message"
+        placeholder={
+          disabled ? "Can't type message in closed chat" : 'Type a message'
+        }
         onChange={onChangeText}
         type="text"
-        disabled={file !== undefined}
+        disabled={disabled || file !== undefined}
         startAdornment={
           <InputAdornment>
             <InsertEmoticon sx={{ marginRight: '10px' }} />
@@ -51,6 +53,7 @@ export default function ChatMessageBar({
               </Tooltip>
 
               <input
+                disabled={disabled}
                 id="message-bar-file-input"
                 type="file"
                 hidden={true}

@@ -1,8 +1,6 @@
 // ----------------------------------------------------------------------
 import { ChangeEvent } from 'react';
 import { ChatSession } from './support';
-import { User } from './users';
-import axios from '../utils/axios';
 
 export type Contact = {
   id: string;
@@ -74,18 +72,12 @@ export type AccordionProps = {
 };
 
 export type ChatStatusProps = {
-  chatSession: ChatSession | undefined;
-  callback: (
-    status: 'open' | 'close',
-    session: ChatSession | undefined
-  ) => void;
-  open: boolean;
-  onChange: () => void;
+  session?: ChatSession;
+  callback: () => void;
 };
 
 export type ChatHeaderProps = {
-  chatSession: ChatSession | undefined;
-  user: User | undefined;
+  session: ChatSession | undefined;
 };
 
 export type ChatMessageProps = {
