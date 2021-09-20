@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -33,13 +34,18 @@ const useStyles = makeStyles({
   }
 });
 
-export default function ChatStatus({
-  chatSession,
-  callback,
-  open,
-  onChange
-}: ChatStatusProps) {
+export default function ChatStatus({ session, callback }: ChatStatusProps) {
   const classes = useStyles();
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    setExpanded(false);
+  }, [session]);
+
+  function handleChangeStatus() {
+    setExpanded(false);
+    callback();
+  }
 
   return (
     <div
@@ -54,9 +60,9 @@ export default function ChatStatus({
     >
       <Accordion
         classes={{ root: classes.root }}
-        disabled={!chatSession}
-        expanded={open}
-        onChange={onChange}
+        disabled={!session}
+        expanded={expanded}
+        onChange={() => setExpanded((prev) => !prev)}
       >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon sx={{ marginRight: '10px' }} />}
@@ -66,18 +72,22 @@ export default function ChatStatus({
             variant="body2"
             classes={{ root: classes.typographyRoot }}
           >
-            Status: {!chatSession && 'No Status'}
-            {chatSession && chatSession.chatOpen && 'Open'}
-            {chatSession && !chatSession.chatOpen && 'Closed'}
-            {chatSession && chatSession.chatOpen && (
-              <WarningRoundedIcon
-                sx={{ color: '#FF4842', marginLeft: '5px' }}
-              />
+            Status: {!session && 'No Status'}
+            {session?.chatOpen && (
+              <>
+                Open
+                <WarningRoundedIcon
+                  sx={{ color: '#FF4842', marginLeft: '5px' }}
+                />
+              </>
             )}
-            {chatSession && !chatSession.chatOpen && (
-              <CheckCircleRoundedIcon
-                sx={{ color: '#00AB55', marginLeft: '5px' }}
-              />
+            {session && !session.chatOpen && (
+              <>
+                Closed
+                <CheckCircleRoundedIcon
+                  sx={{ color: '#00AB55', marginLeft: '5px' }}
+                />
+              </>
             )}
           </Typography>
         </AccordionSummary>
@@ -85,8 +95,8 @@ export default function ChatStatus({
           <List>
             <ListItem
               button
-              onClick={() => callback('close', chatSession)}
-              disabled={!chatSession?.chatOpen}
+              onClick={handleChangeStatus}
+              disabled={!session?.chatOpen}
             >
               <ListItemText
                 disableTypography
@@ -105,8 +115,8 @@ export default function ChatStatus({
             </ListItem>
             <ListItem
               button
-              onClick={() => callback('open', chatSession)}
-              disabled={chatSession?.chatOpen}
+              onClick={handleChangeStatus}
+              disabled={session?.chatOpen}
             >
               <ListItemText
                 disableTypography

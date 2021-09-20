@@ -10,7 +10,11 @@ import {
 import { useEffect, useRef } from 'react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
-import { Message, MessageListProps } from '../../@types/support';
+import {
+  Message,
+  MessageListProps,
+  ChatSessionStatus
+} from '../../@types/support';
 import LoadingScreen from '../LoadingScreen';
 import useAuth from '../../hooks/useAuth';
 
@@ -42,19 +46,20 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function MessageList({
-  chatSession,
-  user,
-  messages
-}: MessageListProps) {
-  const auth = useAuth();
-  const internalUserID = auth.user.id;
+function translateTimestamp(ts: number): string {
+  return new Date(ts * 1000).toLocaleTimeString();
+}
+
+export default function MessageList({ session }: MessageListProps) {
   const classes = useStyles();
   const messagesEndRef = useRef(null);
-  const scrollToBottom = () => {
+  const auth = useAuth();
+  const internalUserID = auth.user.id;
+
+  useEffect(() => {
     // @ts-ignore
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }, [session]);
 
   const getAlignment = (message: Message) => {
     if (message.fileID !== null) {
@@ -94,28 +99,25 @@ export default function MessageList({
 
   const getFileMessage = (message: Message) =>
     `${
-      message.senderID === internalUserID ? 'You' : `${user.displayName}`
+      message.senderID === internalUserID
+        ? 'You'
+        : `${session?.user?.displayName}`
     } sent a file${
       message.fileID !== null ? `: [${message.message}]` : ' '
     } to ${
-      message.senderID === internalUserID ? `${user.displayName}` : 'You'
+      message.senderID === internalUserID
+        ? `${session?.user?.displayName}`
+        : 'You'
     }`;
 
-  useEffect(scrollToBottom, [chatSession, messages]);
-
-  return (
-    <div
-      style={{
-        flexGrow: 1,
-        borderBottom: '1px solid rgba(145, 158, 171, 0.24)',
-        maxHeight: '700px',
-        overflowY: 'scroll'
-      }}
-    >
-      {chatSession && messages.length <= 0 && <LoadingScreen />}
-      {chatSession && messages.length > 0 && (
+  let content = null;
+  if (session) {
+    if (session.status === ChatSessionStatus.HYDRATING) {
+      content = <LoadingScreen />;
+    } else {
+      content = (
         <List>
-          {messages.map((message, index) => (
+          {session.messages.map((message, index) => (
             <ListItem key={index}>
               <Grid
                 container
@@ -128,8 +130,10 @@ export default function MessageList({
                     <ListItemText
                       secondary={
                         message.senderID === internalUserID
-                          ? message.createdTimestamp
-                          : `${user.displayName}, ${message.createdTimestamp}`
+                          ? translateTimestamp(message.createdTimestamp)
+                          : `${
+                              session?.user?.displayName
+                            }, ${translateTimestamp(message.createdTimestamp)}`
                       }
                     />
                   </Grid>
@@ -148,7 +152,9 @@ export default function MessageList({
                               <InfoRoundedIcon
                                 sx={{ color: '#1890FF', marginRight: '2%' }}
                               />{' '}
-                              {`${message.createdTimestamp}:`}
+                              {`${translateTimestamp(
+                                message.createdTimestamp
+                              )}:`}
                               <strong
                                 style={{ flexGrow: 1, textAlign: 'center' }}
                               >
@@ -170,7 +176,20 @@ export default function MessageList({
             <div ref={messagesEndRef} />
           </ListItem>
         </List>
-      )}
+      );
+    }
+  }
+
+  return (
+    <div
+      style={{
+        flexGrow: 1,
+        borderBottom: '1px solid rgba(145, 158, 171, 0.24)',
+        maxHeight: '700px',
+        overflowY: 'scroll'
+      }}
+    >
+      {content}
     </div>
   );
 }

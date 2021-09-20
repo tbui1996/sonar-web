@@ -5,11 +5,22 @@ export type Provider = {
   id: string;
 };
 
+export enum SocketMessageType {
+  Message = 'message',
+  NewPendingSession = 'new_pending_session'
+}
+
+export type SocketMessage = {
+  type: SocketMessageType;
+  payload?: Message | ChatSessionDTO;
+};
+
 export type Message = {
-  senderID: string;
-  createdTimestamp: string;
-  message: string;
+  id: string;
   sessionID: string;
+  senderID: string;
+  message: string;
+  createdTimestamp: number;
   fileID: string | null;
 };
 
@@ -18,28 +29,48 @@ export type ChatSessionRequest = {
   userID: string;
 };
 
-export type ChatSession = {
+export type ChatSessionDTO = {
   ID: string;
   userID: string;
   createdTimestamp: number;
-  internalUserID: string | undefined;
-  chatOpen: boolean | undefined;
-  pending: boolean | undefined;
-  topic: string | undefined;
+  internalUserID?: string;
+  chatOpen?: boolean;
+  topic?: string;
+  pending?: boolean;
+
+  // Only available after chat session is assigned
+  userLastRead?: number;
+  internalUserLastRead?: number;
+
+  // Only available after first message is sent
+  lastMessageTimestamp?: number;
+  lastMessagePreview?: string;
+  lastMessageSenderID?: string;
+};
+
+export enum ChatSessionStatus {
+  UNHYDRATED,
+  HYDRATING,
+  HYDRATED
+}
+
+export type ChatSession = ChatSessionDTO & {
+  status: ChatSessionStatus;
+  messages: Message[];
+  hasUnreadMessages: boolean;
+
+  // Holds data for user denoted by userID
+  user?: User;
 };
 
 export type UserListProps = {
-  userDetails: User | undefined;
-  selected: boolean;
-  onClickCallback: () => void;
-  open: boolean | undefined;
-  lastMessage: Message | undefined;
+  session: ChatSession;
+  isActive: boolean;
+  onOpenChat: () => void;
 };
 
 export type MessageListProps = {
-  chatSession: ChatSession | undefined;
-  messages: Message[];
-  user: User;
+  session?: ChatSession;
 };
 
 export type SessionID = {
