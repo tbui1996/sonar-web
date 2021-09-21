@@ -1,7 +1,33 @@
 # Global Variables
 variables:
   TF_ROOT: tf/
-  TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/develop
+
+# Workflow Variables
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      variables:
+        ENVIRONMENT_NAME: development
+        ENVIRONMENT_URL: https://circulo.dev
+        TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/develop
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      variables:
+        ENVIRONMENT_NAME: development
+        ENVIRONMENT_URL: https://circulo.dev
+        TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/develop
+        RUN_ALL: "true"
+    - if: '$CI_COMMIT_BRANCH == "test"'
+      variables:
+        ENVIRONMENT_NAME: testing
+        ENVIRONMENT_URL: https://test.circulosonar.com
+        TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/test
+        RUN_ALL: "true"
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      variables:
+        ENVIRONMENT_NAME: production
+        ENVIRONMENT_URL: https://circulosonar.com
+        TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/production
+        RUN_ALL: "true"
 
 # Base States
 stages:
@@ -18,7 +44,7 @@ init_tf:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
         - "**/*.tf"
-    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$RUN_ALL == "true"'
       when: always
   image:
     name: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
@@ -26,7 +52,7 @@ init_tf:
     - cd ${TF_ROOT}
     - gitlab-terraform validate
   environment:
-    name: development
+    name: $ENVIRONMENT_NAME
     action: prepare
   cache:
     key: "${TF_ROOT}"
@@ -56,7 +82,7 @@ build_web:
     paths:
       - node_modules
   environment:
-    name: development
+    name: $ENVIRONMENT_NAME
     action: prepare
   artifacts:
     paths:
@@ -70,7 +96,7 @@ plan_terraform:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
         - "**/*.tf"
-    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$RUN_ALL == "true"'
       when: always
   image:
     name: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
@@ -78,21 +104,13 @@ plan_terraform:
     - cd ${TF_ROOT}
     - gitlab-terraform plan
     - gitlab-terraform plan-json
-  variables:
-    AWS_ACCOUNT_ID: "$DEV_AWS_ACCOUNT_ID"
-    AWS_ACCESS_KEY_ID: "$DEV_AWS_ACCESS_KEY_ID"
-    AWS_SECRET_ACCESS_KEY: "$DEV_AWS_SECRET_ACCESS_KEY"
-    AWS_DEFAULT_REGION: us-east-1
-    TF_VAR_zone_id: "$DEV_HOSTED_ZONE_ID"
-    TF_VAR_domain_name: circulo.dev
-    TF_VAR_environment: development
   cache:
     key: "${TF_ROOT}"
     paths:
       - ${TF_ROOT}/.terraform/
       - ${TF_ROOT}/.terraform.lock.hcl
   environment:
-    name: development
+    name: $ENVIRONMENT_NAME
     action: prepare
   artifacts:
     paths:
@@ -100,7 +118,7 @@ plan_terraform:
     reports:
       terraform: ${TF_ROOT}/plan.json
 
-deploy_develop:
+deploy:
   stage: deploy
   dependencies:
     - build_web
@@ -110,18 +128,12 @@ deploy_develop:
   script:
     - cd ${TF_ROOT}
     - gitlab-terraform apply
-  variables:
-    AWS_ACCOUNT_ID: "$DEV_AWS_ACCOUNT_ID"
-    AWS_ACCESS_KEY_ID: "$DEV_AWS_ACCESS_KEY_ID"
-    AWS_SECRET_ACCESS_KEY: "$DEV_AWS_SECRET_ACCESS_KEY"
-    AWS_DEFAULT_REGION: us-east-1
-    TF_VAR_zone_id: "$DEV_HOSTED_ZONE_ID"
-    TF_VAR_domain_name: circulo.dev
-    TF_VAR_environment: development
   when: manual
   environment:
-    name: development
-    url: https://circulo.dev
+    name: $ENVIRONMENT_NAME
+    url: $ENVIRONMENT_URL
   only:
     variables:
       - $CI_COMMIT_BRANCH == "develop"
+      - $CI_COMMIT_BRANCH == "test"
+      - $CI_COMMIT_BRANCH == "main"
