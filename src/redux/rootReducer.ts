@@ -5,13 +5,13 @@ import { firestoreReducer } from 'redux-firestore';
 import { firebaseReducer } from 'react-redux-firebase';
 // slices
 import mailReducer from './slices/mail';
-import chatReducer from './slices/chat';
 import blogReducer from './slices/blog';
 import userReducer from './slices/user';
 import productReducer from './slices/product';
 import authJwtReducer from './slices/authJwt';
 import settingsReducer from './slices/settings';
 import calendarReducer from './slices/calendar';
+import supportReducer from './slices/support';
 
 // ----------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ const rootReducer = combineReducers({
   firebase: firebaseReducer,
   firestore: firestoreReducer,
   mail: mailReducer,
-  chat: chatReducer,
+  support: supportReducer,
   blog: blogReducer,
   user: userReducer,
   settings: settingsReducer,
