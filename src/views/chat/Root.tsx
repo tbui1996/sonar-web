@@ -26,7 +26,6 @@ import {
 } from '../../@types/support';
 import MyAvatar from '../../components/MyAvatar';
 import AccordionSidebar from '../../components/chat/AccordionSidebar';
-import NotificationMessage from '../../utils/notificationMessage';
 import MessageList from '../../components/chat/MessageList';
 import UserListItem from '../../components/chat/UserListItem';
 import ChatStatus from '../../components/chat/ChatStatus';
@@ -56,6 +55,8 @@ import {
   isMessage,
   isSocketMessage
 } from '../../utils/type-guards';
+import AlertSnackbar from '../../components/AlertSnackbar';
+import { AlertState } from '../../@types/alert';
 
 const useStyles = makeStyles({
   justify: {
@@ -71,6 +72,11 @@ export default function Chat() {
   const [messageTextInput, setMessageTextInput] = useState<string>('');
   const [file, setFile] = useState<File>();
   const [page, setPage] = useState(0);
+  const [alertState, setAlertState] = useState<AlertState>({
+    open: false,
+    message: '',
+    severity: 'error'
+  });
 
   // Redux
   const dispatch = useAppDispatch();
@@ -207,6 +213,11 @@ export default function Chat() {
     const session = sessions.byId[id];
 
     if (!session) {
+      setAlertState({
+        ...alertState,
+        open: true,
+        message: 'Unable to open chat, the session does not exist'
+      });
       console.log(`expected session to exist when activating (${id})`);
       return;
     }
@@ -251,6 +262,11 @@ export default function Chat() {
 
   async function onClickSend() {
     if (!activeSession?.ID) {
+      setAlertState({
+        ...alertState,
+        open: true,
+        message: 'Unable to send file, the chat session is not active'
+      });
       console.log(`expected a session to be active when sending a file.`);
       return;
     }
@@ -264,11 +280,21 @@ export default function Chat() {
     try {
       response = await dispatch(postUploadFile(file));
     } catch (e) {
+      setAlertState({
+        ...alertState,
+        open: true,
+        message: 'Unable to upload file'
+      });
       console.log(e);
       return;
     }
 
     if (!isFileUploadResponse(response?.payload)) {
+      setAlertState({
+        ...alertState,
+        open: true,
+        message: 'Unable to upload file'
+      });
       console.log(
         'Response is not a file upload response: ',
         response?.payload
@@ -281,12 +307,20 @@ export default function Chat() {
 
   async function onSendMessage(fileID: string | null) {
     if (!activeSession?.ID) {
-      NotificationMessage('You have not selected a chat', 'error');
+      setAlertState({
+        ...alertState,
+        open: true,
+        message: 'You have not selected a chat'
+      });
       return;
     }
 
     if (messageTextInput === '' && fileID === null) {
-      NotificationMessage('Please include message text', 'error');
+      setAlertState({
+        ...alertState,
+        open: true,
+        message: 'Cannot send a message with no content'
+      });
       return;
     }
 
@@ -489,6 +523,14 @@ export default function Chat() {
             overflow: 'unset'
           }}
         >
+          <AlertSnackbar
+            open={alertState.open}
+            message={alertState.message}
+            onAlertClose={() =>
+              setAlertState({ ...alertState, open: false, message: '' })
+            }
+            severity={alertState.severity}
+          />
           {content}
         </Card>
       </Container>

@@ -71,25 +71,25 @@ const INFO = {
   darker: '#04297A'
 };
 const SUCCESS = {
-  lighter: '#4bd786',
-  light: '#36d278',
-  main: '#27ae60',
-  dark: '#1e8449',
-  darker: '#19703e'
+  lighter: '#E9FCD4',
+  light: '#AAF27F',
+  main: '#54D62C',
+  dark: '#229A16',
+  darker: '#08660D'
 };
 const WARNING = {
-  lighter: '#f7df93',
-  light: '#f5d77c',
-  main: '#f2c94c',
-  dark: '#efbb1c',
-  darker: '#e1ae10'
+  lighter: '#FFF7CD',
+  light: '#FFE16A',
+  main: '#FFC107',
+  dark: '#B78103',
+  darker: '#7A4F01'
 };
 const ERROR = {
-  lighter: '#d38783',
-  light: '#cc7570',
-  main: '#bf514a',
-  dark: '#9e3e38',
-  darker: '#8b3731'
+  lighter: '#FFE7D9',
+  light: '#FFA48D',
+  main: '#FF4842',
+  dark: '#B72136',
+  darker: '#7A0C2E'
 };
 const GREY = {
   100: '#F9FAFB',
