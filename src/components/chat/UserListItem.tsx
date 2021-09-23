@@ -12,6 +12,7 @@ import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
 import { makeStyles } from '@material-ui/core/styles';
 import formatDistanceStrict from 'date-fns/formatDistanceStrict';
 
+import mime from 'mime-types';
 import { UserListProps } from '../../@types/support';
 import useAuth from '../../hooks/useAuth';
 import { MTimelineDot } from '../@material-extend';
@@ -51,11 +52,19 @@ export default function UserListItem({
 
   let lastMessageText = '';
   if (session.lastMessageSenderID) {
+    const messageSplit = session.lastMessagePreview?.split('.') || [''];
+    const isMessageLikelyAFile = mime.lookup(
+      `.${messageSplit[messageSplit.length - 1]}`
+    );
     if (session.lastMessageSenderID === internalUserID) {
-      lastMessageText = `You: ${session.lastMessagePreview}`;
+      lastMessageText = !isMessageLikelyAFile
+        ? `You: ${session.lastMessagePreview}`
+        : 'You sent a file';
     } else {
       // lastMessageText = `${session.user?.displayName}: ${session.lastMessagePreview}`;
-      lastMessageText = `${session.lastMessagePreview}`;
+      lastMessageText = !isMessageLikelyAFile
+        ? `${session.lastMessagePreview}`
+        : `A file was sent to you`;
     }
   }
 
