@@ -1,4 +1,5 @@
 import {
+  Button,
   createStyles,
   Grid,
   List,
@@ -38,7 +39,8 @@ const useStyles = makeStyles((theme: Theme) =>
       color: '#04297A',
       display: 'flex',
       flexDirection: 'row',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      alignItems: 'center'
     },
     gridRootItemFile: {
       width: '80%'
@@ -102,12 +104,10 @@ export default function MessageList({ session }: MessageListProps) {
       message.senderID === internalUserID
         ? 'You'
         : `${session?.user?.displayName}`
-    } sent a file${
-      message.fileID !== null ? `: [${message.message}]` : ' '
-    } to ${
+    } sent new file(s) to ${
       message.senderID === internalUserID
         ? `${session?.user?.displayName}`
-        : 'You'
+        : 'you'
     }`;
 
   let content = null;
@@ -160,6 +160,17 @@ export default function MessageList({ session }: MessageListProps) {
                               >
                                 {getFileMessage(message)}
                               </strong>
+                              <Button
+                                variant="text"
+                                color="secondary"
+                                onClick={() =>
+                                  window.open(
+                                    `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/cloud/file_download/${message.fileID}`
+                                  )
+                                }
+                              >
+                                View
+                              </Button>
                             </>
                           )}
                           {message.fileID === null && <>{message.message}</>}
