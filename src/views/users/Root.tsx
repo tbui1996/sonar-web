@@ -368,9 +368,7 @@ export default function UserRoles() {
                     <MenuItem value="no_group" disabled>
                       No Role
                     </MenuItem>
-                    <MenuItem value="externals_supervisors">
-                      Supervisor
-                    </MenuItem>
+                    <MenuItem value="externals_supervisor">Supervisor</MenuItem>
                   </Select>
                 </FormControl>
                 <div
