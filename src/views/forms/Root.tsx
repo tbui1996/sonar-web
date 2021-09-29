@@ -1,37 +1,93 @@
 import { useEffect, useState, useCallback } from 'react';
-
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import {
-  Box,
-  Container,
-  Card,
-  Button,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Typography
-} from '@material-ui/core';
+  DataGrid,
+  GridColDef,
+  GridValueFormatterParams
+} from '@mui/x-data-grid';
+import { makeStyles } from '@material-ui/core/styles';
+import { formatDate } from '@fullcalendar/react';
+import { Box, Container, Card, Button } from '@material-ui/core';
 
+import Search from '../../components/Search';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import LoadingScreen from '../../components/LoadingScreen';
 import axios from '../../utils/axios';
 
-type Form = {
+export const useStyles = makeStyles({
+  table: {
+    width: '100%',
+    '& .MuiDataGrid-columnHeaderTitle, & .MuiDataGrid-cell': {
+      whiteSpace: 'normal',
+      lineHeight: '1.5!important',
+      maxHeight: 'fit-content!important',
+      minHeight: 'auto!important',
+      display: 'flex',
+      alignItems: 'center'
+    },
+
+    '& .MuiDataGrid-columnHeaderWrapper': {
+      maxHeight: 'none!important',
+      flex: '1 0 auto'
+    },
+
+    '&.MuiDataGrid-root .MuiDataGrid-cell:focus, &.MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within': {
+      outline: 'none'
+    }
+  }
+});
+
+export type Form = {
   id: string;
   title: string;
   description: string;
+  creator: string;
   created: string;
 };
+
+const minDateVal = '0001-01-01T00:00:00Z';
 
 export default function Forms() {
   const history = useHistory();
   const [forms, setForms] = useState<Array<Form>>([]);
   const [loading, setLoading] = useState(false);
+  const classes = useStyles();
+  const [filteredItems, setFilteredItems] = useState<Array<Form>>([]);
+
+  const getFormattedDate = (date: string) =>
+    formatDate(date, {
+      month: 'numeric',
+      year: 'numeric',
+      day: 'numeric',
+      timeZone: 'UTC'
+    });
+
+  const columns: GridColDef[] = [
+    { field: 'id', headerName: 'ID', flex: 0.4 },
+    { field: 'title', headerName: 'Title', flex: 1 },
+    { field: 'description', headerName: 'Description', flex: 1.5 },
+    { field: 'creator', headerName: 'Creator', flex: 1 },
+    {
+      field: 'created',
+      headerName: 'Created',
+      flex: 0.7,
+      type: 'date',
+      valueFormatter: (params: GridValueFormatterParams) =>
+        getFormattedDate(params?.value as string)
+    },
+    {
+      field: 'sent',
+      headerName: 'Last Sent',
+      flex: 0.7,
+      type: 'date',
+      valueFormatter: (params: GridValueFormatterParams) => {
+        if (params?.value === minDateVal) return '--';
+        return getFormattedDate(params?.value as string);
+      }
+    }
+  ];
 
   useEffect(() => {
     async function execute() {
@@ -60,6 +116,10 @@ export default function Forms() {
     },
     [history]
   );
+
+  function updateFilteredItems(values: Array<Form>) {
+    setFilteredItems(values as Array<Form>);
+  }
 
   return (
     <Page title="Forms | Sonar">
@@ -96,50 +156,45 @@ export default function Forms() {
             </Box>
           )}
           {!loading && (
-            <TableContainer sx={{ minWidth: 480 }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Id</TableCell>
-                    <TableCell>Title</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell>Created</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {forms.map((form) => (
-                    <TableRow
-                      key={form.id}
-                      hover
-                      onClick={() => handleClick(form.id)}
-                    >
-                      <TableCell>
-                        <Typography variant="body2">{form.id}</Typography>
-                      </TableCell>
-                      <TableCell>{form.title}</TableCell>
-                      <TableCell>{form.description}</TableCell>
-                      <TableCell>
-                        {new Date(form.created).toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+            <>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'baseline',
+                  paddingBottom: '1em',
+                  width: '100%'
+                }}
+              >
+                <Search
+                  originalData={forms}
+                  searchColumnNames={[
+                    'title',
+                    'description',
+                    'created',
+                    'creator',
+                    'sent'
+                  ]}
+                  filterData={updateFilteredItems}
+                />
+                <Button
+                  component={RouterLink}
+                  variant="contained"
+                  to="/dashboard/forms/create"
+                >
+                  Create Form
+                </Button>
+              </Box>
+              <DataGrid
+                onRowClick={(param) => handleClick(param.row.id)}
+                columns={columns}
+                rows={filteredItems}
+                className={classes.table}
+                disableColumnMenu
+                autoHeight
+              />
+            </>
           )}
-          <Button
-            component={RouterLink}
-            variant="contained"
-            to="/dashboard/forms/create"
-            sx={{ marginTop: '1rem' }}
-          >
-            Create Form
-          </Button>
         </Card>
       </Container>
     </Page>

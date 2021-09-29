@@ -21,6 +21,7 @@ import { FormApiResponse, OptionsInput } from '../../@types/form';
 import { DEFAULT_TEXT } from '../../constants/formConstants';
 import FormPreviewCard from '../../components/forms/FormPreviewCard';
 import axios from '../../utils/axios';
+import useAuth from '../../hooks/useAuth';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -41,6 +42,7 @@ function Form() {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [selected, setSelected] = useState(0);
   const [creating, setCreating] = useState(false);
+  const { user } = useAuth();
   const {
     inputs,
     setInputs,
@@ -83,6 +85,8 @@ function Form() {
       .post(`/forms`, {
         title,
         description,
+        creatorId: user.id,
+        creator: user.displayName ? user.displayName : user.email,
         inputs: inputs.map((item) => {
           if (item.type === 'text') {
             return item;
@@ -106,7 +110,7 @@ function Form() {
     }
 
     history.push(`/dashboard/forms/${res.data.string}`);
-  }, [title, description, inputs, history]);
+  }, [title, description, inputs, history, user]);
 
   return (
     <>

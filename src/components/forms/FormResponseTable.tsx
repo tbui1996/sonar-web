@@ -1,33 +1,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { DataGrid, GridColDef, GridRowData } from '@mui/x-data-grid';
-import { makeStyles } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
 import { useHistory, useParams } from 'react-router-dom';
 import { FormResponseTableProps, Input } from '../../@types/form';
-
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-    '& .MuiDataGrid-columnHeaderTitle, & .MuiDataGrid-cell': {
-      whiteSpace: 'normal',
-      lineHeight: '1.5!important',
-      maxHeight: 'fit-content!important',
-      minHeight: 'auto!important',
-      display: 'flex',
-      alignItems: 'center'
-    },
-
-    '& .MuiDataGrid-columnHeaderWrapper': {
-      maxHeight: 'none!important',
-      flex: '1 0 auto'
-    },
-
-    '& .MuiDataGrid-cell': {
-      overflowWrap: 'anywhere',
-      padding: '18px'
-    }
-  }
-});
+import { useStyles } from '../../views/forms/Root';
 
 export default function FormResponseTable({
   inputs,
