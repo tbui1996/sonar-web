@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
 import { Box, Typography, Button } from '@material-ui/core';
 import { PDFDownloadLink } from '@react-pdf/renderer';
+import axios from '../../utils/axios';
 import {
   FormApiResponse,
   FormApiSubmitResponse,
@@ -25,21 +25,18 @@ export default function Response() {
         return;
       }
 
-      const formRes = await axios.get<FormApiResponse>(
-        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/forms/${params.id}`
-      );
+      const [formData, formSubmitResponse] = await Promise.all([
+        axios.get<FormApiResponse>(`/forms/${params.id}`),
+        axios.get<FormApiSubmitResponse>(`/forms/${params.id}/response`)
+      ]);
 
-      setForm(formRes.data);
+      setForm(formData.data);
 
-      const submitRes = await axios.get<FormApiSubmitResponse>(
-        `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/forms/${params.id}/response`
-      );
-
-      if (!submitRes.data || !Array.isArray(submitRes.data)) {
+      if (!formSubmitResponse.data || !Array.isArray(formSubmitResponse.data)) {
         console.log('Expected forms to exist and be an array');
       }
 
-      const formsArrayBySubmissionId = submitRes.data.submissions.filter(
+      const formsArrayBySubmissionId = formSubmitResponse.data.submissions.filter(
         (item: InputSubmission[]) =>
           item[0].formSubmissionId === parseInt(params.formSubmissionId, 10)
       );
