@@ -127,7 +127,7 @@ export type FormPDFProps = {
   submissionId: string;
   form: FormApiResponse;
   submissionResponses: InputSubmission[];
-}
+};
 
 export type InputPDFProps = Input & {
   options?: Array<string>;

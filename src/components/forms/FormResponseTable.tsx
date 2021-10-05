@@ -44,7 +44,31 @@ export default function FormResponseTable({
     const rowsData = submits?.map((submitItem) => {
       const [firstSubmission] = submitItem;
       let row = { id: firstSubmission.formSubmissionId };
-      submitItem
+      const newArray = submitItem;
+      if (columns !== undefined) {
+        const begField = parseInt(columns[1]?.field, 10);
+        const lastField = parseInt(columns[columns.length - 1]?.field, 10);
+        const columnFields: number[] = [];
+        for (let i = begField; i <= lastField; i++) {
+          columnFields.push(i);
+        }
+        for (let i = 0; i < submitItem.length; i++) {
+          if (columnFields.includes(submitItem[i].inputId)) {
+            columnFields[columnFields.indexOf(submitItem[i].inputId)] = -1;
+          }
+        }
+        columnFields.forEach((v) => {
+          if (v !== -1) {
+            newArray.push({
+              id: firstSubmission.id,
+              formSubmissionId: firstSubmission.formSubmissionId,
+              inputId: v,
+              response: '-'
+            });
+          }
+        });
+      }
+      newArray
         .filter((input) => input.response)
         .sort((a, b) => a.inputId - b.inputId)
         .forEach((resp) => {
@@ -58,7 +82,7 @@ export default function FormResponseTable({
     });
 
     setRows(rowsData);
-  }, [submits]);
+  }, [columns, submits]);
 
   const handleClick = useCallback(
     (formSubmissionId: number) => {

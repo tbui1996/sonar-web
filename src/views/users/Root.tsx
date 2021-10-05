@@ -37,6 +37,7 @@ import { User, Users } from '../../@types/users';
 import { MIconButton } from '../../components/@material-extend';
 import mapUserDisplayName from '../../utils/mapUserDisplayName';
 import axios from '../../utils/axios';
+import dashIfNullOrEmpty from '../../utils/dashIfNullOrEmpty';
 
 const useStyles = makeStyles({
   paginationRoot: {
@@ -221,7 +222,7 @@ export default function UserRoles() {
                           </TableCell>
                           <TableCell>
                             <Typography variant="body1">
-                              {user.organization}
+                              {dashIfNullOrEmpty(user.organization)}
                             </Typography>
                           </TableCell>
                           <TableCell>
