@@ -15,6 +15,7 @@ import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import LoadingScreen from '../../components/LoadingScreen';
 import axios from '../../utils/axios';
+import dashIfNullOrEmpty from '../../utils/dashIfNullOrEmpty';
 
 export const useStyles = makeStyles({
   table: {
@@ -67,8 +68,21 @@ export default function Forms() {
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', flex: 0.4 },
     { field: 'title', headerName: 'Title', flex: 1 },
-    { field: 'description', headerName: 'Description', flex: 1.5 },
-    { field: 'creator', headerName: 'Creator', flex: 1 },
+    {
+      field: 'description',
+      headerName: 'Description',
+      flex: 1.5,
+      type: 'string',
+      valueFormatter: (params: GridValueFormatterParams) =>
+        dashIfNullOrEmpty(params?.value as string)
+    },
+    {
+      field: 'creator',
+      headerName: 'Creator',
+      flex: 1,
+      valueFormatter: (params: GridValueFormatterParams) =>
+        dashIfNullOrEmpty(params?.value as string)
+    },
     {
       field: 'created',
       headerName: 'Created',
@@ -83,7 +97,7 @@ export default function Forms() {
       flex: 0.7,
       type: 'date',
       valueFormatter: (params: GridValueFormatterParams) => {
-        if (params?.value === minDateVal) return '--';
+        if (params?.value === minDateVal) return '-';
         return getFormattedDate(params?.value as string);
       }
     }
