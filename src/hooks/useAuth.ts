@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 // redux
 import { RootState } from '../redux/store';
-import { login, logout } from '../redux/slices/authJwt';
+import { login, logout, token } from '../redux/slices/authJwt';
 
 export default function useAuth() {
   // JWT Auth
@@ -18,6 +18,8 @@ export default function useAuth() {
     login: () => dispatch(login()),
 
     logout: () => dispatch(logout()),
+
+    token: () => token(),
 
     updateProfile: (data: any) => {}
   };

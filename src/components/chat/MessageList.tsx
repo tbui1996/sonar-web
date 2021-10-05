@@ -61,7 +61,7 @@ export default function MessageList({ session }: MessageListProps) {
   useEffect(() => {
     // @ts-ignore
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [session]);
+  }, [auth, session]);
 
   const getAlignment = (message: Message) => {
     if (message.fileID !== null) {
@@ -163,11 +163,12 @@ export default function MessageList({ session }: MessageListProps) {
                               <Button
                                 variant="text"
                                 color="secondary"
-                                onClick={() =>
+                                onClick={async () => {
+                                  const token = await auth.token();
                                   window.open(
-                                    `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/cloud/file_download/${message.fileID}`
-                                  )
-                                }
+                                    `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/cloud/file_download/${message.fileID}?authorization=${token}`
+                                  );
+                                }}
                               >
                                 View
                               </Button>
