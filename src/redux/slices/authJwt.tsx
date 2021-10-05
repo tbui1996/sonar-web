@@ -97,13 +97,11 @@ async function getSession(): Promise<Session> {
   //   are expired and a valid refreshToken presented. So you can use this method to refresh the session if needed.
   const currentSession = await Auth.currentSession();
 
-  const session = {
+  return {
     idToken: currentSession.getIdToken().getJwtToken(),
     accessToken: currentSession.getAccessToken().getJwtToken(),
     refreshToken: currentSession.getRefreshToken().getToken()
   };
-
-  return session;
 }
 
 // ----------------------------------------------------------------------
@@ -161,6 +159,13 @@ export function logout() {
     setSession(null);
     await Auth.signOut();
   };
+}
+
+// ----------------------------------------------------------------------
+
+export async function token() {
+  const sess = await getSession();
+  return sess.accessToken;
 }
 
 // ----------------------------------------------------------------------
