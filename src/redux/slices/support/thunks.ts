@@ -181,14 +181,9 @@ export const getUsers = createAsyncThunk('support/getUsers', async () => {
 export const getInitialState = createAsyncThunk(
   'support/getInitialState',
   async () => {
-    const [
-      responseUsers,
-      responseActiveSessions,
-      responsePendingSessions
-    ] = await Promise.all([
+    const [responseUsers, responseActiveSessions] = await Promise.all([
       axios.get<Users>(`/users/user_list`),
-      axios.get<ChatSession[]>('/support/sessions'),
-      axios.get<ChatSession[]>('/support/pending_chat_sessions')
+      axios.get<ChatSession[]>('/support/sessions')
     ]);
 
     const users = mapUserDisplayName(responseUsers.data.users);
@@ -196,29 +191,26 @@ export const getInitialState = createAsyncThunk(
     const activeSessions = responseActiveSessions.data.map((item) => {
       const user = users.find((maybeUser) => maybeUser.sub === item.userID);
 
+      if (!item.internalUserID) {
+        return {
+          ...item,
+          status: ChatSessionStatus.UNHYDRATED,
+          pending: true,
+          chatOpen: true,
+          user
+        };
+      }
+
       return {
         ...item,
         status: ChatSessionStatus.UNHYDRATED,
-        user
-      };
-    });
-
-    const pendingSessions = responsePendingSessions.data.map((item) => {
-      const user = users.find((maybeUser) => maybeUser.sub === item.userID);
-
-      return {
-        ...item,
-        status: ChatSessionStatus.UNHYDRATED,
-        pending: true,
-        chatOpen: true,
         user
       };
     });
 
     return {
       users,
-      activeSessions,
-      pendingSessions
+      activeSessions
     };
   }
 );
