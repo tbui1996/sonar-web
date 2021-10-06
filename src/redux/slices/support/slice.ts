@@ -301,13 +301,6 @@ export default createSlice({
         state.loadingInitialState = false;
 
         const byId: Record<string, ChatSession> = {};
-
-        action.payload.pendingSessions.forEach((item) => {
-          byId[item.ID] = item;
-          item.messages = [];
-          item.status = ChatSessionStatus.UNHYDRATED;
-        });
-
         action.payload.activeSessions.forEach((item) => {
           byId[item.ID] = item;
           item.messages = [];
@@ -316,10 +309,7 @@ export default createSlice({
 
         state.sessions = {
           byId,
-          allIds: [
-            ...action.payload.pendingSessions.map((item) => item.ID),
-            ...action.payload.activeSessions.map((item) => item.ID)
-          ]
+          allIds: action.payload.activeSessions.map((item) => item.ID)
         };
 
         sortSessions(state);
