@@ -4,7 +4,6 @@ import { Link as RouterLink, useLocation, matchPath } from 'react-router-dom';
 import { experimentalStyled as styled } from '@material-ui/core/styles';
 import {
   Box,
-  Link,
   List,
   // Button,
   Drawer,
@@ -14,8 +13,6 @@ import {
 } from '@material-ui/core';
 // hooks
 import useAuth from '../../hooks/useAuth';
-// routes
-import { PATH_DASHBOARD } from '../../routes/paths';
 // components
 import Logo from '../../components/Logo';
 import MyAvatar from '../../components/MyAvatar';
@@ -158,23 +155,17 @@ export default function DashboardSidebar({
         </RouterLink>
       </Box>
 
-      <Link
-        underline="none"
-        component={RouterLink}
-        to={PATH_DASHBOARD.user.account}
-      >
-        <AccountStyle>
-          <MyAvatar />
-          <Box sx={{ ml: 2 }}>
-            <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-              {user.displayName}
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              {user.role}
-            </Typography>
-          </Box>
-        </AccountStyle>
-      </Link>
+      <AccountStyle>
+        <MyAvatar />
+        <Box sx={{ ml: 2 }}>
+          <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
+            {user.displayName}
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            {user.role}
+          </Typography>
+        </Box>
+      </AccountStyle>
 
       {MenuLinks.map((list) => (
         <List
