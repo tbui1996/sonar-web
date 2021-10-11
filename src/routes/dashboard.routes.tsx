@@ -83,7 +83,7 @@ const DashboardRoutes = {
     {
       exact: true,
       path: PATH_DASHBOARD.user.account,
-      component: lazy(() => import('../views/UserAccount'))
+      component: () => <Redirect to="/404" />
     },
     {
       exact: true,
