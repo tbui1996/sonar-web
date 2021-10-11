@@ -49,7 +49,10 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 function translateTimestamp(ts: number): string {
-  return new Date(ts * 1000).toLocaleTimeString();
+  return new Date(ts * 1000).toLocaleTimeString([], {
+    hour: 'numeric',
+    minute: '2-digit'
+  });
 }
 
 export default function MessageList({ session }: MessageListProps) {
