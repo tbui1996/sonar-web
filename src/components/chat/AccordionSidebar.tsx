@@ -6,6 +6,7 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import GroupIcon from '@material-ui/icons/Group';
+import PersonIcon from '@material-ui/icons/Person';
 import { makeStyles } from '@material-ui/core/styles';
 import { AccordionProps } from '../../@types/chat';
 
@@ -32,7 +33,15 @@ export default function AccordionSidebar({
           <Typography variant="overline">Patient Information</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography variant="body2">Nothing here yet</Typography>
+          {patientInfo && (
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <PersonIcon sx={{ marginRight: '10px' }} />
+              <Typography variant="body2">{patientInfo}</Typography>
+            </div>
+          )}
+          {!patientInfo && (
+            <Typography variant="body2">Nothing here yet</Typography>
+          )}
         </AccordionDetails>
       </Accordion>
       <Accordion square classes={{ root: classes.root }}>

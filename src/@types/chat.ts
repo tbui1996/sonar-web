@@ -67,7 +67,7 @@ export type SendMessage = {
 };
 
 export type AccordionProps = {
-  patientInfo?: undefined;
+  patientInfo?: string;
   providerName?: string | null;
 };
 

@@ -494,6 +494,7 @@ export default function Chat() {
               >
                 <AccordionSidebar
                   providerName={activeSession?.user?.displayName}
+                  patientInfo={activeSession?.topic}
                 />
               </div>
             </div>

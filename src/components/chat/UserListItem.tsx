@@ -29,8 +29,7 @@ const useStyles = makeStyles({
     fontWeight: 600,
     fontStyle: 'normal',
     fontSize: '14px',
-    lineHeight: '22px',
-    color: '#212B36'
+    lineHeight: '22px'
   },
   typographyMessage: {
     fontWeight: 500,
