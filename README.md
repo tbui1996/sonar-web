@@ -20,6 +20,7 @@ REACT_APP_COGNITO_USER_POOL_WEB_CLIENT_ID=<INTERNAL_USER_POOL_WEB_CLIENT_ID>
 REACT_APP_COGNITO_REDIRECT_SIGNIN=http://localhost:8080/dashboard/app
 REACT_APP_COGNITO_REDIRECT_SIGNOUT=http://localhost:8080
 REACT_APP_COGNITO_DOMAIN=sonar-<NAME>-internals-web-app.auth.us-east-2.amazoncognito.com
+REACT_APP_DOPPLER_DASHBOARD_URL=https://doppler.circulo.dev/apps/Circulator-Latest
 ```
 
 - `BASE_API_DOMAIN`: Used to establish endpoint for API calls, e.g. `dev-you.circulo.dev`
@@ -30,6 +31,7 @@ REACT_APP_COGNITO_DOMAIN=sonar-<NAME>-internals-web-app.auth.us-east-2.amazoncog
   - NOTE: redirect signin URL must match the callback URL set on your `internals` user pool client
 - `COGNITO_REDIRECT_SIGNOUT`: The redirect URL on sign out, e.g. `http://localhost:8080`
 - `COGNITO_DOMAIN`: The domain of your Cognito `internals` User Pool App Integration, e.g. `sonar-dev-you-internals-web-app.auth.us-east-2.amazoncognito.com`
+- `DOPPLER_DASHBOARD_URL`: This URL will point to our latest version of the UI in our test Retool environment. Replace what's after apps/ with your own app if you create one.
 
 3. Start the application
 
