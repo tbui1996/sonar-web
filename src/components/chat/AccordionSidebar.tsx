@@ -8,6 +8,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
 import { makeStyles } from '@material-ui/core/styles';
+import { InsertDriveFile } from '@material-ui/icons';
 import { AccordionProps } from '../../@types/chat';
 
 const useStyles = makeStyles({
@@ -21,6 +22,7 @@ export default function AccordionSidebar({
   providerName
 }: AccordionProps) {
   const classes = useStyles();
+  const url = process.env.REACT_APP_DOPPLER_DASHBOARD_URL;
 
   return (
     <>
@@ -73,7 +75,14 @@ export default function AccordionSidebar({
           <Typography variant="overline">Documents</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography variant="body2">Nothing here yet</Typography>
+          <Typography variant="body2">
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <InsertDriveFile sx={{ marginRight: '10px' }} />
+              <a href={url} target="_blank" rel="noreferrer">
+                View files on Doppler Dashboard
+              </a>
+            </div>
+          </Typography>
         </AccordionDetails>
       </Accordion>
     </>

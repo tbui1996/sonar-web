@@ -15,19 +15,19 @@ workflow:
         ENVIRONMENT_NAME: development
         ENVIRONMENT_URL: https://circulo.dev
         TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/develop
-        RUN_ALL: "true"
+        RUN_ALL: 'true'
     - if: '$CI_COMMIT_BRANCH == "test"'
       variables:
         ENVIRONMENT_NAME: testing
         ENVIRONMENT_URL: https://test.circulosonar.com
         TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/test
-        RUN_ALL: "true"
+        RUN_ALL: 'true'
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
         ENVIRONMENT_NAME: production
         ENVIRONMENT_URL: https://circulosonar.com
         TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/production
-        RUN_ALL: "true"
+        RUN_ALL: 'true'
 
 # Base States
 stages:
@@ -43,7 +43,7 @@ init_tf:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
-        - "**/*.tf"
+        - '**/*.tf'
     - if: '$RUN_ALL == "true"'
       when: always
   image:
@@ -55,7 +55,7 @@ init_tf:
     name: $ENVIRONMENT_NAME
     action: prepare
   cache:
-    key: "${TF_ROOT}"
+    key: '${TF_ROOT}'
     paths:
       - ${TF_ROOT}/.terraform/
       - ${TF_ROOT}/.terraform.lock.hcl
@@ -73,12 +73,13 @@ build_web:
     - echo REACT_APP_COGNITO_REDIRECT_SIGNIN=${COGNITO_REDIRECT_SIGNIN} >> .env
     - echo REACT_APP_COGNITO_REDIRECT_SIGNOUT=${COGNITO_REDIRECT_SIGNOUT} >> .env
     - echo REACT_APP_COGNITO_DOMAIN=${COGNITO_DOMAIN} >> .env
+    - echo REACT_APP_DOPPLER_DASHBOARD_URL=${DOPPLER_DASHBOARD_URL} >> .env
 
     # Build Application
     - yarn install --prefer-offline
     - yarn build
   cache:
-    key: "node_modules"
+    key: 'node_modules'
     paths:
       - node_modules
   environment:
@@ -90,12 +91,12 @@ build_web:
 
 plan_terraform:
   stage: plan
-  dependencies: 
+  dependencies:
     - build_web
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
-        - "**/*.tf"
+        - '**/*.tf'
     - if: '$RUN_ALL == "true"'
       when: always
   image:
@@ -105,7 +106,7 @@ plan_terraform:
     - gitlab-terraform plan
     - gitlab-terraform plan-json
   cache:
-    key: "${TF_ROOT}"
+    key: '${TF_ROOT}'
     paths:
       - ${TF_ROOT}/.terraform/
       - ${TF_ROOT}/.terraform.lock.hcl
