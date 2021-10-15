@@ -31,7 +31,7 @@ export default function GeneralApp() {
   }, []);
 
   return (
-    <Page title="Dashboard: App | Minimal-UI">
+    <Page title="Dashboard | Sonar">
       <Container maxWidth="xl">
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>
