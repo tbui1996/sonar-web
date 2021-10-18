@@ -24,7 +24,6 @@ export const postUploadFile = createAsyncThunk(
     const state = getState() as RootState;
 
     const { activeSessionID, sessions } = state.support;
-    const { user } = state.authJwt;
 
     if (!activeSessionID) {
       throw new Error(
@@ -44,7 +43,7 @@ export const postUploadFile = createAsyncThunk(
     formData.append('file-upload', file, file.name);
 
     const response = await axios.post<FileUploadResponse>(
-      `/cloud/file_upload?username=${user.id}&chatId=${activeSession.ID}`,
+      `/cloud/file_upload?&chatId=${activeSession.ID}`,
       formData,
       {
         headers: {
