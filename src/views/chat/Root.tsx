@@ -409,14 +409,18 @@ export default function Chat() {
           <MyAvatar sx={{ margin: '.8em', width: '48px', height: '48px' }} />
           <div
             style={{
+              marginTop: '.8em',
               display: 'flex',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              flexDirection: 'column',
+              flexGrow: 1
             }}
           >
             <TextField
-              placeholder="Search Contact"
+              placeholder="Search..."
               disabled
               size="small"
+              sx={{ paddingLeft: '16px', paddingRight: '16px' }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -425,15 +429,6 @@ export default function Chat() {
                 )
               }}
             />
-          </div>
-          <div
-            style={{
-              marginTop: '.8em',
-              display: 'flex',
-              flexDirection: 'column',
-              flexGrow: 1
-            }}
-          >
             <List sx={{ flexGrow: 1 }}>{getChatSessionsView()}</List>
             <Pagination
               classes={{ ul: classes.justify }}
