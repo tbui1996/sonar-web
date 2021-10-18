@@ -442,6 +442,7 @@ export default function Chat() {
               page={page + 1}
               shape="rounded"
               size="small"
+              sx={{ paddingBottom: '12px' }}
             />
           </div>
         </Grid>
