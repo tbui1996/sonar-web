@@ -155,7 +155,7 @@ export default function View() {
       </div>
       <TabPanel value={value} index={0}>
         <Container maxWidth="xl" className={classes.flex}>
-          <FormPreviewCard form={form} isOliveHelps={false} />
+          <FormPreviewCard form={form} isOliveHelps={false} isEditable />
           <Button
             disabled={sending}
             onClick={handleSendForm}
