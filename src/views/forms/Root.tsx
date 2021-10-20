@@ -2,12 +2,21 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import {
   DataGrid,
+  GridCellParams,
   GridColDef,
   GridValueFormatterParams
 } from '@mui/x-data-grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { formatDate } from '@fullcalendar/react';
-import { Box, Container, Card, Button } from '@material-ui/core';
+import {
+  Box,
+  Container,
+  Card,
+  Button,
+  Drawer,
+  IconButton
+} from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
 
 import Search from '../../components/Search';
 import Page from '../../components/Page';
@@ -16,7 +25,10 @@ import { PATH_DASHBOARD } from '../../routes/paths';
 import LoadingScreen from '../../components/LoadingScreen';
 import axios from '../../utils/axios';
 import dashIfNullOrEmpty from '../../utils/dashIfNullOrEmpty';
+import { Form, FormToEditProps } from '../../@types/form';
+import FormEdit from './Edit';
 
+const DRAWER_WIDTH = 400;
 export const useStyles = makeStyles({
   table: {
     width: '100%',
@@ -26,7 +38,8 @@ export const useStyles = makeStyles({
       maxHeight: 'fit-content!important',
       minHeight: 'auto!important',
       display: 'flex',
-      alignItems: 'center'
+      alignItems: 'center',
+      cursor: 'pointer'
     },
 
     '& .MuiDataGrid-columnHeaderWrapper': {
@@ -34,19 +47,11 @@ export const useStyles = makeStyles({
       flex: '1 0 auto'
     },
 
-    '&.MuiDataGrid-root .MuiDataGrid-cell:focus, &.MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within': {
+    '&.MuiDataGrid-root .MuiDataGrid-cell:focus, &.MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within, &.MuiDataGrid-root .MuiDataGrid-cell--withRenderer': {
       outline: 'none'
     }
   }
 });
-
-export type Form = {
-  id: string;
-  title: string;
-  description: string;
-  creator: string;
-  created: string;
-};
 
 const minDateVal = '0001-01-01T00:00:00Z';
 
@@ -56,6 +61,8 @@ export default function Forms() {
   const [loading, setLoading] = useState(false);
   const classes = useStyles();
   const [filteredItems, setFilteredItems] = useState<Array<Form>>([]);
+  const [open, setOpen] = useState(false);
+  const [formToEdit, setFormToEdit] = useState<FormToEditProps | null>();
 
   const getFormattedDate = (date: string) =>
     formatDate(date, {
@@ -100,8 +107,42 @@ export default function Forms() {
         if (params?.value === minDateVal) return '-';
         return getFormattedDate(params?.value as string);
       }
+    },
+    {
+      field: 'edit',
+      headerName: 'Edit',
+      flex: 0.4,
+      type: 'date',
+      sortable: false,
+      renderCell: () => (
+        <IconButton color="primary">
+          <EditIcon />
+        </IconButton>
+      )
     }
   ];
+
+  function handleTableDisplay(
+    id: string,
+    title?: string,
+    description?: string
+  ) {
+    const index = forms.findIndex((form) => form.id === id);
+    if (index < 0) {
+      return;
+    }
+
+    if (title && (description || description === '')) {
+      const editedRow = forms[index];
+      setForms([
+        ...forms.slice(0, index),
+        { ...editedRow, title, description },
+        ...forms.slice(index + 1)
+      ]);
+    } else {
+      setForms([...forms.slice(0, index), ...forms.slice(index + 1)]);
+    }
+  }
 
   useEffect(() => {
     async function execute() {
@@ -125,10 +166,19 @@ export default function Forms() {
   }, []);
 
   const handleClick = useCallback(
-    (formId: string) => {
-      history.push(`/dashboard/forms/${formId}`);
+    (param: GridCellParams) => {
+      if (param?.colDef?.headerName === 'Edit') {
+        setFormToEdit({
+          id: param.row.id,
+          title: param.row.title,
+          description: param.row.description
+        });
+        setOpen(!open);
+      } else {
+        history.push(`/dashboard/forms/${param.row.id}`);
+      }
     },
-    [history]
+    [history, open]
   );
 
   function updateFilteredItems(values: Array<Form>) {
@@ -199,8 +249,24 @@ export default function Forms() {
                   Create Form
                 </Button>
               </Box>
+              {formToEdit && (
+                <Drawer
+                  anchor="right"
+                  open={open}
+                  PaperProps={{
+                    sx: { width: DRAWER_WIDTH }
+                  }}
+                >
+                  <FormEdit
+                    data={formToEdit}
+                    updateData={setFormToEdit}
+                    setOpen={setOpen}
+                    handleTableDisplay={handleTableDisplay}
+                  />
+                </Drawer>
+              )}
               <DataGrid
-                onRowClick={(param) => handleClick(param.row.id)}
+                onCellClick={handleClick}
                 columns={columns}
                 rows={filteredItems}
                 className={classes.table}

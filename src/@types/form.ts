@@ -40,6 +40,7 @@ export type Form = {
   id: string;
   title: string;
   description: string;
+  creator: string;
   created: string;
 };
 
@@ -85,6 +86,7 @@ export type FormPreviewProps = {
   isOliveHelps: boolean;
   isFormPreview?: boolean;
   submissionResponses?: InputSubmission[];
+  isEditable?: boolean;
 };
 
 export type FormResponseTableProps = {
@@ -141,4 +143,21 @@ export type RadioFormPDFProps = {
 export type CheckboxFormPDFProps = {
   label: string;
   response?: string;
+};
+
+export type FormToEditProps = {
+  id: string;
+  title: string;
+  description: string;
+};
+
+export type FormEditProps = {
+  data: FormToEditProps;
+  setOpen: (val: boolean) => void;
+  handleTableDisplay?: (
+    id: string,
+    title?: string,
+    description?: string
+  ) => void;
+  updateData: (val: FormToEditProps) => void;
 };
