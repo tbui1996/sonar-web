@@ -60,7 +60,6 @@ export default function MessageList({ session }: MessageListProps) {
   const messagesEndRef = useRef(null);
   const auth = useAuth();
   const internalUserID = auth.user.id;
-
   useEffect(() => {
     // @ts-ignore
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -127,10 +126,12 @@ export default function MessageList({ session }: MessageListProps) {
                 direction="column"
                 flexWrap="nowrap"
                 alignItems={getAlignment(message)}
+                paddingTop={index === 0 ? '0' : '40px'}
               >
                 {message.fileID === null && (
                   <Grid item xs={12}>
                     <ListItemText
+                      sx={{ paddingBottom: '8px' }}
                       secondary={
                         message.senderID === internalUserID
                           ? translateTimestamp(message.createdTimestamp)
