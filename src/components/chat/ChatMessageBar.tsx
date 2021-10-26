@@ -6,7 +6,6 @@ import {
   LinearProgress,
   Tooltip
 } from '@material-ui/core';
-import { InsertEmoticon } from '@material-ui/icons';
 import AttachFileOutlinedIcon from '@material-ui/icons/AttachFileOutlined';
 import SendIcon from '@material-ui/icons/Send';
 import { ChatMessageProps } from '../../@types/chat';
@@ -25,7 +24,7 @@ export default function ChatMessageBar({
     <div>
       {messageSending && <LinearProgress />}
       <Input
-        sx={{ padding: '10px' }}
+        sx={{ paddingLeft: '16px', paddingTop: '15px', paddingBottom: '17px' }}
         fullWidth
         value={messageText}
         id="message-input"
@@ -35,11 +34,6 @@ export default function ChatMessageBar({
         onChange={onChangeText}
         type="text"
         disabled={disabled || file !== undefined}
-        startAdornment={
-          <InputAdornment>
-            <InsertEmoticon sx={{ marginRight: '10px' }} />
-          </InputAdornment>
-        }
         endAdornment={
           <InputAdornment position="end">
             {file !== undefined && (
