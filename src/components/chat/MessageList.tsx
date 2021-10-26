@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: 'center'
     },
     gridRootItemFile: {
-      width: '80%'
+      width: '100%'
     }
   })
 );
@@ -154,18 +154,26 @@ export default function MessageList({ session }: MessageListProps) {
                           {message.fileID !== null && (
                             <>
                               <InfoRoundedIcon
-                                sx={{ color: '#1890FF', marginRight: '2%' }}
+                                sx={{
+                                  color: '#1890FF',
+                                  marginRight: '14px',
+                                  marginLeft: '18px'
+                                }}
                               />{' '}
                               {`${translateTimestamp(
                                 message.createdTimestamp
-                              )}:`}
-                              <strong
-                                style={{ flexGrow: 1, textAlign: 'center' }}
+                              )} `}
+                              <text
+                                style={{
+                                  flexGrow: 1,
+                                  textAlign: 'left',
+                                  paddingLeft: '4px'
+                                }}
                               >
                                 {getFileMessage(message)}
-                              </strong>
+                              </text>
                               <Button
-                                variant="text"
+                                variant="outlined"
                                 color="secondary"
                                 onClick={async () => {
                                   const token = await auth.token();
