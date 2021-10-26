@@ -121,18 +121,20 @@ export default function EditUser({
         <TextField
           sx={{ flexGrow: 1, marginRight: '1em' }}
           id="firstName"
-          label="First Name"
+          label="First name"
           variant="outlined"
           value={user?.firstName}
           disabled
+          InputLabelProps={{ shrink: true }}
         />
         <TextField
           sx={{ flexGrow: 1, marginLeft: '1em' }}
           id="lastName"
-          label="Last Name"
+          label="Last name"
           variant="outlined"
           value={user?.lastName}
           disabled
+          InputLabelProps={{ shrink: true }}
         />
       </div>
       <div
@@ -156,7 +158,7 @@ export default function EditUser({
             }
             label="Organization"
           >
-            <MenuItem value="none">No Organization</MenuItem>
+            <MenuItem value="none">No organization</MenuItem>
             <MenuItem value="stationmd">StationMD</MenuItem>
             <MenuItem value="reddoor">Reddoor</MenuItem>
             <MenuItem value="circulo">Circulo</MenuItem>
@@ -191,7 +193,7 @@ export default function EditUser({
             label="Role"
           >
             <MenuItem value="no_group" disabled>
-              No Role
+              No role
             </MenuItem>
             <MenuItem value="externals_supervisor">Supervisor</MenuItem>
           </Select>
@@ -215,11 +217,11 @@ export default function EditUser({
           <Button
             variant="contained"
             color="primary"
-            sx={{ marginRight: '.25em', flexGrow: 1 }}
+            sx={{ marginRight: '.25em', flexGrow: 1, textTransform: 'none' }}
             onClick={handleSaveChanges}
             disabled={updating}
           >
-            Save Changes
+            Save changes
           </Button>
           <Button
             sx={{ marginLeft: '.25em', flexGrow: 1 }}
@@ -239,13 +241,13 @@ export default function EditUser({
           }}
         >
           <Button
-            sx={{ marginLeft: '.25em', width: '50%' }}
+            sx={{ marginLeft: '.25em', width: '50%', textTransform: 'none' }}
             variant="outlined"
             color="primary"
             onClick={() => setOpenConfirm(true)}
             disabled={updating}
           >
-            Disable User
+            Disable user
           </Button>
         </div>
       </div>
