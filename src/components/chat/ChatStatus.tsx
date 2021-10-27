@@ -55,7 +55,7 @@ export default function ChatStatus({ session, callback }: ChatStatusProps) {
         borderBottom: '1px solid rgba(145, 158, 171, 0.24)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'right'
       }}
     >
       <Accordion
@@ -65,7 +65,8 @@ export default function ChatStatus({ session, callback }: ChatStatusProps) {
         onChange={() => setExpanded((prev) => !prev)}
       >
         <AccordionSummary
-          expandIcon={<ExpandMoreIcon sx={{ marginRight: '10px' }} />}
+          sx={{ marginLeft: '20px', paddingRight: '34.41px' }}
+          expandIcon={<ExpandMoreIcon />}
           classes={{ content: classes.content }}
         >
           <Typography
