@@ -63,7 +63,7 @@ init_tf:
 build_web:
   stage: build
   image:
-    name: node:latest
+    name: node:16.13.0
   script:
     # Construct .env file
     - echo REACT_APP_BASE_API_DOMAIN=${BASE_API_DOMAIN} >> .env

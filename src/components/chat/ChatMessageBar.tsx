@@ -20,6 +20,16 @@ export default function ChatMessageBar({
   onDeleteFile,
   file
 }: ChatMessageProps) {
+  const ENTER_KEY = 'Enter';
+  function handleKeypress(e: React.KeyboardEvent) {
+    if (e.key === ENTER_KEY && e.shiftKey) {
+      // This allows user to add an extra line
+    } else if (e.key === ENTER_KEY) {
+      e.preventDefault();
+      onClickSend();
+    }
+  }
+
   return (
     <div>
       {messageSending && <LinearProgress />}
@@ -32,6 +42,8 @@ export default function ChatMessageBar({
           disabled ? "Can't type message in closed chat" : 'Type a message'
         }
         onChange={onChangeText}
+        onKeyDown={handleKeypress}
+        multiline
         type="text"
         disabled={disabled || file !== undefined}
         endAdornment={
