@@ -186,7 +186,16 @@ export default function MessageList({ session }: MessageListProps) {
                               </Button>
                             </>
                           )}
-                          {message.fileID === null && <>{message.message}</>}
+                          {message.fileID === null && (
+                            <div
+                              style={{
+                                whiteSpace: 'pre-line',
+                                overflowWrap: 'break-word'
+                              }}
+                            >
+                              {message.message}
+                            </div>
+                          )}
                         </Typography>
                       }
                       sx={{ padding: '10px', color: '#242832' }}
