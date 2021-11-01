@@ -66,9 +66,9 @@ const SECONDARY = {
 const INFO = {
   lighter: '#D0F2FF',
   light: '#74CAFF',
-  main: '#1890FF',
-  dark: '#0C53B7',
-  darker: '#04297A'
+  main: '#242832',
+  dark: '#474F63',
+  darker: '#000000'
 };
 const SUCCESS = {
   lighter: '#E9FCD4',

@@ -216,16 +216,27 @@ export default function EditUser({
         >
           <Button
             variant="contained"
-            color="primary"
-            sx={{ marginRight: '.25em', flexGrow: 1, textTransform: 'none' }}
+            color="info"
+            sx={{
+              marginRight: '.25em',
+              width: '127px',
+              height: '36px',
+              textTransform: 'none'
+            }}
             onClick={handleSaveChanges}
             disabled={updating}
           >
             Save changes
           </Button>
           <Button
-            sx={{ marginLeft: '.25em', flexGrow: 1 }}
+            sx={{
+              marginLeft: '10px',
+              textTransform: 'none',
+              height: '36px',
+              width: '127px'
+            }}
             variant="outlined"
+            color="info"
             onClick={() => handleClick(undefined)}
             disabled={updating}
           >
@@ -241,9 +252,14 @@ export default function EditUser({
           }}
         >
           <Button
-            sx={{ marginLeft: '.25em', width: '50%', textTransform: 'none' }}
-            variant="outlined"
-            color="primary"
+            sx={{
+              marginLeft: '.25em',
+              width: '127px',
+              height: '36px',
+              textTransform: 'none'
+            }}
+            variant="contained"
+            color="inherit"
             onClick={() => setOpenConfirm(true)}
             disabled={updating}
           >
