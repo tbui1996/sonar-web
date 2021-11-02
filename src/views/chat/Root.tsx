@@ -8,14 +8,15 @@ import {
   Pagination,
   TextField
 } from '@material-ui/core';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket from 'react-use-websocket';
 import SearchIcon from '@material-ui/icons/Search';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 
 // Local
 import Page from '../../components/Page';
+import MessageList from '../../components/chat/MessageList';
 import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import LoadingScreen from '../../components/LoadingScreen';
@@ -26,12 +27,9 @@ import {
 } from '../../@types/support';
 import MyAvatar from '../../components/MyAvatar';
 import AccordionSidebar from '../../components/chat/AccordionSidebar';
-import MessageList from '../../components/chat/MessageList';
 import UserListItem from '../../components/chat/UserListItem';
 import ChatStatus from '../../components/chat/ChatStatus';
 import ChatHeader from '../../components/chat/ChatHeader';
-import ChatMessageBar from '../../components/chat/ChatMessageBar';
-
 // hooks
 import useActiveSession from '../../hooks/useActiveSession';
 
@@ -43,7 +41,6 @@ import {
   getSessionMessages,
   postAssignSessionToUser,
   postSwitchSessionOpen,
-  postUploadFile,
   activateSession,
   addPendingSession,
   readMessages,
@@ -51,12 +48,12 @@ import {
 } from '../../redux/slices/support';
 import {
   isChatSessionDTO,
-  isFileUploadResponse,
   isMessage,
   isSocketMessage
 } from '../../utils/type-guards';
 import AlertSnackbar from '../../components/AlertSnackbar';
 import { AlertState } from '../../@types/alert';
+import ChatMessageBar from '../../components/chat/ChatMessageBar';
 
 const useStyles = makeStyles({
   justify: {
@@ -66,11 +63,12 @@ const useStyles = makeStyles({
 
 const rowsPerPage = 6;
 // const INTERVAL = 120000;
+export const socketUrl = `wss://ws-sonar-internal.${
+  process.env.REACT_APP_BASE_API_DOMAIN
+}?authorization=${localStorage.getItem('accessToken')}`;
 
 export default function Chat() {
   const classes = useStyles();
-  const [messageTextInput, setMessageTextInput] = useState<string>('');
-  const [file, setFile] = useState<File>();
   const [page, setPage] = useState(0);
   const [alertState, setAlertState] = useState<AlertState>({
     open: false,
@@ -81,17 +79,13 @@ export default function Chat() {
   // Redux
   const dispatch = useAppDispatch();
   const { user } = useSelector((state: RootState) => state.authJwt);
-  const { loadingInitialState, sessions, messageSending } = useSelector(
+  const { loadingInitialState, messageSending, sessions } = useSelector(
     (state: RootState) => state.support
   );
 
   const { activeSession } = useActiveSession();
 
-  const socketUrl = `wss://ws-sonar-internal.${
-    process.env.REACT_APP_BASE_API_DOMAIN
-  }?authorization=${localStorage.getItem('accessToken')}`;
-
-  const { sendJsonMessage, readyState } = useWebSocket(socketUrl, {
+  const { sendJsonMessage } = useWebSocket(socketUrl, {
     onMessage: async (event) => {
       if (loadingInitialState) {
         console.log(`Received chat message while initial state was loading.`);
@@ -169,7 +163,6 @@ export default function Chat() {
 
   async function addMessageFromSocket(message: Message) {
     const session = sessions.byId[message.sessionID];
-
     if (!session) {
       // if we don't have the session loaded, ignore the message
       // it will be hydrated the next time the user views the chat
@@ -233,138 +226,6 @@ export default function Chat() {
     if (session.status === ChatSessionStatus.UNHYDRATED) {
       dispatch(getSessionMessages(id));
     }
-  }
-
-  function onChangeMessage(e: ChangeEvent<HTMLInputElement>) {
-    setMessageTextInput(e.currentTarget.value);
-  }
-
-  function onChangeFile(event: ChangeEvent<HTMLInputElement>) {
-    const { files } = event.target;
-
-    if (files === null) {
-      return;
-    }
-
-    if (files.length <= 0) {
-      return;
-    }
-
-    const file = files[0];
-    setFile(file);
-    setMessageTextInput(file.name);
-  }
-
-  function onDeleteFile() {
-    setFile(undefined);
-    setMessageTextInput('');
-  }
-
-  async function onClickSend() {
-    if (!activeSession?.ID) {
-      setAlertState({
-        ...alertState,
-        open: true,
-        message: 'Unable to send file, the chat session is not active'
-      });
-      console.log(`expected a session to be active when sending a file.`);
-      return;
-    }
-
-    if (file === undefined) {
-      onSendMessage(null);
-      return;
-    }
-
-    let response;
-    try {
-      response = await dispatch(postUploadFile(file));
-    } catch (e) {
-      setAlertState({
-        ...alertState,
-        open: true,
-        message: 'Unable to upload file'
-      });
-      console.log(e);
-      return;
-    }
-
-    if (!isFileUploadResponse(response?.payload)) {
-      setAlertState({
-        ...alertState,
-        open: true,
-        message: 'Unable to upload file'
-      });
-      console.log(
-        'Response is not a file upload response: ',
-        response?.payload
-      );
-      return;
-    }
-
-    onSendMessage(response.payload.fileID);
-  }
-
-  async function onSendMessage(fileID: string | null) {
-    if (!activeSession?.ID) {
-      setAlertState({
-        ...alertState,
-        open: true,
-        message: 'You have not selected a chat'
-      });
-      return;
-    }
-
-    if (messageTextInput === '' && fileID === null) {
-      setAlertState({
-        ...alertState,
-        open: true,
-        message: 'Cannot send a message with no content'
-      });
-      return;
-    }
-
-    // Optimistic Response add message
-    dispatch(
-      addMessage({
-        id: `unknown-${Date.now() / 1000}`,
-        sessionID: activeSession.ID,
-        senderID: user.id,
-        message: messageTextInput,
-        createdTimestamp: Date.now() / 1000,
-        fileID
-      })
-    );
-
-    dispatch(readMessages());
-
-    // Send through websocket
-    sendJsonMessage({
-      action: 'support',
-      payload: {
-        type: 'chat',
-        message: JSON.stringify({
-          session: activeSession.ID,
-          sender: user.id,
-          message: messageTextInput,
-          file: fileID
-        })
-      }
-    });
-
-    sendJsonMessage({
-      action: 'support',
-      payload: {
-        type: 'read_receipt',
-        message: JSON.stringify({
-          sessionID: activeSession.ID,
-          userID: user.id
-        })
-      }
-    });
-
-    setMessageTextInput('');
-    setFile(undefined);
   }
 
   function getChatSessionsView() {
@@ -451,22 +312,19 @@ export default function Chat() {
               }}
             >
               <ChatHeader session={activeSession} />
-              <MessageList session={activeSession} />
-              <ChatMessageBar
-                onChangeText={onChangeMessage}
-                messageText={messageTextInput}
-                disabled={
-                  readyState !== ReadyState.OPEN ||
-                  !user ||
-                  !activeSession?.chatOpen ||
-                  messageSending
-                }
-                messageSending={messageSending}
-                file={file}
-                onChangeFile={onChangeFile}
-                onClickSend={onClickSend}
-                onDeleteFile={onDeleteFile}
-              />
+              {activeSession?.ID && activeSession?.chatOpen && (
+                <>
+                  <MessageList session={activeSession} />
+                  <ChatMessageBar
+                    activeSessionIsOpen={activeSession?.chatOpen}
+                    activeSession={activeSession}
+                    loadingInitialState={loadingInitialState}
+                    messageSending={messageSending}
+                    alertState={alertState}
+                    setAlertState={setAlertState}
+                  />
+                </>
+              )}
             </div>
           </Grid>
           <Grid container item xs={3}>
