@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------------
 import { ChangeEvent } from 'react';
 import { ChatSession } from './support';
+import { AlertState } from './alert';
 
 export type Contact = {
   id: string;
@@ -101,4 +102,21 @@ export type WebsocketMessage = {
   message: string;
   session: string;
   file: string | null;
+};
+
+export type ChatMessageBarProps = {
+  activeSessionIsOpen: boolean;
+  activeSession: ChatSession;
+  loadingInitialState: boolean;
+  messageSending: boolean;
+  alertState: AlertState;
+  setAlertState: (value: AlertState) => void;
+};
+
+export type MessageInput = {
+  [key: string]: string;
+};
+
+export type FileInput = {
+  [key: string]: File | undefined;
 };
