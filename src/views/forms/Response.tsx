@@ -16,7 +16,6 @@ export default function Response() {
   const [form, setForm] = useState<FormApiResponse | undefined>();
   const [responses, setResponses] = useState<Array<InputSubmission>>([]);
   const [loading, setLoading] = useState(false);
-
   const params = useParams<{ id: string; formSubmissionId: string }>();
 
   useEffect(() => {
@@ -81,6 +80,32 @@ export default function Response() {
     );
   }
 
+  if (!params?.id) {
+    return <></>;
+  }
+
+  if (loading) {
+    return (
+      <Box
+        width="100%"
+        display="flex"
+        padding="3rem"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <LoadingScreen />
+      </Box>
+    );
+  }
+
+  if (!form) {
+    return (
+      <Box>
+        <Typography>No Form</Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box
       sx={{
@@ -95,21 +120,27 @@ export default function Response() {
         }}
       >
         <Typography variant="h5">{`Response - Sumbmission ID ${params.formSubmissionId}`}</Typography>
-        <Button variant="contained" style={{ color: 'white' }}>
-          <PDFDownloadLink
-            style={{ color: 'white', textDecoration: 'none' }}
-            document={
-              <FormPDF
-                submissionId={params.formSubmissionId}
-                form={form}
-                submissionResponses={responses}
-              />
-            }
-            fileName={`Response-submission-id-${params.formSubmissionId}.pdf`}
-          >
-            {({ loading }) => (loading ? 'Loading...' : 'Download')}
-          </PDFDownloadLink>
-        </Button>
+        <Box
+          sx={{
+            display: 'flex'
+          }}
+        >
+          <Button variant="contained" style={{ color: 'white' }}>
+            <PDFDownloadLink
+              style={{ color: 'white', textDecoration: 'none' }}
+              document={
+                <FormPDF
+                  submissionId={params.formSubmissionId}
+                  form={form}
+                  submissionResponses={responses}
+                />
+              }
+              fileName={`Response-submission-id-${params.formSubmissionId}.pdf`}
+            >
+              {({ loading }) => (loading ? 'Loading...' : 'Download')}
+            </PDFDownloadLink>
+          </Button>
+        </Box>
       </Box>
       <FormPreviewCard
         form={form}
