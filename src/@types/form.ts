@@ -40,8 +40,10 @@ export type Form = {
   id: string;
   title: string;
   description: string;
-  creator: string;
   created: string;
+  creator?: string;
+  creatorId?: string;
+  dateClosed?: string;
 };
 
 export type FormApiResponse = {

@@ -56,13 +56,23 @@ export default function View() {
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [value, setValue] = useState(0);
+  const [closed, setClosed] = useState(false);
   const classes = useStyles();
+  const params = useParams<{ id: string }>();
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
   };
 
-  const params = useParams<{ id: string }>();
+  const handleCloseForm = useCallback(async () => {
+    if (!params.id) {
+      return;
+    }
+    await axios.put(`/forms/${params.id}/close`).catch((e) => {
+      console.log(e);
+    });
+    setClosed(true);
+  }, [params]);
 
   useEffect(() => {
     async function execute() {
@@ -157,7 +167,7 @@ export default function View() {
         <Container maxWidth="xl" className={classes.flex}>
           <FormPreviewCard form={form} isOliveHelps={false} isEditable />
           <Button
-            disabled={sending}
+            disabled={sending || closed || form?.Form.dateClosed !== null}
             onClick={handleSendForm}
             variant="contained"
             className={classes.width}
@@ -165,6 +175,14 @@ export default function View() {
             Send
           </Button>
           <OliveHelpsMock form={form} />
+          <Button
+            disabled={form?.Form.dateClosed !== null || closed}
+            onClick={handleCloseForm}
+            variant="contained"
+            className={classes.width}
+          >
+            Close
+          </Button>
         </Container>
       </TabPanel>
       <TabPanel value={value} index={1}>
