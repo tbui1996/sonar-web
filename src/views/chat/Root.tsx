@@ -312,11 +312,10 @@ export default function Chat() {
               }}
             >
               <ChatHeader session={activeSession} />
-              {activeSession?.ID && activeSession?.chatOpen && (
+              {activeSession?.ID && (
                 <>
                   <MessageList session={activeSession} />
                   <ChatMessageBar
-                    activeSessionIsOpen={activeSession?.chatOpen}
                     activeSession={activeSession}
                     loadingInitialState={loadingInitialState}
                     messageSending={messageSending}

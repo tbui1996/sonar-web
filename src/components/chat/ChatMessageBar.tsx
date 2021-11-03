@@ -30,7 +30,6 @@ import {
 import { isFileUploadResponse } from '../../utils/type-guards';
 
 export default function ChatMessageBar({
-  activeSessionIsOpen,
   activeSession,
   loadingInitialState,
   messageSending,
@@ -238,7 +237,7 @@ export default function ChatMessageBar({
   const disabled =
     readyState !== ReadyState.OPEN ||
     !user ||
-    !activeSessionIsOpen ||
+    !activeSession.chatOpen ||
     messageSending;
 
   return (
