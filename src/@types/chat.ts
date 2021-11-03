@@ -105,7 +105,6 @@ export type WebsocketMessage = {
 };
 
 export type ChatMessageBarProps = {
-  activeSessionIsOpen: boolean;
   activeSession: ChatSession;
   loadingInitialState: boolean;
   messageSending: boolean;
