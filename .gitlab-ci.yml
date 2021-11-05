@@ -51,7 +51,7 @@ init_tf:
   script:
     - cd ${TF_ROOT}
     - |-
-      if [[ $TF_PROVIDER_UPGRADE != ""]]; then
+      if [[ $TF_PROVIDER_UPGRADE != "" ]]; then
         gitlab-terraform init --upgrade
       else
         gitlab-terraform init
