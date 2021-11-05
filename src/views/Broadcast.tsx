@@ -36,7 +36,12 @@ const useStyles = makeStyles(() => ({
 
 interface Provider {
   email: string;
-  id: string;
+  firstName?: string;
+  lastName?: string;
+  group: string;
+  organization?: string;
+  sub: string;
+  username: string;
 }
 
 export default function Broadcast() {
@@ -51,16 +56,19 @@ export default function Broadcast() {
   const [showBroadcastAlert, setShowBroadcastAlert] = useState(false);
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const getProviders = () =>
+
+  const getUsersList = () =>
     axios({
-      url: `/router/users`
+      url: `/users/user_list`
     })
-      .then((response) => setProviders(response.data))
+      .then((response) => setProviders(response.data.users))
       .catch((err) => console.error(err));
 
   useEffect(() => {
-    getProviders();
+    getUsersList();
   }, []);
+
+  console.log({ providers, selectedProviders });
 
   const handleSendBroadcast = () => {
     if (message === '') return;
@@ -75,9 +83,9 @@ export default function Broadcast() {
 
   const getRecipients = () => {
     if (selectedProviders.length === 0) {
-      return providers.map((provider) => provider.id);
+      return providers.map((provider) => provider.username);
     }
-    return selectedProviders.map((provider) => provider.id);
+    return selectedProviders.map((provider) => provider.username);
   };
 
   const sendBroadcast = () => {
@@ -96,6 +104,7 @@ export default function Broadcast() {
     })
       .then(() => {
         setMessage('');
+        setSelectedProviders([]);
         setSending(false);
         enqueueSnackbar('Broadcast sent', {
           variant: 'success',
@@ -158,6 +167,7 @@ export default function Broadcast() {
               loadingText="Looking for Providers..."
               options={providers}
               getOptionLabel={(provider) => provider.email}
+              value={selectedProviders}
               renderInput={(params) => (
                 <TextField
                   {...params}
