@@ -6,7 +6,9 @@ import {
   InputAdornment,
   List,
   Pagination,
-  TextField
+  TextField,
+  useMediaQuery,
+  useTheme
 } from '@material-ui/core';
 import useWebSocket from 'react-use-websocket';
 import SearchIcon from '@material-ui/icons/Search';
@@ -75,6 +77,9 @@ export default function Chat() {
     message: '',
     severity: 'error'
   });
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [openSidebar, setOpenSidebar] = useState(true);
 
   // Redux
   const dispatch = useAppDispatch();
@@ -136,6 +141,15 @@ export default function Chat() {
     // Will attempt to reconnect on all close events, such as server shutting down
     shouldReconnect: () => true
   });
+
+  useEffect(() => {
+    if (isMobile) {
+      console.log('isMobile is true');
+      return setOpenSidebar(false);
+    }
+    console.log('isMobile is false');
+    return setOpenSidebar(true);
+  }, [isMobile]);
 
   useEffect(() => {
     // Initially fetch all data
@@ -258,50 +272,52 @@ export default function Chat() {
   } else {
     content = (
       <Grid container sx={{ flexGrow: 1 }}>
-        <Grid
-          item
-          xs={3}
-          sx={{
-            borderRight: '1px solid rgba(145, 158, 171, 0.24)',
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-        >
-          <MyAvatar sx={{ margin: '.8em', width: '48px', height: '48px' }} />
-          <div
-            style={{
-              marginTop: '.8em',
+        {openSidebar && (
+          <Grid
+            item
+            xs={3}
+            sx={{
+              borderRight: '1px solid rgba(145, 158, 171, 0.24)',
               display: 'flex',
-              justifyContent: 'center',
-              flexDirection: 'column',
-              flexGrow: 1
+              flexDirection: 'column'
             }}
           >
-            <TextField
-              placeholder="Search..."
-              disabled
-              size="small"
-              sx={{ paddingLeft: '16px', paddingRight: '16px' }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                )
+            <MyAvatar sx={{ margin: '.8em', width: '48px', height: '48px' }} />
+            <div
+              style={{
+                marginTop: '.8em',
+                display: 'flex',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                flexGrow: 1
               }}
-            />
-            <List sx={{ flexGrow: 1 }}>{getChatSessionsView()}</List>
-            <Pagination
-              classes={{ ul: classes.justify }}
-              count={Math.ceil(sessions.allIds.length / rowsPerPage)}
-              onChange={(event, value) => setPage(value - 1)}
-              page={page + 1}
-              shape="rounded"
-              size="small"
-              sx={{ paddingBottom: '12px' }}
-            />
-          </div>
-        </Grid>
+            >
+              <TextField
+                placeholder="Search..."
+                disabled
+                size="small"
+                sx={{ paddingLeft: '16px', paddingRight: '16px' }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  )
+                }}
+              />
+              <List sx={{ flexGrow: 1 }}>{getChatSessionsView()}</List>
+              <Pagination
+                classes={{ ul: classes.justify }}
+                count={Math.ceil(sessions.allIds.length / rowsPerPage)}
+                onChange={(event, value) => setPage(value - 1)}
+                page={page + 1}
+                shape="rounded"
+                size="small"
+                sx={{ paddingBottom: '12px' }}
+              />
+            </div>
+          </Grid>
+        )}
         <Grid container item xs={9}>
           <Grid item xs={9}>
             <div
@@ -326,32 +342,34 @@ export default function Chat() {
               )}
             </div>
           </Grid>
-          <Grid container item xs={3}>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                width: '100%'
-              }}
-            >
-              <ChatStatus
-                session={activeSession}
-                callback={onSwitchSessionOpenState}
-              />
+          {openSidebar && (
+            <Grid container item xs={3}>
               <div
                 style={{
-                  borderLeft: '1px solid rgba(145, 158, 171, 0.24)',
-                  flexGrow: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
                   width: '100%'
                 }}
               >
-                <AccordionSidebar
-                  providerName={activeSession?.user?.displayName}
-                  patientInfo={activeSession?.topic}
+                <ChatStatus
+                  session={activeSession}
+                  callback={onSwitchSessionOpenState}
                 />
+                <div
+                  style={{
+                    borderLeft: '1px solid rgba(145, 158, 171, 0.24)',
+                    flexGrow: 1,
+                    width: '100%'
+                  }}
+                >
+                  <AccordionSidebar
+                    providerName={activeSession?.user?.displayName}
+                    patientInfo={activeSession?.topic}
+                  />
+                </div>
               </div>
-            </div>
-          </Grid>
+            </Grid>
+          )}
         </Grid>
       </Grid>
     );
