@@ -57,7 +57,7 @@ export default function Broadcast() {
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  const getUsersList = () =>
+  const getUsersList = (): Promise<void> =>
     axios({
       url: `/users/user_list`
     })
@@ -67,8 +67,6 @@ export default function Broadcast() {
   useEffect(() => {
     getUsersList();
   }, []);
-
-  console.log({ providers, selectedProviders });
 
   const handleSendBroadcast = () => {
     if (message === '') return;
