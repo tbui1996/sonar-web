@@ -145,7 +145,11 @@ export default function FormEdit({
             width: '100%'
           }}
         >
-          <Button onClick={handleOpenConfirm} disabled={loading}>
+          <Button
+            onClick={handleOpenConfirm}
+            disabled={loading}
+            aria-label="delete"
+          >
             Delete
           </Button>
           <Box
@@ -159,6 +163,7 @@ export default function FormEdit({
               variant="outlined"
               onClick={closeDrawer}
               disabled={loading}
+              aria-label="cancel"
             >
               Cancel
             </Button>
@@ -167,6 +172,7 @@ export default function FormEdit({
               variant="contained"
               onClick={handleEditForm}
               disabled={loading || !isEdited || data.title === ''}
+              aria-label="save"
             >
               Save
             </Button>

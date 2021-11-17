@@ -40,3 +40,88 @@ yarn start
 ```
 
 4. Done!
+
+## Testing
+
+Our tests are currently created using [React Testing Library](https://testing-library.com/docs/), [Mirage](https://miragejs.com/), and Jest.
+
+Command to run tests:
+`yarn run test`
+
+First, setup your tests rendering the component you want to test and the selections you would like to use when asserting.
+
+```
+const setup = () => {
+  const mockedFunction = jest.fn();
+
+  render(
+    <ComponentToTest onChange={mockedFunction} />
+  );
+
+  // When testing for a text match use the regex format: "/text/i"
+  const helperText = screen.getByText(/example/i);
+
+  return {
+    helperText,
+    mockedFunction,
+    ...screen
+  };
+};
+```
+
+Then you can start asserting:
+
+```
+test('Descriptive title', () => {
+  const { helperText } = setup();
+  expect(helperText).toBeInTheDocument();
+});
+```
+
+You can simulate a user's behavior by using [fireEvent](https://testing-library.com/docs/guide-events/), React Testing Library's built-in method, which should be sufficient in most cases. Alternatively, you can use [userEvent](https://testing-library.com/docs/ecosystem-user-event/), which provides a more advanced simulation of browser interactions.
+
+Example:
+
+```
+test('Function prop is called on input', async () => {
+  const { input, mockedFunction } = setup();
+  userEvent.type(input, 'test');
+  expect(mockedFunction).toHaveBeenCalled();
+});
+```
+
+On the example above, we chose to use `userEvent` because the `type` call, will trigger `keyDown`, `keyPress`, and `keyUp` events for each character as well. It's much closer to the user's actual interactions. As stated in the article [Common Mistakes with React Testing Library](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library) by Kent C. Dodds.
+
+To mock api calls, create a new Mirage server instance:
+
+```
+import { makeServer } from '../../server';
+
+let server;
+
+beforeEach(() => {
+  server = makeServer();
+});
+
+afterEach(() => {
+  server.shutdown();
+});
+
+```
+
+And add the necessary routes to the server (under `src/server.js`):
+
+```
+export function makeServer({ environment = 'test' } = {}) {
+  ...
+
+  routes() {
+      this.get('/forms', (schema) => {
+        return schema.forms.all();
+      });
+
+      ...
+  }
+}
+
+```
