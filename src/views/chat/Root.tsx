@@ -79,7 +79,9 @@ export default function Chat() {
   });
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [openSidebar, setOpenSidebar] = useState(true);
+  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
+  const [openUsersSidebar, setOpenUsersSidebar] = useState(true);
+  const [openInfoSidebar, setOpenInfoSidebar] = useState(true);
 
   // Redux
   const dispatch = useAppDispatch();
@@ -144,12 +146,17 @@ export default function Chat() {
 
   useEffect(() => {
     if (isMobile) {
-      console.log('isMobile is true');
-      return setOpenSidebar(false);
+      return setOpenUsersSidebar(false);
     }
-    console.log('isMobile is false');
-    return setOpenSidebar(true);
+    return setOpenUsersSidebar(true);
   }, [isMobile]);
+
+  useEffect(() => {
+    if (isTablet) {
+      return setOpenInfoSidebar(false);
+    }
+    return setOpenInfoSidebar(true);
+  }, [isTablet]);
 
   useEffect(() => {
     // Initially fetch all data
@@ -272,7 +279,7 @@ export default function Chat() {
   } else {
     content = (
       <Grid container sx={{ flexGrow: 1 }}>
-        {openSidebar && (
+        {openUsersSidebar && (
           <Grid
             item
             xs={3}
@@ -318,8 +325,8 @@ export default function Chat() {
             </div>
           </Grid>
         )}
-        <Grid container item xs={openSidebar ? 9 : 12}>
-          <Grid item xs={openSidebar ? 9 : 12}>
+        <Grid container item xs>
+          <Grid item xs>
             <div
               style={{
                 display: 'flex',
@@ -342,7 +349,7 @@ export default function Chat() {
               )}
             </div>
           </Grid>
-          {openSidebar && (
+          {openInfoSidebar && (
             <Grid container item xs={3}>
               <div
                 style={{
