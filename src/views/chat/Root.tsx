@@ -318,8 +318,8 @@ export default function Chat() {
             </div>
           </Grid>
         )}
-        <Grid container item xs={9}>
-          <Grid item xs={9}>
+        <Grid container item xs={openSidebar ? 9 : 12}>
+          <Grid item xs={openSidebar ? 9 : 12}>
             <div
               style={{
                 display: 'flex',
