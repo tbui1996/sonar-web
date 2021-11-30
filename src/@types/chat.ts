@@ -68,8 +68,7 @@ export type SendMessage = {
 };
 
 export type AccordionProps = {
-  patientInfo?: string;
-  providerName?: string | null;
+  activeSession: ChatSession;
 };
 
 export type ChatStatusProps = {

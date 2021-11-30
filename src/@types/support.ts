@@ -36,6 +36,7 @@ export type ChatSessionDTO = {
   internalUserID?: string;
   chatOpen?: boolean;
   topic?: string;
+  notes?: string;
   pending?: boolean;
 
   // Only available after chat session is assigned

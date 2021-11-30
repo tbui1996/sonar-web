@@ -6,6 +6,7 @@ export const {
   activateSession,
   addPendingSession,
   readMessages,
-  checkUnreadMessages
+  checkUnreadMessages,
+  updateSessionNotes
 } = slice.actions;
 export default slice.reducer;
