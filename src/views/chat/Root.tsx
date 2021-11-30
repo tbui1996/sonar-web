@@ -369,10 +369,9 @@ export default function Chat() {
                     width: '100%'
                   }}
                 >
-                  <AccordionSidebar
-                    providerName={activeSession?.user?.displayName}
-                    patientInfo={activeSession?.topic}
-                  />
+                  {activeSession && (
+                    <AccordionSidebar activeSession={activeSession} />
+                  )}
                 </div>
               </div>
             </Grid>

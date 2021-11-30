@@ -1,7 +1,7 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { createServer, Model, Factory } from 'miragejs';
-
 export function makeServer({ environment = 'test' } = {}) {
-  let server = createServer({
+  const server = createServer({
     environment,
 
     models: {
@@ -21,28 +21,23 @@ export function makeServer({ environment = 'test' } = {}) {
 
     seeds(server) {
       server.createList('form', 3);
+      server.create('note', { id: 1, text: 'hello world!' });
     },
 
     routes() {
       this.urlPrefix = `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}`;
 
-      this.get('/forms', (schema) => {
-        return schema.forms.all();
-      });
+      this.get('/forms', (schema) => schema.forms.all());
 
-      this.put('/forms/edit', () => {
-        return {
-          status: true,
-          msg: 'Edited form successfully.'
-        };
-      });
+      this.put('/forms/edit', () => ({
+        status: true,
+        msg: 'Edited form successfully.'
+      }));
 
-      this.put('/forms/:id/delete', () => {
-        return {
-          status: true,
-          msg: 'Deleted form successfully.'
-        };
-      });
+      this.put('/forms/:id/delete', () => ({
+        status: true,
+        msg: 'Deleted form successfully.'
+      }));
 
       this.passthrough();
     }

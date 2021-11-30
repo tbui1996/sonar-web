@@ -216,6 +216,27 @@ export default createSlice({
 
       state.activeSessionID = action.payload;
     },
+    updateSessionNotes(state, action: PayloadAction<string>) {
+      const { sessions, activeSessionID } = state;
+
+      if (!activeSessionID) {
+        console.log(
+          '[support/readMessage]: expected activeSessionID to exist when updating notes'
+        );
+        return;
+      }
+
+      const activeSession = sessions.byId[activeSessionID];
+      if (!activeSession) {
+        console.log(
+          `[support/addMessage]: updated notes for a chat session that does not exist ${activeSessionID}`
+        );
+        return;
+      }
+
+      activeSession.notes = action.payload;
+      sortSessions(state);
+    },
     addPendingSession(state, action: PayloadAction<ChatSessionDTO>) {
       const { sessions, users } = state;
       if (sessions.byId[action.payload.ID]) {
