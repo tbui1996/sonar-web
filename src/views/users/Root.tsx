@@ -20,7 +20,7 @@ import {
 import EditIcon from '@material-ui/icons/Edit';
 
 import { PATH_DASHBOARD } from '../../routes/paths';
-import { User, Users } from '../../@types/users';
+import { Organization, User, Users } from '../../@types/users';
 import mapUserDisplayName from '../../utils/mapUserDisplayName';
 import axios from '../../utils/axios';
 import Edit from './Edit';
@@ -37,6 +37,7 @@ const useStyles = makeStyles({
 
 export default function UserRoles() {
   const [users, setUsers] = useState<Users>();
+  const [organizations, setOrganizations] = useState<Array<Organization>>();
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -61,20 +62,26 @@ export default function UserRoles() {
 
   useEffect(() => {
     async function execute() {
-      const res = await axios.get('/users/user_list');
-      // const res = await axios.get<Users>(
-      //   `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/users/user_list`
-      // );
+      const [userList, organizations] = await Promise.all([
+        axios.get<Users>('/users/user_list'),
+        axios.get<Array<Organization>>('/users/organizations')
+      ]);
 
-      if (!res.data) {
+      if (!userList.data) {
         console.log('Expected users to exist and be an array');
       }
 
-      const users = mapUserDisplayName(res?.data?.users || []);
+      if (!organizations.data) {
+        console.log('Expected organizations to exist and be an array');
+      }
+
+      const users = mapUserDisplayName(userList?.data?.users || []);
       setUsers({
-        paginationToken: res?.data?.paginationToken,
+        paginationToken: userList?.data?.paginationToken,
         users
       });
+
+      setOrganizations(organizations.data);
     }
 
     setLoading(true);
@@ -218,6 +225,7 @@ export default function UserRoles() {
               setEditView={setEditView}
               setUser={setUser}
               setUsers={setUsers}
+              organizations={organizations}
             />
           )}
         </Card>
