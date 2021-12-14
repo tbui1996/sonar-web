@@ -3,12 +3,17 @@ export type Users = {
   paginationToken: string;
 };
 
+export interface Organization {
+  id: number;
+  name: string;
+}
+
 export interface User {
   username: string;
   email: string;
   firstName: string | null;
   lastName: string | null;
-  organization: string | null;
+  organization: Organization | null;
   group: string;
   sub: string;
   displayName: string;
