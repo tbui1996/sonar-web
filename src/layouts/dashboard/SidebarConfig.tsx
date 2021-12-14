@@ -40,16 +40,16 @@ const ICONS = {
 const sidebarConfig = [
   // GENERAL
   // ----------------------------------------------------------------------
-  {
-    subheader: 'general',
-    items: [
-      {
-        title: 'dashboard',
-        href: PATH_DASHBOARD.general.app,
-        icon: ICONS.dashboard
-      }
-    ]
-  },
+  // {
+  //   subheader: 'general',
+  //   items: [
+  //     {
+  //       title: 'dashboard',
+  //       href: PATH_DASHBOARD.general.app,
+  //       icon: ICONS.dashboard
+  //     }
+  //   ]
+  // },
 
   {
     subheader: 'modalities',

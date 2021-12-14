@@ -17,12 +17,12 @@ const DashboardRoutes = {
     {
       exact: true,
       path: PATH_DASHBOARD.general.app,
-      component: lazy(() => import('../views/GeneralApp'))
+      component: () => <Redirect to={PATH_DASHBOARD.modalities.chat.root} />
     },
     {
       exact: true,
       path: PATH_DASHBOARD.general.analytics,
-      component: () => <Redirect to={PATH_DASHBOARD.general.app} />
+      component: () => <Redirect to={PATH_DASHBOARD.modalities.chat.root} />
       // component: lazy(() => import('../views/GeneralAnalytics'))
     },
     {
