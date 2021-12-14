@@ -1,5 +1,5 @@
 // hooks
-import useAuth from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 //
 import { MAvatar } from './@material-extend';
 import { MAvatarProps } from './@material-extend/MAvatar';

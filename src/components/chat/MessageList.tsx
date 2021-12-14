@@ -17,7 +17,7 @@ import {
   ChatSessionStatus
 } from '../../@types/support';
 import LoadingScreen from '../LoadingScreen';
-import useAuth from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

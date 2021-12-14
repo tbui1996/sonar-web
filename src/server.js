@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { createServer, Model, Factory } from 'miragejs';
+
 export function makeServer({ environment = 'test' } = {}) {
   const server = createServer({
     environment,
