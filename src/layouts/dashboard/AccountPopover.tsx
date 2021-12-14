@@ -8,7 +8,7 @@ import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { alpha } from '@material-ui/core/styles';
 import { Button, Box, Divider, MenuItem, Typography } from '@material-ui/core';
 // hooks
-import useAuth from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import useIsMountedRef from '../../hooks/useIsMountedRef';
 // components
 import { MIconButton } from '../../components/@material-extend';

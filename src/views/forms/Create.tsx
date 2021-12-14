@@ -21,7 +21,7 @@ import { FormApiResponse, OptionsInput } from '../../@types/form';
 import { DEFAULT_TEXT } from '../../constants/formConstants';
 import FormPreviewCard from '../../components/forms/FormPreviewCard';
 import axios from '../../utils/axios';
-import useAuth from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 
 const useStyles = makeStyles(() =>
   createStyles({

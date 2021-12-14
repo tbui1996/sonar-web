@@ -1,9 +1,8 @@
 import { Link as RouterLink } from 'react-router-dom';
 import { experimentalStyled as styled } from '@material-ui/core/styles';
-import { Card, Hidden, Container, Typography } from '@material-ui/core';
-// import { PATH_AUTH } from '../../routes/paths';
+import { Card, Container, Typography, Link } from '@material-ui/core';
 import { LoadingButton } from '@material-ui/lab';
-import useAuth from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import Page from '../../components/Page';
 import Logo from '../../components/Logo';
 
@@ -59,19 +58,22 @@ export default function Login() {
   return (
     <RootStyle title="Login">
       <HeaderStyle>
-        <RouterLink to="/">
+        <Link component={RouterLink} to="/">
           <Logo />
-        </RouterLink>
+        </Link>
       </HeaderStyle>
 
-      <Hidden mdDown>
-        <SectionStyle>
-          <Typography variant="h3" sx={{ px: 5, mt: 15, mb: 15 }}>
-            Hi, Welcome Back
-          </Typography>
-          <img src="/static/illustrations/illustration_login.svg" alt="login" />
-        </SectionStyle>
-      </Hidden>
+      <SectionStyle
+        sx={{
+          display: { xs: 'none', md: 'flex' },
+          justifyContent: 'space-around'
+        }}
+      >
+        <Typography variant="h3" sx={{ px: 5, mt: 15, mb: 15 }}>
+          Hi, Welcome Back
+        </Typography>
+        <img src="/static/illustrations/illustration_login.svg" alt="login" />
+      </SectionStyle>
 
       <Container maxWidth="sm">
         <ContentStyle>
@@ -81,6 +83,7 @@ export default function Login() {
             size="large"
             type="submit"
             variant="contained"
+            aria-label="login"
           >
             Sign in with Okta
           </LoadingButton>
