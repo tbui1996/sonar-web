@@ -21,7 +21,8 @@ export default function EditUser({
   setEditView,
   setUser,
   setUsers,
-  handleClick
+  handleClick,
+  organizations
 }: EditUserProps) {
   const [updating, setUpdating] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
@@ -153,17 +154,15 @@ export default function EditUser({
           <Select
             labelId="org-select-label"
             id="organization-select"
-            value={
-              user?.organization
-                ? user?.organization.name.toLowerCase()
-                : 'none'
-            }
+            value={user?.organization?.id || 0}
             label="Organization"
           >
-            <MenuItem value="none">No organization</MenuItem>
-            <MenuItem value="stationmd">StationMD</MenuItem>
-            <MenuItem value="reddoor">Reddoor</MenuItem>
-            <MenuItem value="circulo">Circulo</MenuItem>
+            <MenuItem value={0}>No organization</MenuItem>
+            {organizations?.map((org) => (
+              <MenuItem value={org.id} key={org.id}>
+                {org.name}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
         <TextField

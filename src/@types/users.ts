@@ -22,6 +22,7 @@ export interface User {
 export interface EditUserProps {
   user?: User;
   users?: Users;
+  organizations?: Organization[];
   handleClick: (user?: User) => void;
   setEditView: (val: boolean) => void;
   setUser: (user?: User) => void;
