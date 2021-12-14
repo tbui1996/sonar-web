@@ -162,7 +162,7 @@ export default function UserRoles() {
                           </TableCell>
                           <TableCell>
                             <Typography variant="body1">
-                              {dashIfNullOrEmpty(user.organization)}
+                              {dashIfNullOrEmpty(user.organization?.name)}
                             </Typography>
                           </TableCell>
                           <TableCell>
@@ -180,15 +180,9 @@ export default function UserRoles() {
                           >
                             <Chip
                               label={
-                                user.group === 'no_group'
-                                  ? 'No role'
-                                  : 'Supervisor'
+                                user.group === '' ? 'No role' : 'Supervisor'
                               }
-                              color={
-                                user.group === 'no_group'
-                                  ? 'default'
-                                  : 'primary'
-                              }
+                              color={user.group === '' ? 'default' : 'primary'}
                             />
                             <IconButton
                               aria-label="edit"

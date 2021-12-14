@@ -48,7 +48,7 @@ export default function EditUser({
         );
 
         usersCopy[userIndex].group = route.includes('revoke_access')
-          ? 'no_group'
+          ? ''
           : user.group;
 
         setUsers({
@@ -154,7 +154,9 @@ export default function EditUser({
             labelId="org-select-label"
             id="organization-select"
             value={
-              user?.organization ? user?.organization.toLowerCase() : 'none'
+              user?.organization
+                ? user?.organization.name.toLowerCase()
+                : 'none'
             }
             label="Organization"
           >
@@ -192,7 +194,7 @@ export default function EditUser({
             onChange={handleChange}
             label="Role"
           >
-            <MenuItem value="no_group" disabled>
+            <MenuItem value="" disabled>
               No role
             </MenuItem>
             <MenuItem value="externals_supervisor">Supervisor</MenuItem>
