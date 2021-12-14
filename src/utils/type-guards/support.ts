@@ -1,4 +1,4 @@
-import { FileUploadResponse } from '../../@types/chat';
+import { FileTypeResponse } from '../../@types/chat';
 import {
   ChatSessionDTO,
   Message,
@@ -54,11 +54,11 @@ export function isSocketMessage(value: unknown): value is SocketMessage {
 
 export function isFileUploadResponse(
   value: unknown
-): value is FileUploadResponse {
+): value is FileTypeResponse {
   if (!value) {
     return false;
   }
 
-  const assumed = value as FileUploadResponse;
-  return Boolean(assumed.fileID);
+  const assumed = value as FileTypeResponse;
+  return Boolean(assumed.fileKey) && Boolean(assumed.databaseId);
 }
