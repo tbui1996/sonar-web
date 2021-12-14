@@ -68,6 +68,7 @@ export type UserListProps = {
   session: ChatSession;
   isActive: boolean;
   onOpenChat: () => void;
+  internalUserID: string;
 };
 
 export type MessageListProps = {

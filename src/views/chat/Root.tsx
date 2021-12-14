@@ -34,7 +34,6 @@ import ChatStatus from '../../components/chat/ChatStatus';
 import ChatHeader from '../../components/chat/ChatHeader';
 // hooks
 import useActiveSession from '../../hooks/useActiveSession';
-
 // redux
 import { RootState, useAppDispatch } from '../../redux/store';
 import {
@@ -259,6 +258,7 @@ export default function Chat() {
           isActive={Boolean(activeSession && session.ID === activeSession.ID)}
           session={session}
           onOpenChat={() => onOpenSession(session.ID)}
+          internalUserID={user.id}
         />
       ));
   }
