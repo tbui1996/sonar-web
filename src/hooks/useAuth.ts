@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { login, logout, token } from '../redux/slices/authJwt';
 
-export default function useAuth() {
+export function useAuth() {
   // JWT Auth
   const dispatch = useDispatch();
   const { user, isLoading, isAuthenticated } = useSelector(

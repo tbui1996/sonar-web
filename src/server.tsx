@@ -1,11 +1,14 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { createServer, Model, Factory } from 'miragejs';
+import { File } from './@types/file';
+
 export function makeServer({ environment = 'test' } = {}) {
   const server = createServer({
     environment,
 
     models: {
-      form: Model
+      form: Model,
+      file: Model
     },
 
     factories: {
@@ -21,13 +24,13 @@ export function makeServer({ environment = 'test' } = {}) {
 
     seeds(server) {
       server.createList('form', 3);
-      server.create('note', { id: 1, text: 'hello world!' });
     },
 
     routes() {
       this.urlPrefix = `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}`;
 
-      this.get('/forms', (schema) => schema.forms.all());
+      this.get('/forms', (schema) => schema.all('form'));
+      this.get('/cloud/get_file', (schema) => schema.all('file'));
 
       this.put('/forms/edit', () => ({
         status: true,

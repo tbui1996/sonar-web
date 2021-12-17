@@ -14,7 +14,6 @@ import formatDistanceStrict from 'date-fns/formatDistanceStrict';
 
 import mime from 'mime-types';
 import { UserListProps } from '../../@types/support';
-import useAuth from '../../hooks/useAuth';
 import { MTimelineDot } from '../@material-extend';
 
 const useStyles = makeStyles({
@@ -43,10 +42,9 @@ const useStyles = makeStyles({
 export default function UserListItem({
   session,
   isActive,
-  onOpenChat
+  onOpenChat,
+  internalUserID
 }: UserListProps) {
-  const auth = useAuth();
-  const internalUserID = auth.user.id;
   const classes = useStyles();
 
   let lastMessageText = '';

@@ -21,7 +21,8 @@ export default function EditUser({
   setEditView,
   setUser,
   setUsers,
-  handleClick
+  handleClick,
+  organizations
 }: EditUserProps) {
   const [updating, setUpdating] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
@@ -48,7 +49,7 @@ export default function EditUser({
         );
 
         usersCopy[userIndex].group = route.includes('revoke_access')
-          ? 'no_group'
+          ? ''
           : user.group;
 
         setUsers({
@@ -153,15 +154,15 @@ export default function EditUser({
           <Select
             labelId="org-select-label"
             id="organization-select"
-            value={
-              user?.organization ? user?.organization.toLowerCase() : 'none'
-            }
+            value={user?.organization?.id || 0}
             label="Organization"
           >
-            <MenuItem value="none">No organization</MenuItem>
-            <MenuItem value="stationmd">StationMD</MenuItem>
-            <MenuItem value="reddoor">Reddoor</MenuItem>
-            <MenuItem value="circulo">Circulo</MenuItem>
+            <MenuItem value={0}>No organization</MenuItem>
+            {organizations?.map((org) => (
+              <MenuItem value={org.id} key={org.id}>
+                {org.name}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
         <TextField
@@ -192,7 +193,7 @@ export default function EditUser({
             onChange={handleChange}
             label="Role"
           >
-            <MenuItem value="no_group" disabled>
+            <MenuItem value="" disabled>
               No role
             </MenuItem>
             <MenuItem value="externals_supervisor">Supervisor</MenuItem>

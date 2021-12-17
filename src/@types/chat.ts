@@ -95,6 +95,16 @@ export type FileUploadResponse = {
   fileID: string | null;
 };
 
+export type PreSignedUrlResponse = {
+  url: string | undefined;
+  key: string;
+};
+
+export type FileTypeResponse = {
+  databaseId: string | null;
+  fileKey: string;
+};
+
 export type WebsocketMessage = {
   sender: string;
   timestamp: number;

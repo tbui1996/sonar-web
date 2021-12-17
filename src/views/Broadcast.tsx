@@ -19,7 +19,7 @@ import Page from '../components/Page';
 import HeaderDashboard from '../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../routes/paths';
 import { MLinearProgress, MIconButton } from '../components/@material-extend';
-import useAuth from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 
 const useStyles = makeStyles(() => ({
   button: {

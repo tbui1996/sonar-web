@@ -50,6 +50,9 @@ export const PATH_DASHBOARD = {
     },
     users: {
       root: path(ROOTS_DASHBOARD, '/users')
+    },
+    files: {
+      root: path(ROOTS_DASHBOARD, '/files')
     }
   },
   user: {

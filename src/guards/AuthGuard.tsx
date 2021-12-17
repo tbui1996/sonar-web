@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Redirect } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 import { PATH_AUTH } from '../routes/paths';
 import LoadingScreen from '../components/LoadingScreen';
 

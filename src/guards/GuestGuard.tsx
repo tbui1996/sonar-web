@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Redirect } from 'react-router-dom';
 // hooks
-import useAuth from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 // routes
 import { PATH_DASHBOARD } from '../routes/paths';
 // components

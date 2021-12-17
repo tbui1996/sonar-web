@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import { LoadingButton } from '@material-ui/lab';
 // hooks
-import useAuth from '../../../hooks/useAuth';
+import { useAuth } from '../../../hooks/useAuth';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
 import { UploadAvatar } from '../../upload';
 // @types
