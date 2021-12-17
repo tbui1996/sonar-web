@@ -12,7 +12,7 @@ import {
   ListSubheader
 } from '@material-ui/core';
 // hooks
-import useAuth from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 // components
 import Logo from '../../components/Logo';
 import MyAvatar from '../../components/MyAvatar';

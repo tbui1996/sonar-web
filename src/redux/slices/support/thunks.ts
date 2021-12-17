@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import axios from '../../../utils/axios';
+import axios from 'axios';
+import axiosInstance from '../../../utils/axios';
 
 // utils
 import mapUserDisplayName from '../../../utils/mapUserDisplayName';
@@ -16,7 +17,11 @@ import {
   SessionID
 } from '../../../@types/support';
 import type { Users } from '../../../@types/users';
-import type { FileUploadResponse } from '../../../@types/chat';
+import type {
+  FileTypeResponse,
+  FileUploadResponse,
+  PreSignedUrlResponse
+} from '../../../@types/chat';
 
 export const postUploadFile = createAsyncThunk(
   'support/postUploadFile',
@@ -42,21 +47,45 @@ export const postUploadFile = createAsyncThunk(
     const formData = new FormData();
     formData.append('file-upload', file, file.name);
 
-    const response = await axios.post<FileUploadResponse>(
-      `/cloud/file_upload?&chatId=${activeSession.ID}`,
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+    const s3PresignedUrl = await axiosInstance.get<PreSignedUrlResponse>(
+      `/cloud/upload/url?filename=${file.name}`
+    );
+
+    if (s3PresignedUrl.status !== 200) {
+      throw new Error(
+        '[support/postUploadFile]: failed to get presigned URL for file upload'
+      );
+    }
+
+    // Regular axios presigned URL
+    const s3Upload = await axios.put(s3PresignedUrl.data.url!, file, {
+      headers: {
+        'Content-Type': [file.type],
+        'x-amz-meta-filename': [file.name]
       }
+    });
+
+    if (s3Upload.status !== 200) {
+      throw new Error('[support/postUploadFile]: failed to upload file to S3');
+    }
+
+    const response = await axiosInstance.post<FileUploadResponse>(
+      `/cloud/upload`,
+      JSON.stringify({
+        chatId: activeSession.ID,
+        fileId: s3PresignedUrl.data.key,
+        filename: file.name
+      })
     );
 
     if (response.status !== 200) {
       throw new Error('[support/postUploadFile]: failed to upload file');
     }
 
-    return response.data;
+    return {
+      databaseId: response.data.fileID,
+      fileKey: s3PresignedUrl.data.key
+    } as FileTypeResponse;
   }
 );
 
@@ -82,7 +111,7 @@ export const postSwitchSessionOpen = createAsyncThunk<
     );
   }
 
-  await axios.post('/support/chat_session_update', {
+  await axiosInstance.post('/support/chat_session_update', {
     // Pending is called before this callback is called in the payload creator
     // Optimistic Response already changed this value.
     open: activeSession.chatOpen,
@@ -93,7 +122,7 @@ export const postSwitchSessionOpen = createAsyncThunk<
 export const getSessionMessages = createAsyncThunk(
   'support/getSessionMessages',
   async (sessionID: string) => {
-    const response = await axios.get<Message[]>(
+    const response = await axiosInstance.get<Message[]>(
       `/support/sessions/${sessionID}/messages`
     );
 
@@ -118,7 +147,7 @@ export const postAssignSessionToUser = createAsyncThunk(
       internalUserID
     };
 
-    const response = await axios.post<Message[]>(
+    const response = await axiosInstance.post<Message[]>(
       `/support/assign_pending_chat_session`,
       data
     );
@@ -140,7 +169,7 @@ export const getPendingChatSessions = createAsyncThunk(
       );
     }
 
-    const response = await axios.get<ChatSession[]>(
+    const response = await axiosInstance.get<ChatSession[]>(
       `/support/pending_chat_sessions`
     );
 
@@ -166,13 +195,15 @@ export const getPendingChatSessions = createAsyncThunk(
 export const getChatSessions = createAsyncThunk(
   'support/getChatSessions',
   async () => {
-    const response = await axios.get<ChatSession[]>(`/support/sessions`);
+    const response = await axiosInstance.get<ChatSession[]>(
+      `/support/sessions`
+    );
     return response.data;
   }
 );
 
 export const getUsers = createAsyncThunk('support/getUsers', async () => {
-  const response = await axios.get<Users>(`/users/user_list`);
+  const response = await axiosInstance.get<Users>(`/users/user_list`);
   response.data.users = mapUserDisplayName(response.data.users);
   return response.data;
 });
@@ -181,8 +212,8 @@ export const getInitialState = createAsyncThunk(
   'support/getInitialState',
   async () => {
     const [responseUsers, responseActiveSessions] = await Promise.all([
-      axios.get<Users>(`/users/user_list`),
-      axios.get<ChatSession[]>('/support/sessions')
+      axiosInstance.get<Users>(`/users/user_list`),
+      axiosInstance.get<ChatSession[]>('/support/sessions')
     ]);
 
     const users = mapUserDisplayName(responseUsers.data.users);

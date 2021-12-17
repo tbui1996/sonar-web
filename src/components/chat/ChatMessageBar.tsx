@@ -231,7 +231,7 @@ export default function ChatMessageBar({
       return;
     }
 
-    onSendMessage(response.payload.fileID);
+    onSendMessage(response.payload.fileKey);
     onDeleteFile();
   }
   const disabled =
