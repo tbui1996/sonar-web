@@ -6,8 +6,6 @@ import {
   GridColDef,
   GridValueFormatterParams
 } from '@mui/x-data-grid';
-import { makeStyles } from '@material-ui/core/styles';
-import { formatDate } from '@fullcalendar/react';
 import {
   Box,
   Container,
@@ -27,32 +25,9 @@ import axios from '../../utils/axios';
 import dashIfNullOrEmpty from '../../utils/dashIfNullOrEmpty';
 import { Form, FormToEditProps } from '../../@types/form';
 import FormEdit from './Edit';
+import { useStyles, getFormattedDate } from '../../utils/tableStyles';
 
 const DRAWER_WIDTH = 400;
-export const useStyles = makeStyles({
-  table: {
-    width: '100%',
-    '& .MuiDataGrid-columnHeaderTitle, & .MuiDataGrid-cell': {
-      whiteSpace: 'normal',
-      lineHeight: '1.5!important',
-      maxHeight: 'fit-content!important',
-      minHeight: 'auto!important',
-      display: 'flex',
-      alignItems: 'center',
-      cursor: 'pointer'
-    },
-
-    '& .MuiDataGrid-columnHeaderWrapper': {
-      maxHeight: 'none!important',
-      flex: '1 0 auto'
-    },
-
-    '&.MuiDataGrid-root .MuiDataGrid-cell:focus, &.MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within, &.MuiDataGrid-root .MuiDataGrid-cell--withRenderer': {
-      outline: 'none'
-    }
-  }
-});
-
 const minDateVal = '0001-01-01T00:00:00Z';
 
 export default function Forms() {
@@ -63,14 +38,6 @@ export default function Forms() {
   const [filteredItems, setFilteredItems] = useState<Array<Form>>([]);
   const [open, setOpen] = useState(false);
   const [formToEdit, setFormToEdit] = useState<FormToEditProps | null>();
-
-  const getFormattedDate = (date: string) =>
-    formatDate(date, {
-      month: 'numeric',
-      year: 'numeric',
-      day: 'numeric',
-      timeZone: 'UTC'
-    });
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', flex: 0.4 },
