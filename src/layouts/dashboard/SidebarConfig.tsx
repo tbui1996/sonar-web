@@ -73,6 +73,11 @@ const sidebarConfig = [
         title: 'User roles',
         href: PATH_DASHBOARD.modalities.users.root,
         icon: ICONS.user
+      },
+      {
+        title: 'Files',
+        href: PATH_DASHBOARD.modalities.files.root,
+        icon: ICONS.elements
       }
     ]
   }

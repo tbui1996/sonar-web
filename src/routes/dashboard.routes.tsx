@@ -57,6 +57,11 @@ const DashboardRoutes = {
     },
     {
       exact: true,
+      path: PATH_DASHBOARD.modalities.files.root,
+      component: lazy(() => import('../views/files/Root'))
+    },
+    {
+      exact: true,
       path: PATH_DASHBOARD.modalities.forms.response,
       component: lazy(() => import('../views/forms/Response'))
     },

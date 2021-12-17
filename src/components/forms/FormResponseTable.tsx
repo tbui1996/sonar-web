@@ -3,7 +3,7 @@ import { DataGrid, GridColDef, GridRowData } from '@mui/x-data-grid';
 import { Box } from '@material-ui/core';
 import { useHistory, useParams } from 'react-router-dom';
 import { FormResponseTableProps, Input } from '../../@types/form';
-import { useStyles } from '../../views/forms/Root';
+import { useStyles } from '../../utils/tableStyles';
 
 export default function FormResponseTable({
   inputs,
