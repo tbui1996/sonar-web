@@ -125,3 +125,22 @@ export function makeServer({ environment = 'test' } = {}) {
 }
 
 ```
+
+## Analyzing Bundle Size
+
+According to this [blog post](https://www.emgoto.com/react-bundles-and-code-splitting/) there are 2 simple packages to visualize bundle size:
+
+1. `source-map-explorer` (official support for create-react-app, but not recommended by the author)
+2. `webpack-bundle-analyzer` (recommended by the author and easy enough to get working)
+
+To add support for `webpack-bundle-analyzer` the steps were to:
+
+1. `yarn add -D webpack-bundle-analyzer`
+2. `yarn add -D progress-bar-webpack-plugin`
+3. Add file `/scripts/analyze.js` based on this [blog post](https://medium.com/@romanonthego/webpack-bundle-analyzer-for-create-react-app-9aebb0d01084)
+4. Add `"analyze": "node scripts/analyze.js"` to scripts in `package.json`
+5. Run the analysis: `yarn analyze`
+
+After analysis, a server should start on localhost for viewing a visual representation of the bundle size.
+
+To run the analysis at any point, simply run `yarn analyze` again.

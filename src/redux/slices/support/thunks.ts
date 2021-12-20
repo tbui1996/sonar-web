@@ -178,7 +178,7 @@ export const getPendingChatSessions = createAsyncThunk(
 
       if (!user) {
         throw new Error(
-          '[support/getPendingChatSessions]: expecteed to find a user for chat session'
+          '[support/getPendingChatSessions]: expected to find a user for chat session'
         );
       }
 

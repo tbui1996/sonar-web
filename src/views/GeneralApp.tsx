@@ -2,12 +2,7 @@ import { Container, Grid } from '@material-ui/core';
 
 import { useEffect, useState } from 'react';
 import Page from '../components/Page';
-import {
-  AppModalities,
-  AppTotalDownloads,
-  AppTotalInstalled,
-  AppTotalActiveUsers
-} from '../components/general/app';
+import { AppModalities } from '../components/general/app';
 import StyledPieChart from '../components/charts/StyledPieChart';
 import { FormCount } from '../@types/form';
 import axios from '../utils/axios';
@@ -34,18 +29,6 @@ export default function GeneralApp() {
     <Page title="Dashboard | Sonar">
       <Container maxWidth="xl">
         <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
-            <AppTotalActiveUsers />
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <AppTotalInstalled />
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <AppTotalDownloads />
-          </Grid>
-
           <Grid item xs={12} md={6} lg={4}>
             <StyledPieChart
               data={[50, 10, formCount?.count || 0]}
