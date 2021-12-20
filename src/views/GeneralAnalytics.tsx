@@ -7,12 +7,8 @@ import {
   AnalyticsNewUsers,
   AnalyticsBugReports,
   AnalyticsItemOrders,
-  AnalyticsNewsUpdate,
-  AnalyticsWeeklySales,
-  AnalyticsOrderTimeline,
   AnalyticsCurrentVisits,
   AnalyticsWebsiteVisits,
-  AnalyticsTrafficBySite,
   AnalyticsCurrentSubject,
   AnalyticsConversionRates
 } from '../components/general/analytics';
@@ -27,10 +23,6 @@ export default function GeneralAnalytics() {
           <Typography variant="h4">Hi, Welcome back</Typography>
         </Box>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
-            <AnalyticsWeeklySales />
-          </Grid>
-
           <Grid item xs={12} sm={6} md={3}>
             <AnalyticsNewUsers />
           </Grid>
@@ -57,18 +49,6 @@ export default function GeneralAnalytics() {
 
           <Grid item xs={12} md={6} lg={4}>
             <AnalyticsCurrentSubject />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={8}>
-            <AnalyticsNewsUpdate />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={4}>
-            <AnalyticsOrderTimeline />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={4}>
-            <AnalyticsTrafficBySite />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>

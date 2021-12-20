@@ -24,7 +24,6 @@ import NotistackProvider from './components/NotistackProvider';
 
 // Using for Auth (Check doc https://minimals.cc/docs/authentication)
 import JwtProvider from './components/authentication/JwtProvider';
-// import FirebaseProvider from './components/authentication/FirebaseProvider';
 
 // ----------------------------------------------------------------------
 
