@@ -337,10 +337,10 @@ export default createSlice({
 
         state.users = {
           byId: action.payload.users.reduce((prev, current) => {
-            prev[current.sub] = current;
+            prev[current.username] = current;
             return prev;
           }, {} as Record<string, User>),
-          allIds: action.payload.users.map((item) => item.sub)
+          allIds: action.payload.users.map((item) => item.username)
         };
       })
       .addCase(getSessionMessages.pending, (state, action) => {

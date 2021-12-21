@@ -219,7 +219,9 @@ export const getInitialState = createAsyncThunk(
     const users = mapUserDisplayName(responseUsers.data.users);
 
     const activeSessions = responseActiveSessions.data.map((item) => {
-      const user = users.find((maybeUser) => maybeUser.sub === item.userID);
+      const user = users.find(
+        (maybeUser) => maybeUser.username === item.userID
+      );
 
       if (!item.internalUserID) {
         return {
