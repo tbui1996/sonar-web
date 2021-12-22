@@ -18,7 +18,6 @@ import {
 } from '../../@types/support';
 import LoadingScreen from '../LoadingScreen';
 import { useAuth } from '../../hooks/useAuth';
-import axios from '../../utils/axios';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -177,10 +176,10 @@ export default function MessageList({ session }: MessageListProps) {
                                 variant="outlined"
                                 color="secondary"
                                 onClick={async () => {
-                                  const s3Url = await axios.get<string>(
-                                    `/cloud/file_download/${message.fileID}`
+                                  const token = await auth.token();
+                                  window.open(
+                                    `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/cloud/file_download/${message.fileID}?authorization=${token}`
                                   );
-                                  window.open(s3Url.data);
                                 }}
                               >
                                 View

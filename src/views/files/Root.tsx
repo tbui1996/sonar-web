@@ -10,6 +10,7 @@ import LoadingScreen from '../../components/LoadingScreen';
 import { columns } from './filesTableColumns';
 import FileAssociate from './Associate';
 import ConfirmDialog from '../../components/general/app/ConfirmDialog';
+import { useAuth } from '../../hooks/useAuth';
 
 const DRAWER_WIDTH = 400;
 const useStyles = makeStyles({
@@ -37,6 +38,7 @@ export default function Files() {
   const [fileToUpdate, setFileToUpdate] = useState<File | null>();
   const [fileIdToDelete, setFileIdToDelete] = useState<number | null>();
   const classes = useStyles();
+  const { token } = useAuth();
 
   useEffect(() => {
     async function execute() {
@@ -95,16 +97,9 @@ export default function Files() {
     setOpenConfirm(!openConfirm);
   }
 
-  async function downloadFile(id: string) {
-    const s3Download = await axios.get(`/cloud/file_download/${id}`);
-    const newTab = window.open();
-    if (s3Download && newTab) {
-      newTab.location.href = s3Download.data;
-    }
-  }
-
   const handleClick = useCallback(
-    (param: GridCellParams) => {
+    async (param: GridCellParams) => {
+      const t = await token();
       switch (param?.colDef?.field) {
         case 'associate':
           setFileToUpdate({
@@ -123,7 +118,9 @@ export default function Files() {
           setOpen(!open);
           break;
         case 'view':
-          downloadFile(param.row.fileId);
+          window.open(
+            `https://api.${process.env.REACT_APP_BASE_API_DOMAIN}/cloud/file_download/${param.row.fileId}?authorization=${t}`
+          );
           break;
         case 'delete':
           setFileIdToDelete(param.row.id);
@@ -134,7 +131,7 @@ export default function Files() {
           break;
       }
     },
-    [open]
+    [token, open]
   );
 
   const loadingState = (

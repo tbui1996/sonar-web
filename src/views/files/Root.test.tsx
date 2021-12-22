@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { HelmetProvider } from 'react-helmet-async';
 import { MemoryRouter } from 'react-router-dom';
 import { makeServer } from '../../server';
@@ -21,6 +21,10 @@ jest.mock('react-router-dom', () => ({
   useHistory: () => ({
     push: mockHistoryPush
   })
+}));
+
+jest.mock('../../hooks/useAuth', () => ({
+  useAuth: () => ({ token: () => 'blah' })
 }));
 
 const setup = () => {

@@ -1,9 +1,9 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { makeServer } from '../../server';
 import FileAssociate from './Associate';
 import { File } from '../../@types/file';
-import userEvent from '@testing-library/user-event';
 
 let server: any;
 
@@ -15,20 +15,18 @@ afterEach(() => {
   server.shutdown();
 });
 
-const getFile = (memberId?: string): File => {
-  return {
-    id: 1,
-    fileId: '123-456-789',
-    fileName: 'test.png',
-    filePath: 'path',
-    fileMimetype: 'image/png',
-    memberId: memberId || '',
-    sendUserId: '0001',
-    dateUploaded: Date.now().toString(),
-    dateLastAccessed: Date.now().toString(),
-    chatId: '0002'
-  };
-};
+const getFile = (memberId?: string): File => ({
+  id: 1,
+  fileId: '123-456-789',
+  fileName: 'test.png',
+  filePath: 'path',
+  fileMimetype: 'image/png',
+  memberId: memberId || '',
+  sendUserId: '0001',
+  dateUploaded: Date.now().toString(),
+  dateLastAccessed: Date.now().toString(),
+  chatId: '0002'
+});
 
 const mockedSetOpen = jest.fn();
 const mockedUpdateData = jest.fn();
