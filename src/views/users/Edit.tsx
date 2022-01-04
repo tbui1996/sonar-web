@@ -1,4 +1,4 @@
-import { useState, useCallback, ChangeEvent } from 'react';
+import { useState, useCallback, ChangeEvent, SyntheticEvent } from 'react';
 import {
   TextField,
   FormControl,
@@ -10,10 +10,13 @@ import {
 import { useSnackbar } from 'notistack';
 import { Icon } from '@iconify/react';
 import closeFill from '@iconify/icons-eva/close-fill';
-import { EditUserProps } from '../../@types/users';
+import { EditUserProps, User } from '../../@types/users';
 import { MIconButton } from '../../components/@material-extend';
 import ConfirmDialog from '../../components/general/app/ConfirmDialog';
 import axios from '../../utils/axios';
+
+const UPDATE_USER_ROUTE = '/users/update_user';
+const REVOKE_USER_ROUTE = '/users/revoke_access';
 
 export default function EditUser({
   user,
@@ -26,6 +29,7 @@ export default function EditUser({
 }: EditUserProps) {
   const [updating, setUpdating] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [isEdited, setIsEdited] = useState(false);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const handleAction = useCallback(
@@ -45,18 +49,25 @@ export default function EditUser({
 
         const usersCopy = [...users.users];
         const userIndex = usersCopy?.findIndex(
-          (item: any) => item.sub === user.sub
+          (item: User) => item.id === user.id
         );
 
-        usersCopy[userIndex].group = route.includes('revoke_access')
-          ? ''
-          : user.group;
+        const updatedUsers: User[] = [
+          ...usersCopy.slice(0, userIndex),
+          {
+            ...user,
+            group: route.includes('revoke_access') ? '' : user?.group,
+            displayName: user?.firstName
+              ? `${user?.firstName} ${user?.lastName}`
+              : user?.email
+          },
+          ...usersCopy.slice(userIndex + 1)
+        ];
 
         setUsers({
           paginationToken: users?.paginationToken,
-          users: usersCopy
+          users: updatedUsers
         });
-
         setUser(undefined);
       } else {
         setUpdating(false);
@@ -83,26 +94,64 @@ export default function EditUser({
 
   const handleSaveChanges = () =>
     handleAction(
-      `/users/group_assign`,
-      { username: user?.email, group: user?.group },
+      UPDATE_USER_ROUTE,
+      {
+        id: user?.id,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        group: user?.group,
+        organizationId: user?.organization?.id || 0
+      },
       'Save'
     );
 
   const handleDisableUser = () =>
     handleAction(
-      `/users/revoke_access`,
+      REVOKE_USER_ROUTE,
       { username: user?.username },
-      'Action'
+      'Revoking User'
     );
 
-  const handleChange = (event: ChangeEvent<{ value: string }>) => {
+  const handleOrgChange = (
+    event: ChangeEvent<{
+      name?: string | undefined;
+      value: number;
+      event: Event | SyntheticEvent<Element, Event>;
+    }>
+  ) => {
+    if (user) {
+      const organizationId = event.target.value;
+      let selectedOrg;
+      if (organizationId === 0) {
+        selectedOrg = { id: 0, name: '-' };
+      } else {
+        selectedOrg = organizations?.find(
+          (org) => org.id === event.target.value
+        );
+      }
+
+      setUser({
+        ...user,
+        organization: selectedOrg || null
+      });
+      setIsEdited(true);
+    }
+  };
+
+  function handlerUserChanges(
+    e:
+      | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | ChangeEvent<{ value: string }>,
+    attribute: string
+  ) {
     if (user) {
       setUser({
         ...user,
-        group: event.target.value
+        [attribute]: e.target.value
       });
+      setIsEdited(true);
     }
-  };
+  }
 
   return (
     <div
@@ -125,8 +174,9 @@ export default function EditUser({
           label="First name"
           variant="outlined"
           value={user?.firstName}
-          disabled
+          disabled={updating}
           InputLabelProps={{ shrink: true }}
+          onChange={(e) => handlerUserChanges(e, 'firstName')}
         />
         <TextField
           sx={{ flexGrow: 1, marginLeft: '1em' }}
@@ -134,8 +184,9 @@ export default function EditUser({
           label="Last name"
           variant="outlined"
           value={user?.lastName}
-          disabled
+          disabled={updating}
           InputLabelProps={{ shrink: true }}
+          onChange={(e) => handlerUserChanges(e, 'lastName')}
         />
       </div>
       <div
@@ -147,7 +198,7 @@ export default function EditUser({
       >
         <FormControl
           variant="outlined"
-          disabled
+          disabled={updating}
           sx={{ flexGrow: 1, marginRight: '1em', width: '100% ' }}
         >
           <InputLabel id="org-select-label">Organization</InputLabel>
@@ -156,6 +207,7 @@ export default function EditUser({
             id="organization-select"
             value={user?.organization?.id || 0}
             label="Organization"
+            onChange={handleOrgChange}
           >
             <MenuItem value={0}>No organization</MenuItem>
             {organizations?.map((org) => (
@@ -184,13 +236,14 @@ export default function EditUser({
         <FormControl
           variant="outlined"
           sx={{ flexGrow: 1, marginRight: '1em', width: '100%' }}
+          disabled={updating}
         >
           <InputLabel id="role-select-label">Role</InputLabel>
           <Select
             labelId="role-select-label"
             id="role-select"
             value={user?.group}
-            onChange={handleChange}
+            onChange={(e) => handlerUserChanges(e, 'group')}
             label="Role"
           >
             <MenuItem value="" disabled>
@@ -225,7 +278,7 @@ export default function EditUser({
               textTransform: 'none'
             }}
             onClick={handleSaveChanges}
-            disabled={updating}
+            disabled={updating || !isEdited}
           >
             Save changes
           </Button>
