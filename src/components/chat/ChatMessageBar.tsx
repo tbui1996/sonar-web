@@ -80,7 +80,8 @@ export default function ChatMessageBar({
       if (loadingInitialState) {
         console.log(`Received chat message while initial state was loading.`);
       }
-    }
+    },
+    shouldReconnect: () => true
   });
 
   async function onSendMessage(fileID: string | null) {
