@@ -14,7 +14,7 @@ import { useAuth } from '../../hooks/useAuth';
 
 const DRAWER_WIDTH = 400;
 const useStyles = makeStyles({
-  table: {
+  root: {
     width: '100%',
     '& .MuiDataGrid-columnHeaderTitle': {
       whiteSpace: 'normal',
@@ -45,7 +45,7 @@ export default function Files() {
       const res = await axios.get<Array<File>>(`/cloud/get_file`);
 
       if (!res.data || !Array.isArray(res.data)) {
-        console.log('Expected forms to exist and be an array');
+        console.log('Expected files to exist and be an array');
       }
 
       setFiles(res.data || []);
@@ -188,10 +188,12 @@ export default function Files() {
             loadingState
           ) : (
             <DataGrid
+              getRowId={(row) => row.id}
               onCellClick={handleClick}
               columns={columns}
               rows={files}
-              className={classes.table}
+              className={classes.root}
+              columnBuffer={11}
               disableColumnMenu
               autoHeight
             />
