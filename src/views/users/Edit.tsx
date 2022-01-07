@@ -5,19 +5,22 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Button
+  Button,
+  Drawer
 } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import { Icon } from '@iconify/react';
 import closeFill from '@iconify/icons-eva/close-fill';
-import { EditUserProps, User } from '../../@types/users';
+import { EditUserProps, Organization, User } from '../../@types/users';
 import { MIconButton } from '../../components/@material-extend';
 import ConfirmDialog from '../../components/general/app/ConfirmDialog';
 import axios from '../../utils/axios';
+import NewOrganizationForm from './NewOrganizationForm';
 
 const UPDATE_USER_ROUTE = '/users/update_user';
 const REVOKE_USER_ROUTE = '/users/revoke_access';
 
+const DRAWER_WIDTH = 400;
 export default function EditUser({
   user,
   users,
@@ -31,6 +34,20 @@ export default function EditUser({
   const [openConfirm, setOpenConfirm] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [selectOrganizationID, setSelectedOrganizationID] = useState(
+    user?.organization?.id
+  );
+  const [organization, setOrganization] = useState<Organization | null>(null);
+
+  function handleOpen() {
+    setOpen(true);
+  }
+
+  function handleClose() {
+    setOpen(false);
+  }
 
   const handleAction = useCallback(
     async (route: string, params: any, snackBarMessage: string) => {
@@ -51,11 +68,11 @@ export default function EditUser({
         const userIndex = usersCopy?.findIndex(
           (item: User) => item.id === user.id
         );
-
         const updatedUsers: User[] = [
           ...usersCopy.slice(0, userIndex),
           {
             ...user,
+            organization,
             group: route.includes('revoke_access') ? '' : user?.group,
             displayName: user?.firstName
               ? `${user?.firstName} ${user?.lastName}`
@@ -82,13 +99,14 @@ export default function EditUser({
       }
     },
     [
-      user,
       users,
+      user,
       setEditView,
-      setUser,
+      organization,
       setUsers,
-      closeSnackbar,
-      enqueueSnackbar
+      setUser,
+      enqueueSnackbar,
+      closeSnackbar
     ]
   );
 
@@ -100,7 +118,7 @@ export default function EditUser({
         firstName: user?.firstName,
         lastName: user?.lastName,
         group: user?.group,
-        organizationId: user?.organization?.id || 0
+        organizationId: selectOrganizationID || 0
       },
       'Save'
     );
@@ -124,11 +142,14 @@ export default function EditUser({
       let selectedOrg;
       if (organizationId === 0) {
         selectedOrg = { id: 0, name: '-' };
+        setSelectedOrganizationID(0);
       } else {
         selectedOrg = organizations?.find(
           (org) => org.id === event.target.value
         );
+        setSelectedOrganizationID(organizationId);
       }
+      setOrganization(selectedOrg || null);
 
       setUser({
         ...user,
@@ -152,7 +173,6 @@ export default function EditUser({
       setIsEdited(true);
     }
   }
-
   return (
     <div
       style={{
@@ -205,11 +225,14 @@ export default function EditUser({
           <Select
             labelId="org-select-label"
             id="organization-select"
-            value={user?.organization?.id || 0}
+            value={selectOrganizationID || 0}
             label="Organization"
             onChange={handleOrgChange}
           >
             <MenuItem value={0}>No organization</MenuItem>
+            <MenuItem value={1} onClick={handleOpen}>
+              Create Organization
+            </MenuItem>
             {organizations?.map((org) => (
               <MenuItem value={org.id} key={org.id}>
                 {org.name}
@@ -217,6 +240,25 @@ export default function EditUser({
             ))}
           </Select>
         </FormControl>
+        <Drawer
+          anchor="right"
+          open={open}
+          PaperProps={{
+            sx: { width: DRAWER_WIDTH }
+          }}
+        >
+          <NewOrganizationForm
+            handleClose={handleClose}
+            loading={loading}
+            setLoading={setLoading}
+            user={user}
+            setOpen={setOpen}
+            setSelectedOrganizationID={setSelectedOrganizationID}
+            organizations={organizations}
+            setOrganization={setOrganization}
+            organization={organization}
+          />
+        </Drawer>
         <TextField
           sx={{ flexGrow: 1, marginLeft: '1em', width: '100%' }}
           id="emailAddress"
@@ -278,7 +320,7 @@ export default function EditUser({
               textTransform: 'none'
             }}
             onClick={handleSaveChanges}
-            disabled={updating || !isEdited}
+            disabled={updating || !isEdited || selectOrganizationID === 1}
           >
             Save changes
           </Button>
