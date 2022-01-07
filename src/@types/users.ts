@@ -29,3 +29,15 @@ export interface EditUserProps {
   setUser: (user?: User) => void;
   setUsers: (users?: Users) => void;
 }
+
+export interface NewOrganizationProps {
+  handleClose: () => void;
+  loading: boolean;
+  setLoading: (val: boolean) => void;
+  user?: User;
+  setOpen: (val: boolean) => void;
+  setSelectedOrganizationID: (val: number) => void;
+  organizations?: Organization[];
+  setOrganization: (val: Organization | null) => void;
+  organization: Organization | null;
+}
