@@ -31,7 +31,7 @@ export default function ChatHeader({ session }: ChatHeaderProps) {
               color: '#637381'
             }}
           >
-            {session?.user?.organization}
+            {session?.user?.organization?.name}
           </Typography>
         )}
       </div>
