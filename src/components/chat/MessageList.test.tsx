@@ -30,11 +30,12 @@ const getMockChatSession = (): ChatSession => {
     fileID: 'hello'
   };
   const mockUserInterface: User = {
+    id: '123',
     username: 'hello',
     email: 'hello@circulohealth.com',
     firstName: 'thomas',
     lastName: 'bui',
-    organization: 'abcd',
+    organization: { name: 'abcd', id: 123 },
     group: 'b',
     sub: 'wrold',
     displayName: 'tom'
