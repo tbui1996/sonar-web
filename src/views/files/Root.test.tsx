@@ -6,11 +6,12 @@ import {
   waitFor,
   waitForElementToBeRemoved
 } from '@testing-library/react';
+
 import { HelmetProvider } from 'react-helmet-async';
 import { MemoryRouter } from 'react-router-dom';
+import userEvent from '@testing-library/user-event';
 import { makeServer } from '../../server';
 import Files from './Root';
-import userEvent from '@testing-library/user-event';
 
 let server: any;
 

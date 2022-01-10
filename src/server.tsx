@@ -30,6 +30,8 @@ export function makeServer({ environment = 'test' } = {}) {
 
       this.get('/forms', (schema) => schema.all('form'));
 
+      this.get('/cloud/get_file', (schema) => schema.all('file'));
+
       this.put('/forms/edit', () => ({
         status: true,
         msg: 'Edited form successfully.'
