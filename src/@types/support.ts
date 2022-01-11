@@ -38,6 +38,7 @@ export type ChatSessionDTO = {
   topic?: string;
   notes?: string;
   pending?: boolean;
+  rideScheduled?: boolean;
 
   // Only available after chat session is assigned
   userLastRead?: number;

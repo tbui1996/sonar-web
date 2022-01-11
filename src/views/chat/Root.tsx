@@ -218,8 +218,8 @@ export default function Chat() {
     dispatch(checkUnreadMessages(session.ID));
   }
 
-  function onSwitchSessionOpenState() {
-    dispatch(postSwitchSessionOpen());
+  function onSwitchSessionOpenState(rideScheduled: boolean) {
+    dispatch(postSwitchSessionOpen(rideScheduled));
   }
 
   async function onOpenSession(id: string) {
