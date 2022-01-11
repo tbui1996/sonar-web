@@ -89,35 +89,35 @@ export const postUploadFile = createAsyncThunk(
   }
 );
 
-export const postSwitchSessionOpen = createAsyncThunk<
-  void,
-  void,
-  { state: RootState }
->('support/postSwitchSessionOpen', async (_, { getState }) => {
-  const state = getState();
-  const { activeSessionID, sessions } = state.support;
+export const postSwitchSessionOpen = createAsyncThunk(
+  'support/postSwitchSessionOpen',
+  async (rideScheduled: boolean, { getState }) => {
+    const state = getState() as RootState;
+    const { activeSessionID, sessions } = state.support;
 
-  if (!activeSessionID) {
-    throw new Error(
-      `[support/postSwitchSessionOpen]: expected active session id to be defined`
-    );
+    if (!activeSessionID) {
+      throw new Error(
+        `[support/postSwitchSessionOpen]: expected active session id to be defined`
+      );
+    }
+
+    const activeSession = sessions.byId[activeSessionID];
+
+    if (!activeSession) {
+      throw new Error(
+        `[support/postSwitchSessionOpen]: expected active session to exist`
+      );
+    }
+
+    await axiosInstance.post('/support/chat_session_update', {
+      // Pending is called before this callback is called in the payload creator
+      // Optimistic Response already changed this value.
+      rideScheduled,
+      open: activeSession.chatOpen,
+      id: activeSession.ID
+    });
   }
-
-  const activeSession = sessions.byId[activeSessionID];
-
-  if (!activeSession) {
-    throw new Error(
-      `[support/postSwitchSessionOpen]: expected active session to exist`
-    );
-  }
-
-  await axiosInstance.post('/support/chat_session_update', {
-    // Pending is called before this callback is called in the payload creator
-    // Optimistic Response already changed this value.
-    open: activeSession.chatOpen,
-    id: activeSession.ID
-  });
-});
+);
 
 export const getSessionMessages = createAsyncThunk(
   'support/getSessionMessages',

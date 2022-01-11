@@ -3,6 +3,10 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Button,
+  DialogActions,
+  DialogTitle,
+  Dialog,
   List,
   ListItem,
   ListItemText,
@@ -37,6 +41,7 @@ const useStyles = makeStyles({
 export default function ChatStatus({ session, callback }: ChatStatusProps) {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     setExpanded(false);
@@ -44,7 +49,12 @@ export default function ChatStatus({ session, callback }: ChatStatusProps) {
 
   function handleChangeStatus() {
     setExpanded(false);
-    callback();
+    setOpen(true);
+  }
+
+  function handle(rideScheduled: boolean) {
+    callback(rideScheduled);
+    setOpen(false);
   }
 
   return (
@@ -137,6 +147,20 @@ export default function ChatStatus({ session, callback }: ChatStatusProps) {
           </List>
         </AccordionDetails>
       </Accordion>
+
+      <Dialog
+        open={open}
+        onClose={() => handle(false)}
+        aria-labelledby="confirm-dialog-title"
+      >
+        <DialogTitle>
+          Was a Circulator ride scheduled from this chat?
+        </DialogTitle>
+        <DialogActions>
+          <Button onClick={() => handle(false)}>No</Button>
+          <Button onClick={() => handle(true)}>Yes</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

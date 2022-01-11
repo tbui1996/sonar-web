@@ -73,7 +73,7 @@ export type AccordionProps = {
 
 export type ChatStatusProps = {
   session?: ChatSession;
-  callback: () => void;
+  callback: (rideScheduled: boolean) => void;
 };
 
 export type ChatHeaderProps = {
