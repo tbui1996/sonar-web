@@ -14,10 +14,10 @@ import {
   Chip,
   IconButton,
   Card,
-  TablePagination,
-  makeStyles
+  TablePagination
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
+import { makeStyles } from '@mui/styles';
 
 import { PATH_DASHBOARD } from '../../routes/paths';
 import { Organization, User, Users } from '../../@types/users';
