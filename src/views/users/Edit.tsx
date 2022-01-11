@@ -1,4 +1,4 @@
-import { useState, useCallback, ChangeEvent, SyntheticEvent } from 'react';
+import { useState, useCallback, ChangeEvent } from 'react';
 import {
   TextField,
   FormControl,
@@ -130,13 +130,7 @@ export default function EditUser({
       'Revoking User'
     );
 
-  const handleOrgChange = (
-    event: ChangeEvent<{
-      name?: string | undefined;
-      value: number;
-      event: Event | SyntheticEvent<Element, Event>;
-    }>
-  ) => {
+  const handleOrgChange = (event: ChangeEvent<{ value: number }>) => {
     if (user) {
       const organizationId = event.target.value;
       let selectedOrg;
@@ -160,9 +154,7 @@ export default function EditUser({
   };
 
   function handlerUserChanges(
-    e:
-      | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-      | ChangeEvent<{ value: string }>,
+    e: ChangeEvent<{ value: string }>,
     attribute: string
   ) {
     if (user) {
@@ -230,7 +222,7 @@ export default function EditUser({
             onChange={handleOrgChange}
           >
             <MenuItem value={0}>No organization</MenuItem>
-            <MenuItem value={1} onClick={handleOpen}>
+            <MenuItem value={-1} onClick={handleOpen}>
               Create Organization
             </MenuItem>
             {organizations?.map((org) => (
@@ -320,7 +312,7 @@ export default function EditUser({
               textTransform: 'none'
             }}
             onClick={handleSaveChanges}
-            disabled={updating || !isEdited || selectOrganizationID === 1}
+            disabled={updating || !isEdited || selectOrganizationID === -1}
           >
             Save changes
           </Button>

@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { createServer, Model, Factory, Response } from 'miragejs';
+import { createServer, Model, Response } from 'miragejs';
 
 export function makeServer({ environment = 'test' } = {}) {
   const server = createServer({
@@ -7,22 +7,9 @@ export function makeServer({ environment = 'test' } = {}) {
 
     models: {
       form: Model,
-      file: Model
-    },
-
-    factories: {
-      form: Factory.extend({
-        title: 'Test Form',
-        description: 'This is a test form',
-        creator: 'Milu Franz',
-        created: new Date(),
-        deletedAt: null,
-        dateClosed: null
-      })
-    },
-
-    seeds(server) {
-      server.createList('form', 3);
+      file: Model,
+      user: Model,
+      organization: Model
     },
 
     routes() {
@@ -42,6 +29,26 @@ export function makeServer({ environment = 'test' } = {}) {
         msg: 'Deleted form successfully.'
       }));
 
+      this.get('/users/user_list', (schema) => {
+        const users = schema.all('user');
+        return new Response(200, {}, { users: users.models });
+      });
+
+      this.get('/users/organizations', (schema) => {
+        const organizations = schema.all('organization');
+        return new Response(200, {}, organizations.models);
+      });
+
+      this.put('/users/update_user', () => ({
+        status: true,
+        msg: 'Updated user successfully.'
+      }));
+
+      this.put('/users/revoke_access', () => ({
+        status: true,
+        msg: 'Revoked user successfully.'
+      }));
+
       this.get('/cloud/get_file', (schema) => {
         const files = schema.all('file');
         return new Response(200, {}, files.models);
@@ -56,6 +63,12 @@ export function makeServer({ environment = 'test' } = {}) {
         status: true,
         msg: 'Associated file successfully.'
       }));
+
+      this.post('/users/organizations', (schema, request) => {
+        const attrs = JSON.parse(request.requestBody);
+        schema.create('organization', attrs);
+        return new Response(200, {}, { ID: '1', name: attrs.name });
+      });
 
       this.passthrough();
     }
