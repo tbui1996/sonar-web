@@ -19,7 +19,7 @@ import {
   getSessionMessages
 } from './thunks';
 
-type ChatState = {
+export type ChatState = {
   loadingInitialState: boolean;
 
   error: boolean;
@@ -42,7 +42,7 @@ type ChatState = {
   };
 };
 
-const initialState: ChatState = {
+export const initialState: ChatState = {
   loadingInitialState: false,
   error: false,
   messageSending: false,

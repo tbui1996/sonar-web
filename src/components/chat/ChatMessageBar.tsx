@@ -240,7 +240,6 @@ export default function ChatMessageBar({
     !user ||
     !activeSession.chatOpen ||
     messageSending;
-
   return (
     <div>
       {messageSending && <LinearProgress />}

@@ -34,7 +34,7 @@ const unAuthUser = {
   isPublic: true
 };
 
-const initialState: AuthJWTState = {
+export const initialState: AuthJWTState = {
   isLoading: false,
   isAuthenticated: false,
   user: unAuthUser

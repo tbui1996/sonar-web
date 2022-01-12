@@ -18,7 +18,7 @@ type MailState = {
   labels: MailLabel[];
 };
 
-const initialState: MailState = {
+export const initialState: MailState = {
   isLoading: false,
   error: false,
   mails: { byId: {}, allIds: [] },
