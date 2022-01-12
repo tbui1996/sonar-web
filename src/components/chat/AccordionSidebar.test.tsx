@@ -61,13 +61,11 @@ const setup = () => {
   const accordionButton = screen.getByTestId('notes-accordion');
   const patientInfo = screen.getByText('Patient Information');
   const supervisorHeader = screen.getByText('Supervisors');
-  const patientInfoGroup = screen.getByText('aasdfklqadslkmq', { exact: true });
   const documentsHeader = screen.getByText(/Documents/i);
   return {
     accordionButton,
     patientInfo,
     supervisorHeader,
-    patientInfoGroup,
     documentsHeader,
     ...screen
   };
@@ -113,11 +111,6 @@ test('Patient Information text renders', () => {
 test('Supervisors header text renders', () => {
   const { supervisorHeader } = setup();
   expect(supervisorHeader).toBeInTheDocument();
-});
-
-test('Renders Patient Information Group', () => {
-  const { patientInfoGroup } = setup();
-  expect(patientInfoGroup).toBeInTheDocument();
 });
 
 test('Documents Header loads', () => {

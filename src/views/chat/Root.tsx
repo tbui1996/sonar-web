@@ -21,7 +21,6 @@ import Page from '../../components/Page';
 import MessageList from '../../components/chat/MessageList';
 import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
-import LoadingScreen from '../../components/LoadingScreen';
 import {
   ChatSessionStatus,
   Message,
@@ -55,6 +54,7 @@ import {
 import AlertSnackbar from '../../components/AlertSnackbar';
 import { AlertState } from '../../@types/alert';
 import ChatMessageBar from '../../components/chat/ChatMessageBar';
+import LoadingScreen from '../../components/LoadingScreen';
 
 const useStyles = makeStyles({
   justify: {

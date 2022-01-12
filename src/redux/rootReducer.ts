@@ -30,4 +30,4 @@ const rootReducer = combineReducers({
   authJwt: persistReducer(authPersistConfig, authJwtReducer)
 });
 
-export { rootPersistConfig, rootReducer };
+export { rootPersistConfig, rootReducer, authPersistConfig };

@@ -72,6 +72,7 @@ export default function UserListItem({
       placement="right-start"
     >
       <ListItem
+        data-testid={`user-list-item-${session.ID}`}
         button
         selected={isActive}
         onClick={onOpenChat}

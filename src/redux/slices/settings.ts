@@ -4,7 +4,7 @@ import { SettingsState } from '../../@types/settings';
 
 // ----------------------------------------------------------------------
 
-const initialState: SettingsState = {
+export const initialState: SettingsState = {
   themeMode: 'light',
   themeDirection: 'ltr'
 };
