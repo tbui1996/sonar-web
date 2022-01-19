@@ -1,7 +1,9 @@
 // routes
+import { Flag } from '@material-ui/icons';
 import { PATH_DASHBOARD } from '../../routes/paths';
 // components
 import SvgIconStyle from '../../components/SvgIconStyle';
+import CognitoGroups from '../../constants/cognitoGroups';
 
 // ----------------------------------------------------------------------
 
@@ -34,7 +36,8 @@ const ICONS = {
   analytics: getIcon('ic_analytics'),
   dashboard: getIcon('ic_dashboard'),
   components: getIcon('ic_components'),
-  authenticator: getIcon('ic_authenticator')
+  authenticator: getIcon('ic_authenticator'),
+  flags: <Flag />
 };
 
 const sidebarConfig = [
@@ -78,6 +81,12 @@ const sidebarConfig = [
         title: 'Files',
         href: PATH_DASHBOARD.modalities.files.root,
         icon: ICONS.elements
+      },
+      {
+        title: 'Flags',
+        href: PATH_DASHBOARD.modalities.flags.root,
+        requiredGroup: CognitoGroups.DEVELOPMENT_ADMIN,
+        icon: ICONS.flags
       }
     ]
   }

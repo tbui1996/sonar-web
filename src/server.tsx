@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { createServer, Model, Response } from 'miragejs';
+import { createServer, Factory, Model, Response } from 'miragejs';
 
 export function makeServer({ environment = 'test' } = {}) {
   const server = createServer({
@@ -9,7 +9,21 @@ export function makeServer({ environment = 'test' } = {}) {
       form: Model,
       file: Model,
       user: Model,
-      organization: Model
+      organization: Model,
+      flag: Model
+    },
+
+    factories: {
+      flag: Factory.extend({
+        name: (i) => `FlagName ${i}`,
+        key: (i) => `FlagKey${i}`,
+        id: (i) => i,
+        updatedAt: '2022-01-18T16:25Z',
+        createdAt: '2022-01-18T16:25Z',
+        updatedBy: 'test-user-id',
+        createdBy: 'test-user-id',
+        isEnabled: true
+      })
     },
 
     routes() {
@@ -69,6 +83,43 @@ export function makeServer({ environment = 'test' } = {}) {
         schema.create('organization', attrs);
         return new Response(200, {}, { ID: '1', name: attrs.name });
       });
+
+      this.get(
+        '/flags',
+        (schema) =>
+          new Response(
+            200,
+            {},
+            {
+              result: schema.all('flag').models
+            }
+          )
+      );
+
+      this.patch('/flags/:id', async (schema, request) => {
+        const flag = schema.find('flag', request.params.id);
+        if (flag) {
+          flag.update(JSON.parse(request.requestBody));
+          return new Response(200, {}, {});
+        }
+        return new Response(404);
+      });
+
+      this.get(
+        '/flags/evaluate',
+        (schema) =>
+          new Response(
+            200,
+            {},
+            {
+              result: {
+                ...schema
+                  .all('flag')
+                  .models.map((flag) => ({ [flag.key]: flag.isEnabled }))
+              }
+            }
+          )
+      );
 
       this.passthrough();
     }

@@ -53,6 +53,9 @@ export const PATH_DASHBOARD = {
     },
     files: {
       root: path(ROOTS_DASHBOARD, '/files')
+    },
+    flags: {
+      root: path(ROOTS_DASHBOARD, '/flags')
     }
   },
   user: {

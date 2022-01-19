@@ -5,6 +5,7 @@ import { PATH_DASHBOARD } from './paths';
 import AuthGuard from '../guards/AuthGuard';
 // layouts
 import DashboardLayout from '../layouts/dashboard';
+import DevelopmentAdminGuard from '../guards/DevelopmentAdminGuard';
 // ----------------------------------------------------------------------
 
 const DashboardRoutes = {
@@ -84,6 +85,12 @@ const DashboardRoutes = {
       exact: true,
       path: PATH_DASHBOARD.modalities.users.root,
       component: lazy(() => import('../views/users/Root'))
+    },
+    {
+      exact: true,
+      path: PATH_DASHBOARD.modalities.flags.root,
+      component: lazy(() => import('../views/flags/Root')),
+      guard: DevelopmentAdminGuard
     },
     {
       exact: true,
