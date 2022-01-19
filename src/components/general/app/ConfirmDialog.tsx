@@ -5,13 +5,16 @@ import {
   DialogContent,
   Button
 } from '@material-ui/core';
+import { ReactNode, ReactNodeArray } from 'react';
+import { LoadingButton } from '@material-ui/lab';
 
 type Props = {
   open: boolean;
   title: string;
-  description: string;
+  description: string | ReactNode | ReactNodeArray;
   onConfirm: () => void;
   onCancel: () => void;
+  isConfirming?: boolean;
 };
 
 export default function ConfirmDialog({
@@ -19,7 +22,8 @@ export default function ConfirmDialog({
   title,
   description,
   onConfirm,
-  onCancel
+  onCancel,
+  isConfirming = false
 }: Props) {
   return (
     <Dialog
@@ -31,7 +35,9 @@ export default function ConfirmDialog({
       <DialogContent>{description}</DialogContent>
       <DialogActions>
         <Button onClick={onCancel}>Cancel</Button>
-        <Button onClick={onConfirm}>Confirm</Button>
+        <LoadingButton pending={isConfirming} onClick={onConfirm}>
+          Confirm
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );

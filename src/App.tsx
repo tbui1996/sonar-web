@@ -9,6 +9,7 @@ import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
 // auth
 import { Amplify } from '@aws-amplify/core';
 // redux
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { store, persistor } from './redux/store';
 // routes
 import routes, { renderRoutes } from './routes';
@@ -48,27 +49,31 @@ Amplify.configure({
 
 const history = createBrowserHistory();
 
+const queryClient = new QueryClient();
+
 export default function App() {
   return (
     <HelmetProvider>
       <ReduxProvider store={store}>
         <PersistGate loading={<LoadingScreen />} persistor={persistor}>
-          <ThemeConfig>
-            <RtlLayout>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <NotistackProvider>
-                  <Router history={history}>
-                    <JwtProvider>
-                      <Settings />
-                      <ScrollToTop />
-                      <GoogleAnalytics />
-                      {renderRoutes(routes)}
-                    </JwtProvider>
-                  </Router>
-                </NotistackProvider>
-              </LocalizationProvider>
-            </RtlLayout>
-          </ThemeConfig>
+          <QueryClientProvider client={queryClient}>
+            <ThemeConfig>
+              <RtlLayout>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <NotistackProvider>
+                    <Router history={history}>
+                      <JwtProvider>
+                        <Settings />
+                        <ScrollToTop />
+                        <GoogleAnalytics />
+                        {renderRoutes(routes)}
+                      </JwtProvider>
+                    </Router>
+                  </NotistackProvider>
+                </LocalizationProvider>
+              </RtlLayout>
+            </ThemeConfig>
+          </QueryClientProvider>
         </PersistGate>
       </ReduxProvider>
     </HelmetProvider>

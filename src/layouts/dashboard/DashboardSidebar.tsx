@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useMemo } from 'react';
 import { Link as RouterLink, useLocation, matchPath } from 'react-router-dom';
 // material
 import { experimentalStyled as styled } from '@material-ui/core/styles';
@@ -20,6 +20,7 @@ import Scrollbar from '../../components/Scrollbar';
 //
 import MenuLinks from './SidebarConfig';
 import SidebarItem from './SidebarItem';
+import useGetCognitoUser from '../../hooks/useGetCognitoUser';
 
 // ----------------------------------------------------------------------
 
@@ -57,6 +58,7 @@ type TNavItem = {
   href: string;
   title: string;
   items?: TNavItem[];
+  requiredGroup?: string;
 };
 
 type ReduceChildParams = {
@@ -86,11 +88,11 @@ function reduceChild({ array, item, pathname, level }: ReduceChildParams) {
         title={item.title}
         open={Boolean(match)}
       >
-        {renderSidebarItems({
-          pathname,
-          level: level + 1,
-          items: item.items
-        })}
+        <SideBarItems
+          items={item.items}
+          pathname={pathname}
+          level={level + 1}
+        />
       </SidebarItem>
     ];
   }
@@ -113,14 +115,27 @@ type RenderSidebarItemsParams = {
   level?: number;
 };
 
-function renderSidebarItems({
+function SideBarItems({
   items,
   pathname,
   level = 0
 }: RenderSidebarItemsParams) {
+  const { data: cognitoUser } = useGetCognitoUser();
+  const cognitoGroups =
+    cognitoUser?.signInUserSession.accessToken.payload['cognito:groups'];
+
+  const filteredItems = useMemo(
+    () =>
+      items.filter(
+        (i) =>
+          i.requiredGroup == null || cognitoGroups?.includes(i.requiredGroup)
+      ),
+    [items, cognitoGroups]
+  );
+
   return (
     <List disablePadding>
-      {items.reduce<ReactNode[]>(
+      {filteredItems.reduce<ReactNode[]>(
         (array, item) => reduceChild({ array, item, pathname, level }),
         []
       )}
@@ -187,10 +202,7 @@ export default function DashboardSidebar({
             </ListSubheader>
           }
         >
-          {renderSidebarItems({
-            items: list.items,
-            pathname
-          })}
+          <SideBarItems items={list.items} pathname={pathname} />
         </List>
       ))}
     </Scrollbar>
