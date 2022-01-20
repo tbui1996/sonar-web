@@ -15,6 +15,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import useGetFeatureFlags from '../../hooks/domain/queries/useGetFeatureFlags';
+import useDeleteFeatureFlag from '../../hooks/domain/mutations/useDeleteFeatureFlag';
 import CreateFeatureFlagDialog from './CreateFeatureFlagDialog';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -43,6 +44,10 @@ const Flags: React.FC = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const { data: flags } = useGetFeatureFlags();
+  const {
+    mutateAsync: deleteFlag,
+    isLoading: isDeleting
+  } = useDeleteFeatureFlag();
   const [selectedFlagsIds, setSelectedFlagIds] = useState<
     Record<number, boolean>
   >({});
@@ -128,25 +133,32 @@ const Flags: React.FC = () => {
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
       />
-      <ConfirmDialog
-        open={isDeleteConfirmOpen}
-        title="Are you sure you want to delete these flags?"
-        description={
-          <Box>
-            <Typography variant="subtitle2">
-              By confirming the following flags will be deleted:
-            </Typography>
-            <ul style={{ padding: '8px 16px 0 16px' }}>
-              {flags &&
-                flags
-                  .filter((f) => selectedFlagsIds[f.id])
-                  .map((f) => <li key={f.id}>{f.name}</li>)}
-            </ul>
-          </Box>
-        }
-        onConfirm={() => setIsDeleteConfirmOpen(false)}
-        onCancel={() => setIsDeleteConfirmOpen(false)}
-      />
+      {selectedFlags && (
+        <ConfirmDialog
+          isConfirming={isDeleting}
+          open={isDeleteConfirmOpen}
+          title="Are you sure you want to delete these flags?"
+          description={
+            <Box>
+              <Typography variant="subtitle2">
+                By confirming the following flags will be deleted:
+              </Typography>
+              <ul style={{ padding: '8px 16px 0 16px' }}>
+                {selectedFlags.map((f) => (
+                  <li key={f.id}>{f.name}</li>
+                ))}
+              </ul>
+            </Box>
+          }
+          onConfirm={async () => {
+            await Promise.all(
+              selectedFlags.map((flag) => deleteFlag({ id: flag.id }))
+            );
+            setIsDeleteConfirmOpen(false);
+          }}
+          onCancel={() => setIsDeleteConfirmOpen(false)}
+        />
+      )}
     </Page>
   );
 };

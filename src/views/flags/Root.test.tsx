@@ -139,5 +139,30 @@ describe('feature flags root', () => {
         })
       ).toBeInTheDocument();
     });
+
+    test('flag should be removed after deletion and the delete button should be disabled', async () => {
+      const selectRowBox = await screen.findByRole('checkbox', {
+        name: 'select flag with key FlagKey0'
+      });
+
+      selectRowBox.click();
+
+      const deleteFlagBtn = await screen.findByRole('button', {
+        name: /delete/i
+      });
+      expect(deleteFlagBtn).not.toBeDisabled();
+
+      deleteFlagBtn.click();
+
+      const confirmBtn = await screen.findByRole('button', {
+        name: /confirm/i
+      });
+      confirmBtn.click();
+      expect(
+        screen.queryByRole('checkbox', {
+          name: 'select flag with key FlagKey0'
+        })
+      ).toBeNull();
+    });
   });
 });
