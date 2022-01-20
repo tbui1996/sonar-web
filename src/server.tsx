@@ -121,6 +121,14 @@ export function makeServer({ environment = 'test' } = {}) {
           )
       );
 
+      this.delete('flags/:id', async (schema, request) => {
+        const flag = schema.find('flag', request.params.id);
+        if (flag) {
+          flag.destroy();
+          return new Response(200, {}, {});
+        }
+        return new Response(404);
+      });
       this.passthrough();
     }
   });
