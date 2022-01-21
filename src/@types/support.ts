@@ -36,6 +36,7 @@ export type ChatSessionDTO = {
   internalUserID?: string;
   chatOpen?: boolean;
   topic?: string;
+  patient?: Patient;
   notes?: string;
   pending?: boolean;
   rideScheduled?: boolean;
@@ -84,4 +85,12 @@ export type SessionID = {
 export type ChatSessionUpdateRequest = {
   id: string;
   open: boolean;
+};
+
+export type Patient = {
+  name: string;
+  lastName: string;
+  address: string;
+  medicaidID: string;
+  birthday: Date;
 };

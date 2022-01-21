@@ -6,6 +6,10 @@ export function fDate(date: string | number | Date) {
   return format(new Date(date), 'dd MMMM yyyy');
 }
 
+export function fDateDash(date: string | number | Date) {
+  return format(new Date(date), 'MM-dd-yyyy');
+}
+
 export function fDateTime(date: string | number | Date) {
   return format(new Date(date), 'dd MMM yyyy HH:mm');
 }
