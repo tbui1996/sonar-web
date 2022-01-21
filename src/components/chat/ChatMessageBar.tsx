@@ -119,6 +119,8 @@ export default function ChatMessageBar({
     );
     dispatch(readMessages());
 
+    onTypingAction('stop');
+
     // Send through websocket
     sendJsonMessage({
       action: 'support',
@@ -140,6 +142,20 @@ export default function ChatMessageBar({
         message: JSON.stringify({
           sessionID: activeSessionID,
           userID: user.id
+        })
+      }
+    });
+  }
+
+  function onTypingAction(action: 'start' | 'stop') {
+    sendJsonMessage({
+      action: 'support',
+      payload: {
+        type: 'typing',
+        message: JSON.stringify({
+          sessionID: activeSessionID,
+          userID: user.id,
+          action
         })
       }
     });
@@ -253,6 +269,8 @@ export default function ChatMessageBar({
         }
         onChange={onChangeMessage}
         onKeyDown={handleKeypress}
+        onFocus={() => onTypingAction('start')}
+        onBlur={() => onTypingAction('stop')}
         multiline
         type="text"
         disabled={disabled || file !== undefined}
