@@ -7,7 +7,6 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import GroupIcon from '@material-ui/icons/Group';
-import PersonIcon from '@material-ui/icons/Person';
 import { makeStyles } from '@material-ui/core/styles';
 import { InsertDriveFile } from '@material-ui/icons';
 import { ChangeEvent, useState, useCallback, useEffect } from 'react';
@@ -16,19 +15,29 @@ import axios from '../../utils/axios';
 import { AccordionProps } from '../../@types/chat';
 import { dispatch } from '../../redux/store';
 import { updateSessionNotes } from '../../redux/slices/support';
+import { fDateDash } from '../../utils/formatTime';
+import { PATH_DASHBOARD } from '../../routes/paths';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     boxShadow: 'none !important'
+  },
+  patientInfoContainer: {
+    flexDirection: 'row',
+    marginBottom: theme.spacing(2)
+  },
+  patientInfoTitle: {
+    marginRight: theme.spacing(2)
   }
-});
+}));
 
 export default function AccordionSidebar({ activeSession }: AccordionProps) {
   const classes = useStyles();
-  const url = process.env.REACT_APP_DOPPLER_DASHBOARD_URL;
+  const url = PATH_DASHBOARD.modalities.files.root;
   const activeSessionID = activeSession?.ID;
   const providerName = activeSession?.user?.displayName;
-  const patientInfo = activeSession?.topic;
+  const patientInfo = activeSession?.patient;
+  const patientTopic = activeSession?.topic;
 
   const [notes, setNotes] = useState('');
 
@@ -69,10 +78,54 @@ export default function AccordionSidebar({ activeSession }: AccordionProps) {
           <Typography variant="overline">Patient Information</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          {patientInfo && (
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-              <PersonIcon sx={{ marginRight: '10px' }} />
-              <Typography variant="body2">{patientInfo}</Typography>
+          {patientInfo ? (
+            <>
+              <div className={classes.patientInfoContainer}>
+                <Typography
+                  variant="overline"
+                  className={classes.patientInfoTitle}
+                >
+                  Name:
+                </Typography>
+                <Typography variant="body2">
+                  {`${patientInfo.name} ${patientInfo.lastName}`}
+                </Typography>
+              </div>
+              <div className={classes.patientInfoContainer}>
+                <Typography
+                  variant="overline"
+                  className={classes.patientInfoTitle}
+                >
+                  Medicaid ID:
+                </Typography>
+                <Typography variant="body2">
+                  {patientInfo.medicaidID}
+                </Typography>
+              </div>
+              <div className={classes.patientInfoContainer}>
+                <Typography
+                  variant="overline"
+                  className={classes.patientInfoTitle}
+                >
+                  Address:
+                </Typography>
+                <Typography variant="body2">{patientInfo.address}</Typography>
+              </div>
+              <div style={{ flexDirection: 'row' }}>
+                <Typography
+                  variant="overline"
+                  className={classes.patientInfoTitle}
+                >
+                  Birth date:
+                </Typography>
+                <Typography variant="body2">
+                  {fDateDash(patientInfo.birthday)}
+                </Typography>
+              </div>
+            </>
+          ) : (
+            <div className={classes.patientInfoContainer}>
+              <Typography variant="body2">{patientTopic}</Typography>
             </div>
           )}
           {!patientInfo && (
@@ -112,8 +165,8 @@ export default function AccordionSidebar({ activeSession }: AccordionProps) {
           <Typography component="span" variant="body2">
             <div style={{ display: 'flex', flexDirection: 'row' }}>
               <InsertDriveFile sx={{ marginRight: '10px' }} />
-              <a href={url} target="_blank" rel="noreferrer">
-                View files on Doppler Dashboard
+              <a href={url} rel="noreferrer">
+                View files
               </a>
             </div>
           </Typography>

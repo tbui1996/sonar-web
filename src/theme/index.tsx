@@ -36,6 +36,7 @@ export default function ThemeConfig({ children }: ThemeConfigProps) {
       typography,
       shape,
       breakpoints,
+      spacing: 8,
       direction: themeDirection,
       shadows: isLight ? shadows.light : shadows.dark,
       customShadows: isLight ? customShadows.light : customShadows.dark
