@@ -85,6 +85,18 @@ export function makeServer({ environment = 'test' } = {}) {
       });
 
       this.get(
+        '/cloud/upload/url?filename=:filename',
+        () => new Response(200, {}, { url: 'tests3url/:filename' })
+      );
+
+      this.put('/tests3url/:filename', () => ({
+        status: true,
+        msg: 'File uploaded successfully.'
+      }));
+
+      this.post('/cloud/upload', () => new Response(200, {}, { fileID: '1' }));
+
+      this.get(
         '/flags',
         (schema) =>
           new Response(
