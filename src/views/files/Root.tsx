@@ -11,6 +11,7 @@ import { columns } from './filesTableColumns';
 import FileAssociate from './Associate';
 import ConfirmDialog from '../../components/general/app/ConfirmDialog';
 import { useAuth } from '../../hooks/useAuth';
+import UploadFile from '../../components/upload/UploadFile';
 
 const DRAWER_WIDTH = 400;
 const useStyles = makeStyles({
@@ -155,6 +156,7 @@ export default function Files() {
             { name: 'Files' }
           ]}
         />
+        <UploadFile />
         <Card
           sx={{
             minHeight: '50vh',
