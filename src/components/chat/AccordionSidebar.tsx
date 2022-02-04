@@ -88,7 +88,9 @@ export default function AccordionSidebar({ activeSession }: AccordionProps) {
                   Name:
                 </Typography>
                 <Typography variant="body2">
-                  {`${patientInfo.name} ${patientInfo.lastName}`}
+                  {patientInfo.name
+                    ? `${patientInfo.name} ${patientInfo.lastName}`
+                    : patientTopic}
                 </Typography>
               </div>
               <div className={classes.patientInfoContainer}>
@@ -99,7 +101,9 @@ export default function AccordionSidebar({ activeSession }: AccordionProps) {
                   Medicaid ID:
                 </Typography>
                 <Typography variant="body2">
-                  {patientInfo.medicaidID}
+                  {patientInfo.medicaidID
+                    ? patientInfo.medicaidID
+                    : 'Unavailable'}
                 </Typography>
               </div>
               <div className={classes.patientInfoContainer}>
@@ -109,7 +113,9 @@ export default function AccordionSidebar({ activeSession }: AccordionProps) {
                 >
                   Address:
                 </Typography>
-                <Typography variant="body2">{patientInfo.address}</Typography>
+                <Typography variant="body2">
+                  {patientInfo.address ? patientInfo.address : 'Unavailable'}
+                </Typography>
               </div>
               <div style={{ flexDirection: 'row' }}>
                 <Typography
@@ -119,7 +125,12 @@ export default function AccordionSidebar({ activeSession }: AccordionProps) {
                   Birth date:
                 </Typography>
                 <Typography variant="body2">
-                  {fDateDash(patientInfo.birthday)}
+                  {/* eslint-disable-next-line no-nested-ternary */}
+                  {patientInfo.name
+                    ? fDateDash(patientInfo.birthday)
+                    : patientTopic?.split(' ').length === 4
+                    ? patientTopic?.split(' ')[3]
+                    : 'Unavailable'}
                 </Typography>
               </div>
             </>

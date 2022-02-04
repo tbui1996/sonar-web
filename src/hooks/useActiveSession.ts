@@ -17,7 +17,6 @@ export default function useActiveSession() {
     }
 
     const nextActiveSession = sessions.byId[activeSessionID];
-
     if (!nextActiveSession) {
       console.log(
         'Expected to find session for active session id: ',
