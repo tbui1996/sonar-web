@@ -87,6 +87,11 @@ const sidebarConfig = [
         href: PATH_DASHBOARD.modalities.flags.root,
         requiredGroup: CognitoGroups.DEVELOPMENT_ADMIN,
         icon: ICONS.flags
+      },
+      {
+        title: 'Appointments',
+        href: PATH_DASHBOARD.modalities.appointments.root,
+        icon: ICONS.calendar
       }
     ]
   }
