@@ -56,6 +56,9 @@ export const PATH_DASHBOARD = {
     },
     flags: {
       root: path(ROOTS_DASHBOARD, '/flags')
+    },
+    appointments: {
+      root: path(ROOTS_DASHBOARD, '/appointments')
     }
   },
   user: {

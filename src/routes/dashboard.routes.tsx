@@ -94,6 +94,11 @@ const DashboardRoutes = {
     },
     {
       exact: true,
+      path: PATH_DASHBOARD.modalities.appointments.root,
+      component: lazy(() => import('../views/appointments/Root'))
+    },
+    {
+      exact: true,
       path: PATH_DASHBOARD.user.account,
       component: () => <Redirect to="/404" />
     },
