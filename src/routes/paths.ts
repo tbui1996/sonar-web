@@ -59,6 +59,9 @@ export const PATH_DASHBOARD = {
     },
     appointments: {
       root: path(ROOTS_DASHBOARD, '/appointments')
+    },
+    patients: {
+      root: path(ROOTS_DASHBOARD, '/patients')
     }
   },
   user: {
