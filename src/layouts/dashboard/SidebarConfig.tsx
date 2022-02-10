@@ -92,6 +92,11 @@ const sidebarConfig = [
         title: 'Appointments',
         href: PATH_DASHBOARD.modalities.appointments.root,
         icon: ICONS.calendar
+      },
+      {
+        title: 'Patients',
+        href: PATH_DASHBOARD.modalities.patients.root,
+        icon: ICONS.user
       }
     ]
   }

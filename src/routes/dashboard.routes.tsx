@@ -88,6 +88,11 @@ const DashboardRoutes = {
     },
     {
       exact: true,
+      path: PATH_DASHBOARD.modalities.patients.root,
+      component: lazy(() => import('../views/patients/Root'))
+    },
+    {
+      exact: true,
       path: PATH_DASHBOARD.modalities.flags.root,
       component: lazy(() => import('../views/flags/Root')),
       guard: DevelopmentAdminGuard
