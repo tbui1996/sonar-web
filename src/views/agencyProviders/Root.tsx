@@ -30,9 +30,9 @@ const AgencyProviders: React.FC = () => {
       <Paper elevation={4}>
         <TableContainer>
           <Toolbar>
-            <Button variant="outlined">Add Patient</Button>
+            <Button variant="outlined">Add AgencyProvider</Button>
           </Toolbar>
-          <Table sx={{ minWidth: 480 }} arai-label="Patients">
+          <Table sx={{ minWidth: 480 }} arai-label="agencyProviders">
             <TableHead>
               <TableRow>
                 <TableCell align="right">Edit</TableCell>
