@@ -1,6 +1,5 @@
 import {
   Button,
-  makeStyles,
   Paper,
   Table,
   TableBody,
@@ -8,7 +7,6 @@ import {
   TableContainer,
   TableHead,
   Toolbar,
-  Tooltip,
   TableRow
 } from '@material-ui/core';
 import { zonedTimeToUtc, format } from 'date-fns-tz';
@@ -18,20 +16,8 @@ import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import useGetAgencyProviders from '../../hooks/domain/queries/useGetAgencyProviders';
 
-const useStyles = makeStyles((theme) => ({
-  deleteButtonRoot: {
-    marginLeft: theme.spacing(1),
-    '&.Mui-disabled': {
-      pointerEvents: 'auto',
-      cursor: 'help'
-    }
-  }
-}));
-
 const AgencyProviders: React.FC = () => {
-  const classes = useStyles();
   const { data: agencyProviders } = useGetAgencyProviders();
-
   return (
     <Page title="Agency Provider | Sonar">
       <HeaderDashboard
@@ -45,19 +31,6 @@ const AgencyProviders: React.FC = () => {
         <TableContainer>
           <Toolbar>
             <Button variant="outlined">Add Patient</Button>
-            <Tooltip title="Select Agency Provider to delete them">
-              <div>
-                <Button
-                  sx={{ marginLeft: '8px' }}
-                  classes={{
-                    root: classes.deleteButtonRoot
-                  }}
-                  variant="contained"
-                >
-                  Delete Selected
-                </Button>
-              </div>
-            </Tooltip>
           </Toolbar>
           <Table sx={{ minWidth: 480 }} arai-label="Patients">
             <TableHead>
