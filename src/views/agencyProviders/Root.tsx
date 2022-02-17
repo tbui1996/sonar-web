@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Button,
   Paper,
@@ -15,9 +16,12 @@ import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import useGetAgencyProviders from '../../hooks/domain/queries/useGetAgencyProviders';
+import CreateAgencyProviderDialog from './CreateAgencyProviderDialog';
 
 const AgencyProviders: React.FC = () => {
   const { data: agencyProviders } = useGetAgencyProviders();
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+
   return (
     <Page title="Agency Provider | Sonar">
       <HeaderDashboard
@@ -30,7 +34,7 @@ const AgencyProviders: React.FC = () => {
       <Paper elevation={4}>
         <TableContainer>
           <Toolbar>
-            <Button variant="outlined">Add AgencyProvider</Button>
+            <Button variant="outlined">Add Agency Provider</Button>
           </Toolbar>
           <Table sx={{ minWidth: 480 }} arai-label="agencyProviders">
             <TableHead>
@@ -91,6 +95,10 @@ const AgencyProviders: React.FC = () => {
           </Table>
         </TableContainer>
       </Paper>
+      <CreateAgencyProviderDialog
+        isOpen={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+      />
     </Page>
   );
 };
