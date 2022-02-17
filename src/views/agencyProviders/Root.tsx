@@ -11,7 +11,7 @@ import {
   Tooltip,
   TableRow
 } from '@material-ui/core';
-import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
+import { zonedTimeToUtc, format } from 'date-fns-tz';
 import AgencyProviderRow from './AgencyProviderRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -27,12 +27,6 @@ const useStyles = makeStyles((theme) => ({
     }
   }
 }));
-
-const formatInTimeZone = (
-  date: string | number | Date,
-  fmt: string,
-  tz: string
-) => format(utcToZonedTime(date, tz), fmt, { timeZone: tz });
 
 const AgencyProviders: React.FC = () => {
   const classes = useStyles();
