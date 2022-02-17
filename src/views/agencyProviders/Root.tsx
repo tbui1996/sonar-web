@@ -62,7 +62,7 @@ const AgencyProviders: React.FC = () => {
           <Table sx={{ minWidth: 480 }} arai-label="Patients">
             <TableHead>
               <TableRow>
-                <TableCell padding="checkbox" />
+                <TableCell align="right">Edit</TableCell>
                 <TableCell>Agency Provider ID</TableCell>
                 <TableCell>Nation Provider ID</TableCell>
                 <TableCell>First Name</TableCell>

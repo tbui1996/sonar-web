@@ -1,5 +1,6 @@
 import React from 'react';
-import { TableCell, TableRow, useTheme, Checkbox } from '@material-ui/core';
+import { TableCell, TableRow, useTheme, IconButton } from '@material-ui/core';
+import { Edit } from '@material-ui/icons';
 import { AgencyProviderDetails } from '../../hooks/domain/queries/useGetAgencyProviders';
 
 const AgencyProviderRow: React.FC<AgencyProviderDetails> = ({
@@ -31,12 +32,9 @@ const AgencyProviderRow: React.FC<AgencyProviderDetails> = ({
         }}
       >
         <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            inputProps={{
-              'aria-label': `select agency provider with name ${firstName}`
-            }}
-          />
+          <IconButton color="primary">
+            <Edit />
+          </IconButton>
         </TableCell>
         <TableCell>{agencyProviderId}</TableCell>
         <TableCell>{nationalProviderId}</TableCell>
