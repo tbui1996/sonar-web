@@ -1,9 +1,28 @@
 import React from 'react';
 import { TableCell, TableRow, useTheme, IconButton } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
-import { AgencyProviderDetails } from '../../hooks/domain/queries/useGetAgencyProviders';
+// import { AgencyProviderDetails } from '../../hooks/domain/queries/useGetAgencyProviders';
 
-const AgencyProviderRow: React.FC<AgencyProviderDetails> = ({
+interface AgencyProvderDetail {
+  handleClick: () => void;
+  agencyProviderId: string;
+  nationalProviderId: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  suffix: string;
+  businessName: string;
+  businessTIN: string;
+  businessAddress1: string;
+  businessAddress2: string;
+  businessCity: string;
+  businessState: string;
+  businessZip: string;
+  createdTimestamp: string;
+  lastModifiedTimestamp: string;
+}
+const AgencyProviderRow: React.FC<AgencyProvderDetail> = ({
+  handleClick,
   agencyProviderId,
   nationalProviderId,
   firstName,
@@ -21,7 +40,7 @@ const AgencyProviderRow: React.FC<AgencyProviderDetails> = ({
   lastModifiedTimestamp
 }) => {
   const theme = useTheme();
-
+  console.log({ nationalProviderId });
   return (
     <>
       <TableRow
@@ -31,8 +50,8 @@ const AgencyProviderRow: React.FC<AgencyProviderDetails> = ({
           borderBottom: `1px solid ${theme.palette.primary.lighter}`
         }}
       >
-        <TableCell padding="checkbox">
-          <IconButton color="primary">
+        <TableCell>
+          <IconButton onClick={handleClick} color="primary">
             <Edit />
           </IconButton>
         </TableCell>

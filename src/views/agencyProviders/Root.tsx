@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   Button,
   Paper,
@@ -15,12 +15,29 @@ import AgencyProviderRow from './AgencyProviderRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
-import useGetAgencyProviders from '../../hooks/domain/queries/useGetAgencyProviders';
+import useGetAgencyProviders, {
+  AgencyProviderDetails
+} from '../../hooks/domain/queries/useGetAgencyProviders';
 import CreateAgencyProviderDialog from './CreateAgencyProviderDialog';
+import EditAgencyProviderDialog from './EditAgencyProviderDialog';
 
 const AgencyProviders: React.FC = () => {
   const { data: agencyProviders } = useGetAgencyProviders();
+  console.log({ agencyProviders });
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [
+    agencyProviderToEdit,
+    setAgencyProviderToEdit
+  ] = useState<AgencyProviderDetails>();
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+  const handleClick = useCallback(
+    (agencyProvider: AgencyProviderDetails) => {
+      setAgencyProviderToEdit(agencyProvider);
+      setIsEditDialogOpen(true);
+    },
+    [setIsEditDialogOpen, setAgencyProviderToEdit]
+  );
 
   return (
     <Page title="Agency Provider | Sonar">
@@ -34,7 +51,12 @@ const AgencyProviders: React.FC = () => {
       <Paper elevation={4}>
         <TableContainer>
           <Toolbar>
-            <Button variant="outlined">Add Agency Provider</Button>
+            <Button
+              variant="outlined"
+              onClick={() => setIsCreateDialogOpen(true)}
+            >
+              Add Agency Provider
+            </Button>
           </Toolbar>
           <Table sx={{ minWidth: 480 }} arai-label="agencyProviders">
             <TableHead>
@@ -62,6 +84,7 @@ const AgencyProviders: React.FC = () => {
                 agencyProviders.map((agencyProvider, i) => (
                   <AgencyProviderRow
                     key={i}
+                    handleClick={() => handleClick(agencyProvider)}
                     agencyProviderId={agencyProvider.agencyProviderId}
                     nationalProviderId={agencyProvider.nationalProviderId}
                     firstName={agencyProvider.firstName}
@@ -99,6 +122,12 @@ const AgencyProviders: React.FC = () => {
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
       />
+      {agencyProviderToEdit && isEditDialogOpen && (
+        <EditAgencyProviderDialog
+          onClose={() => setIsEditDialogOpen(false)}
+          agencyProvider={agencyProviderToEdit}
+        />
+      )}
     </Page>
   );
 };
