@@ -62,12 +62,19 @@ const CreateAgencyProviderDialog: React.FC<CreateAgencyProviderDialogProps> = ({
       onClose();
     },
     onError: (e) => {
-      let key: '' | 'nationalProviderId' = '';
+      let key: '' | 'nationalProviderId' | 'doddNumber' = '';
 
       if (
-        e.startsWith('agency with this national provider id already exists')
+        e.startsWith(
+          'Agency Provider with this national provider id already exists'
+        )
       ) {
         key = 'nationalProviderId';
+      }
+      if (
+        e.startsWith('Agency Provider with this DoDD number already exists')
+      ) {
+        key = 'doddNumber';
       }
       if (key) {
         setError(
