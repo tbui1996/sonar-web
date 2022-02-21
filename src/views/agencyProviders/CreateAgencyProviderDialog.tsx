@@ -98,7 +98,6 @@ const CreateAgencyProviderDialog: React.FC<CreateAgencyProviderDialogProps> = ({
       <DialogContent>
         <form onSubmit={onFormSubmit}>
           <TextField
-            required
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
             label="NPI"
@@ -106,6 +105,16 @@ const CreateAgencyProviderDialog: React.FC<CreateAgencyProviderDialogProps> = ({
             error={!!errors.nationalProviderId}
             helperText={errors.nationalProviderId?.message}
             {...register('nationalProviderId')}
+          />
+          <TextField
+            required
+            sx={{ marginBottom: theme.spacing(2) }}
+            fullWidth
+            label="DoDD Number"
+            id="doddNumber"
+            error={!!errors.doddNumber}
+            helperText={errors.doddNumber?.message}
+            {...register('doddNumber')}
           />
           <TextField
             required
