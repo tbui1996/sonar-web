@@ -5,7 +5,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  MenuItem,
   IconButton,
   TextField,
   Grid,
@@ -13,7 +12,7 @@ import {
   Typography
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { LoadingButton } from '@material-ui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
