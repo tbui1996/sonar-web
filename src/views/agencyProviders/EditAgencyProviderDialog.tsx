@@ -52,6 +52,7 @@ const EditAgencyProviderDialog: React.FC<EditAgencyProviderDialogProps> = ({
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors }
   } = useForm<Form>({
     mode: 'onTouched',
@@ -65,6 +66,32 @@ const EditAgencyProviderDialog: React.FC<EditAgencyProviderDialogProps> = ({
       onClose();
     },
     onError: (e) => {
+      // let key: '' | 'nationalProviderId' | 'doddNumber' = '';
+
+      // if (
+      //   e.startsWith('Agency Provider with this DoDD number already exists')
+      // ) {
+      //   key = 'doddNumber';
+      // }
+
+      // if (
+      //   e.startsWith(
+      //     'Agency Provider with this national provider id already exists'
+      //   )
+      // ) {
+      //   key = 'nationalProviderId';
+      // }
+
+      // if (key) {
+      //   setError(
+      //     key,
+      //     {
+      //       type: 'manual',
+      //       message: e
+      //     },
+      //     { shouldFocus: true }
+      //   );
+      // }
       enqueueSnackbar('Failed to edit', {
         variant: 'error',
         autoHideDuration: 4_000
@@ -91,7 +118,7 @@ const EditAgencyProviderDialog: React.FC<EditAgencyProviderDialogProps> = ({
       <DialogContent>
         <form onSubmit={onFormSubmit}>
           <Grid container spacing={1}>
-            <Typography item component={Grid} xs={12} variant="h2">
+            <Typography item component={Grid} xs={12} variant="h3">
               Agency Provider Info
             </Typography>
             <Grid item xs={12} md={6} lg={4} xl={2}>
@@ -103,6 +130,17 @@ const EditAgencyProviderDialog: React.FC<EditAgencyProviderDialogProps> = ({
                 error={!!errors.firstName}
                 helperText={errors.firstName?.message}
                 {...register('firstName')}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
+              <TextField
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="DoDD Number"
+                id="doddNumber"
+                error={!!errors.doddNumber}
+                helperText={errors.doddNumber?.message}
+                {...register('doddNumber')}
               />
             </Grid>
             <Grid item xs={12} md={6} lg={4} xl={2}>
@@ -142,7 +180,7 @@ const EditAgencyProviderDialog: React.FC<EditAgencyProviderDialogProps> = ({
               <TextField
                 sx={{ marginBottom: theme.spacing(2) }}
                 fullWidth
-                label="Nation Provider ID"
+                label="National Provider ID"
                 id="nationalProviderId"
                 error={!!errors.nationalProviderId}
                 helperText={errors.nationalProviderId?.message}

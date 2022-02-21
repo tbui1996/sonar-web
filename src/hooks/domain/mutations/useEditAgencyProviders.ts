@@ -19,6 +19,7 @@ const useEditAgencyProvider = (
     (request) =>
       axiosInstance.put(`/agency_provider/${request.agencyProviderId}`, {
         agencyProviderId: request.agencyProviderId,
+        doddNumber: request.doddNumber,
         nationalProviderId: request.nationalProviderId,
         firstName: request.firstName,
         middleName: request.middleName,
