@@ -66,32 +66,32 @@ const EditAgencyProviderDialog: React.FC<EditAgencyProviderDialogProps> = ({
       onClose();
     },
     onError: (e) => {
-      // let key: '' | 'nationalProviderId' | 'doddNumber' = '';
+      let key: '' | 'nationalProviderId' | 'doddNumber' = '';
 
-      // if (
-      //   e.startsWith('Agency Provider with this DoDD number already exists')
-      // ) {
-      //   key = 'doddNumber';
-      // }
+      if (
+        e.startsWith('Agency Provider with this DoDD number already exists')
+      ) {
+        key = 'doddNumber';
+      }
 
-      // if (
-      //   e.startsWith(
-      //     'Agency Provider with this national provider id already exists'
-      //   )
-      // ) {
-      //   key = 'nationalProviderId';
-      // }
+      if (
+        e.startsWith(
+          'Agency Provider with this national provider id already exists'
+        )
+      ) {
+        key = 'nationalProviderId';
+      }
 
-      // if (key) {
-      //   setError(
-      //     key,
-      //     {
-      //       type: 'manual',
-      //       message: e
-      //     },
-      //     { shouldFocus: true }
-      //   );
-      // }
+      if (key) {
+        setError(
+          key,
+          {
+            type: 'manual',
+            message: e
+          },
+          { shouldFocus: true }
+        );
+      }
       enqueueSnackbar('Failed to edit', {
         variant: 'error',
         autoHideDuration: 4_000
