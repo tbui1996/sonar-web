@@ -118,7 +118,6 @@ const CreateAgencyProviderDialog: React.FC<CreateAgencyProviderDialogProps> = ({
             {...register('firstName')}
           />
           <TextField
-            required
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
             label="Middle Name"
@@ -138,7 +137,6 @@ const CreateAgencyProviderDialog: React.FC<CreateAgencyProviderDialogProps> = ({
             {...register('lastName')}
           />
           <TextField
-            required
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
             label="Suffix"
@@ -158,7 +156,6 @@ const CreateAgencyProviderDialog: React.FC<CreateAgencyProviderDialogProps> = ({
             {...register('businessName')}
           />
           <TextField
-            required
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
             label="Business T.I.N"
@@ -178,7 +175,6 @@ const CreateAgencyProviderDialog: React.FC<CreateAgencyProviderDialogProps> = ({
             {...register('businessAddress1')}
           />
           <TextField
-            required
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
             label="Business Address 2"
