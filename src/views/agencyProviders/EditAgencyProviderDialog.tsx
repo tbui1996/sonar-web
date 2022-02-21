@@ -27,7 +27,8 @@ export interface EditAgencyProviderDialogProps {
 type Form = Omit<AgencyProviderDetails, 'handleClick'>;
 const schema = yup.object<Form>({
   agencyProviderId: yup.string(),
-  nationalProviderId: yup.string().required().label('national provider id'),
+  doddNumber: yup.string().required().label('Dodd Number'),
+  nationalProviderId: yup.string(),
   firstName: yup.string().required().label('first name'),
   middleName: yup.string(),
   lastName: yup.string().required().label('last name'),

@@ -6,6 +6,7 @@ import { Edit } from '@material-ui/icons';
 interface AgencyProvderDetail {
   handleClick: () => void;
   agencyProviderId: string;
+  doddNumber: string;
   nationalProviderId: string;
   firstName: string;
   middleName: string;
@@ -24,6 +25,7 @@ interface AgencyProvderDetail {
 const AgencyProviderRow: React.FC<AgencyProvderDetail> = ({
   handleClick,
   agencyProviderId,
+  doddNumber,
   nationalProviderId,
   firstName,
   middleName,
@@ -56,6 +58,7 @@ const AgencyProviderRow: React.FC<AgencyProvderDetail> = ({
           </IconButton>
         </TableCell>
         <TableCell>{agencyProviderId}</TableCell>
+        <TableCell>{doddNumber}</TableCell>
         <TableCell>{nationalProviderId}</TableCell>
         <TableCell>{firstName}</TableCell>
         <TableCell>{middleName}</TableCell>

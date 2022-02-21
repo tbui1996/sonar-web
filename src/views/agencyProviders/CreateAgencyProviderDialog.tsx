@@ -22,7 +22,8 @@ export interface CreateAgencyProviderDialogProps {
 
 const schema = yup.object<AgencyProviderDetails>({
   agencyProviderId: yup.string(),
-  nationalProviderId: yup.string().required().label('N.I.P'),
+  doddNumber: yup.string().required().label('Dodd Number'),
+  nationalProviderId: yup.string(),
   firstName: yup.string().required().label('First Name'),
   middleName: yup.string(),
   lastName: yup.string().required().label('Last Name'),

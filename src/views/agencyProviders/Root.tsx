@@ -63,6 +63,7 @@ const AgencyProviders: React.FC = () => {
               <TableRow>
                 <TableCell align="right">Edit</TableCell>
                 <TableCell>Agency Provider ID</TableCell>
+                <TableCell>DoDD Number</TableCell>
                 <TableCell>Nation Provider ID</TableCell>
                 <TableCell>First Name</TableCell>
                 <TableCell>Middle Name</TableCell>
@@ -86,6 +87,7 @@ const AgencyProviders: React.FC = () => {
                     key={i}
                     handleClick={() => handleClick(agencyProvider)}
                     agencyProviderId={agencyProvider.agencyProviderId}
+                    doddNumber={agencyProvider.doddNumber}
                     nationalProviderId={agencyProvider.nationalProviderId}
                     firstName={agencyProvider.firstName}
                     middleName={agencyProvider.middleName}

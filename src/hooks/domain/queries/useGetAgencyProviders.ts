@@ -7,6 +7,7 @@ interface ResultWrapper<T> {
 
 export interface AgencyProviderDetails {
   agencyProviderId: string;
+  doddNumber: string;
   nationalProviderId: string;
   firstName: string;
   middleName: string;
