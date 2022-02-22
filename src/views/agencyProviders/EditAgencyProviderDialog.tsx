@@ -94,7 +94,7 @@ const EditAgencyProviderDialog: React.FC<EditAgencyProviderDialogProps> = ({
       }
       enqueueSnackbar('Failed to edit', {
         variant: 'error',
-        autoHideDuration: 4_000
+        autoHideDuration: 1_000
       });
     }
   });
