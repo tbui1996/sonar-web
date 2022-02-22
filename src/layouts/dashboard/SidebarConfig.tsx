@@ -100,7 +100,8 @@ const sidebarConfig = [
       },
       {
         title: 'Agency Providers',
-        href: PATH_DASHBOARD.modalities.agencyProviders.root
+        href: PATH_DASHBOARD.modalities.agencyProviders.root,
+        icon: ICONS.page
       }
     ]
   }
