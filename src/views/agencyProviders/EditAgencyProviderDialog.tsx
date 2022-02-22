@@ -187,6 +187,17 @@ const EditAgencyProviderDialog: React.FC<EditAgencyProviderDialogProps> = ({
                 {...register('nationalProviderId')}
               />
             </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
+              <TextField
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="Business TIN"
+                id="businessTIN"
+                error={!!errors.businessTIN}
+                helperText={errors.businessTIN?.message}
+                {...register('businessTIN')}
+              />
+            </Grid>
           </Grid>
           <Grid container spacing={1}>
             <Typography item component={Grid} xs={12} variant="h3">
