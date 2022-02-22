@@ -1,7 +1,9 @@
 import React from 'react';
-import { TableCell, TableRow, useTheme, Checkbox } from '@material-ui/core';
+import { TableCell, TableRow, useTheme, IconButton } from '@material-ui/core';
+import { Edit, Check, Close } from '@material-ui/icons';
 
 export interface PatientDetails {
+  handleClick: () => void;
   patientId: string;
   insuranceId: string;
   patientFirstName: string;
@@ -31,6 +33,7 @@ export interface PatientDetails {
 }
 
 const PatientRow: React.FC<PatientDetails> = ({
+  handleClick,
   patientId,
   insuranceId,
   patientFirstName,
@@ -59,7 +62,6 @@ const PatientRow: React.FC<PatientDetails> = ({
   patientLastModifiedTimestamp
 }) => {
   const theme = useTheme();
-
   return (
     <>
       <TableRow
@@ -69,14 +71,12 @@ const PatientRow: React.FC<PatientDetails> = ({
           borderBottom: `1px solid ${theme.palette.primary.lighter}`
         }}
       >
-        <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            inputProps={{
-              'aria-label': `select appointment with name ${patientFirstName}`
-            }}
-          />
+        <TableCell>
+          <IconButton onClick={handleClick} color="primary">
+            <Edit />
+          </IconButton>
         </TableCell>
+
         <TableCell>{patientId}</TableCell>
         <TableCell>{insuranceId}</TableCell>
         <TableCell>{patientFirstName}</TableCell>
@@ -95,12 +95,16 @@ const PatientRow: React.FC<PatientDetails> = ({
         <TableCell>{patientHomeCounty}</TableCell>
         <TableCell>{patientHomeState}</TableCell>
         <TableCell>{patientHomeZip}</TableCell>
-        <TableCell>{patientSignedCirculoConsentForm}</TableCell>
+        <TableCell>
+          {patientSignedCirculoConsentForm ? <Check /> : <Close />}
+        </TableCell>
         <TableCell>{patientCirculoConsentFormLink}</TableCell>
-        <TableCell>{patientSignedStationMDConsentForm}</TableCell>
+        <TableCell>
+          {patientSignedStationMDConsentForm ? <Check /> : <Close />}
+        </TableCell>
         <TableCell>{patientStationMDConsentFormLink}</TableCell>
-        <TableCell>{patientCompletedGoSheet}</TableCell>
-        <TableCell>{patientMarkedAsActive}</TableCell>
+        <TableCell>{patientCompletedGoSheet ? <Check /> : <Close />}</TableCell>
+        <TableCell>{patientMarkedAsActive ? <Check /> : <Close />}</TableCell>
         <TableCell>{patientCreatedTimestamp}</TableCell>
         <TableCell>{patientLastModifiedTimestamp}</TableCell>
       </TableRow>
