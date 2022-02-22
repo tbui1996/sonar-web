@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Button,
   Paper,
@@ -8,9 +8,15 @@ import {
   TableContainer,
   TableHead,
   Toolbar,
-  TableRow
+  TableRow,
+  Select,
+  MenuItem,
+  Box
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { zonedTimeToUtc, format } from 'date-fns-tz';
+import SearchBar from 'material-ui-search-bar';
+import FormControl from '@mui/material/FormControl';
 import AgencyProviderRow from './AgencyProviderRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -21,15 +27,38 @@ import useGetAgencyProviders, {
 import CreateAgencyProviderDialog from './CreateAgencyProviderDialog';
 import EditAgencyProviderDialog from './EditAgencyProviderDialog';
 
+const useStyles = makeStyles((theme) => ({
+  deleteButtonRoot: {
+    marginLeft: theme.spacing(1),
+    '&.Mui-disabled': {
+      pointerEvents: 'auto',
+      cursor: 'help'
+    }
+  }
+}));
+
 const AgencyProviders: React.FC = () => {
+  const classes = useStyles();
   const { data: agencyProviders } = useGetAgencyProviders();
-  console.log({ agencyProviders });
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [
     agencyProviderToEdit,
     setAgencyProviderToEdit
   ] = useState<AgencyProviderDetails>();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [rows, setRows] = useState<AgencyProviderDetails[] | undefined>(
+    agencyProviders
+  );
+  const [searched, setSearched] = useState<string>('');
+  const [searchOption, setSearchOpen] = useState('');
+
+  const handleChange = (e: any) => {
+    setSearchOpen(e?.target.value);
+  };
+
+  useEffect(() => {
+    setRows(agencyProviders);
+  }, [setRows, agencyProviders]);
 
   const handleClick = useCallback(
     (agencyProvider: AgencyProviderDetails) => {
@@ -38,6 +67,22 @@ const AgencyProviders: React.FC = () => {
     },
     [setIsEditDialogOpen, setAgencyProviderToEdit]
   );
+
+  const requestSearch = (searchedVal: string) => {
+    const lowerCaseSearch = searchedVal.toLocaleLowerCase();
+    const filteredRows = agencyProviders?.filter(
+      (row) =>
+        row.firstName.toLowerCase().includes(lowerCaseSearch) ||
+        row.middleName.toLowerCase().includes(lowerCaseSearch) ||
+        row.lastName.toLowerCase().includes(lowerCaseSearch)
+    );
+    setRows(filteredRows);
+  };
+
+  const cancelSearch = () => {
+    setSearched('');
+    requestSearch(searched);
+  };
 
   return (
     <Page title="Agency Provider | Sonar">
@@ -57,6 +102,36 @@ const AgencyProviders: React.FC = () => {
             >
               Add Agency Provider
             </Button>
+            <FormControl
+              fullWidth
+              sx={{
+                marginTop: 4,
+                paddingBottom: 2,
+                width: 1 / 7
+              }}
+              classes={{ root: classes.deleteButtonRoot }}
+            >
+              <Select
+                labelId="searchBy"
+                id="searchBy"
+                defaultValue="Provider Name"
+                value={searchOption}
+                label="Choose Option to Search By"
+                onChange={handleChange}
+              >
+                <MenuItem value="Provider Name">Provider Name</MenuItem>
+                <MenuItem value="Business Name">Business Name</MenuItem>
+                <MenuItem value="Dodd Number">DoDD Number</MenuItem>
+              </Select>
+            </FormControl>
+            {searchOption && (
+              <SearchBar
+                placeholder={`Search By ${searchOption}`}
+                value={searched}
+                onChange={(searchVal: string) => requestSearch(searchVal)}
+                onCancelSearch={() => cancelSearch()}
+              />
+            )}
           </Toolbar>
           <Table sx={{ minWidth: 480 }} arai-label="agencyProviders">
             <TableHead>
@@ -81,8 +156,8 @@ const AgencyProviders: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {agencyProviders &&
-                agencyProviders.map((agencyProvider, i) => (
+              {rows &&
+                rows.map((agencyProvider, i) => (
                   <AgencyProviderRow
                     key={i}
                     handleClick={() => handleClick(agencyProvider)}
