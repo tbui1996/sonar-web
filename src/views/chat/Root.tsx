@@ -238,9 +238,18 @@ export default function Chat() {
     dispatch(activateSession(id));
 
     if (session.pending) {
-      dispatch(
+      const response = await dispatch(
         postAssignSessionToUser({ sessionID: id, internalUserID: user.id })
       );
+
+      if (!response.payload) {
+        setAlertState({
+          ...alertState,
+          open: true,
+          message: 'Chat session has already been assigned'
+        });
+        dispatch(getInitialState());
+      }
     }
 
     if (session.status === ChatSessionStatus.UNHYDRATED) {
