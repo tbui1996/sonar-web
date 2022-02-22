@@ -12,11 +12,14 @@ import {
   TableRow
 } from '@material-ui/core';
 import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
-import PatientRow from './PatientRow';
+import { useCallback, useState } from 'react';
+import CreatePatientDialog from './CreatePatientDialog';
+import PatientRow, { PatientDetails } from './PatientRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import useGetPatients from '../../hooks/domain/queries/useGetPatients';
+import EditPatientDialog from './EditPatientDialog';
 
 const useStyles = makeStyles((theme) => ({
   deleteButtonRoot: {
@@ -37,7 +40,23 @@ const formatInTimeZone = (
 const Patients: React.FC = () => {
   const classes = useStyles();
   const { data: patients } = useGetPatients();
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [patientToEdit, setPatientToEdit] = useState<PatientDetails | null>();
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
+  const handleClick = useCallback(
+    (patient: PatientDetails) => {
+      patient.patientDateOfBirth = formatInTimeZone(
+        patient.patientDateOfBirth,
+        'yyyy-MM-dd',
+        'UTC'
+      );
+
+      setPatientToEdit(patient);
+      setIsEditDialogOpen(true);
+    },
+    [setIsEditDialogOpen, setPatientToEdit]
+  );
   return (
     <Page title="Patients | Sonar">
       <HeaderDashboard
@@ -50,7 +69,12 @@ const Patients: React.FC = () => {
       <Paper elevation={4}>
         <TableContainer>
           <Toolbar>
-            <Button variant="outlined">Add Patient</Button>
+            <Button
+              variant="outlined"
+              onClick={() => setIsCreateDialogOpen(true)}
+            >
+              Add Patient
+            </Button>
             <Tooltip title="Select Patients to delete them">
               <div>
                 <Button
@@ -68,7 +92,7 @@ const Patients: React.FC = () => {
           <Table sx={{ minWidth: 480 }} arai-label="Patients">
             <TableHead>
               <TableRow>
-                <TableCell padding="checkbox" />
+                <TableCell>Edit</TableCell>
                 <TableCell>Patient ID</TableCell>
                 <TableCell>Insurance ID</TableCell>
                 <TableCell>First Name</TableCell>
@@ -102,6 +126,7 @@ const Patients: React.FC = () => {
                 patients.map((patient, i) => (
                   <PatientRow
                     key={i}
+                    handleClick={() => handleClick(patient)}
                     patientId={patient.patientId}
                     insuranceId={patient.insuranceId}
                     patientFirstName={patient.patientFirstName}
@@ -160,6 +185,16 @@ const Patients: React.FC = () => {
           </Table>
         </TableContainer>
       </Paper>
+      <CreatePatientDialog
+        isOpen={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+      />
+      {patientToEdit && isEditDialogOpen && (
+        <EditPatientDialog
+          onClose={() => setIsEditDialogOpen(false)}
+          patient={patientToEdit}
+        />
+      )}
     </Page>
   );
 };
