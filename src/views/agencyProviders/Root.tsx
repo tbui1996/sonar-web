@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect } from 'react';
 import {
   Button,
   Paper,
-  Box,
   Table,
   TableBody,
   TableCell,
@@ -74,7 +73,6 @@ const AgencyProviders: React.FC = () => {
   const requestSearch = (searchedVal: string, searchOption: string) => {
     let filteredRows;
     const lowerCaseSearch = searchedVal.toLocaleLowerCase();
-    console.log({ lowerCaseSearch });
     if (searchOption === 'Provider Name') {
       filteredRows = agencyProviders?.filter(
         (row) =>
@@ -82,14 +80,12 @@ const AgencyProviders: React.FC = () => {
           row.middleName.toLowerCase().includes(lowerCaseSearch) ||
           row.lastName.toLowerCase().includes(lowerCaseSearch)
       );
-      console.log({ filteredRows });
     }
 
     if (searchOption === 'Business Name') {
       filteredRows = agencyProviders?.filter((row) =>
         row.businessName.toLowerCase().includes(lowerCaseSearch)
       );
-      console.log({ filteredRows });
     }
 
     if (searchOption === 'Dodd Number') {

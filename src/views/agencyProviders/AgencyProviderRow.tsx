@@ -1,7 +1,6 @@
 import React from 'react';
 import { TableCell, TableRow, useTheme, IconButton } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
-// import { AgencyProviderDetails } from '../../hooks/domain/queries/useGetAgencyProviders';
 
 interface AgencyProvderDetail {
   handleClick: () => void;
