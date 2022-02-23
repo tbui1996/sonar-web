@@ -10,8 +10,7 @@ import {
   Toolbar,
   TableRow,
   Select,
-  MenuItem,
-  Box
+  MenuItem
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { zonedTimeToUtc, format } from 'date-fns-tz';
@@ -114,18 +113,19 @@ const AgencyProviders: React.FC = () => {
               <Select
                 labelId="searchBy"
                 id="searchBy"
-                defaultValue="Provider Name"
-                value={searchOption}
                 label="Choose Option to Search By"
+                value={searchOption}
                 onChange={handleChange}
               >
+                <MenuItem value="Option to Search By">Search By</MenuItem>
                 <MenuItem value="Provider Name">Provider Name</MenuItem>
                 <MenuItem value="Business Name">Business Name</MenuItem>
                 <MenuItem value="Dodd Number">DoDD Number</MenuItem>
               </Select>
             </FormControl>
-            {searchOption && (
+            {searchOption && searchOption !== 'Option to Search By' && (
               <SearchBar
+                style={{}}
                 placeholder={`Search By ${searchOption}`}
                 value={searched}
                 onChange={(searchVal: string) => requestSearch(searchVal)}
