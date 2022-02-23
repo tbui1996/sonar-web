@@ -10,7 +10,8 @@ import {
   Toolbar,
   TableRow,
   Select,
-  MenuItem
+  MenuItem,
+  InputLabel
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { zonedTimeToUtc, format } from 'date-fns-tz';
@@ -67,20 +68,37 @@ const AgencyProviders: React.FC = () => {
     [setIsEditDialogOpen, setAgencyProviderToEdit]
   );
 
-  const requestSearch = (searchedVal: string) => {
+  const requestSearch = (searchedVal: string, searchOption: string) => {
+    let filteredRows;
     const lowerCaseSearch = searchedVal.toLocaleLowerCase();
-    const filteredRows = agencyProviders?.filter(
-      (row) =>
-        row.firstName.toLowerCase().includes(lowerCaseSearch) ||
-        row.middleName.toLowerCase().includes(lowerCaseSearch) ||
-        row.lastName.toLowerCase().includes(lowerCaseSearch)
-    );
+
+    if (searchOption === 'Provider Name') {
+      filteredRows = agencyProviders?.filter(
+        (row) =>
+          row.firstName.toLowerCase().includes(lowerCaseSearch) ||
+          row.middleName.toLowerCase().includes(lowerCaseSearch) ||
+          row.lastName.toLowerCase().includes(lowerCaseSearch)
+      );
+    }
+
+    if (searchOption === 'DoDD Number') {
+      filteredRows = agencyProviders?.filter((row) =>
+        row.doddNumber.includes(searchedVal)
+      );
+    }
+
+    if (searchOption === 'Business Name') {
+      filteredRows = agencyProviders?.filter((row) =>
+        row.businessName.toLowerCase().includes(lowerCaseSearch)
+      );
+    }
+
     setRows(filteredRows);
   };
 
   const cancelSearch = () => {
     setSearched('');
-    requestSearch(searched);
+    requestSearch(searched, searchOption);
   };
 
   return (
@@ -105,22 +123,24 @@ const AgencyProviders: React.FC = () => {
               fullWidth
               sx={{
                 marginTop: 4,
-                paddingBottom: 2,
+                paddingBottom: 10,
                 width: 1 / 7
               }}
               classes={{ root: classes.deleteButtonRoot }}
             >
+              <InputLabel htmlFor="hey">Search By</InputLabel>
               <Select
                 labelId="searchBy"
                 id="searchBy"
-                label="Choose Option to Search By"
                 value={searchOption}
                 onChange={handleChange}
+                inputProps={{}}
               >
                 <MenuItem value="Option to Search By">Search By</MenuItem>
                 <MenuItem value="Provider Name">Provider Name</MenuItem>
                 <MenuItem value="Business Name">Business Name</MenuItem>
                 <MenuItem value="Dodd Number">DoDD Number</MenuItem>
+                Search By
               </Select>
             </FormControl>
             {searchOption && searchOption !== 'Option to Search By' && (
@@ -128,7 +148,9 @@ const AgencyProviders: React.FC = () => {
                 style={{}}
                 placeholder={`Search By ${searchOption}`}
                 value={searched}
-                onChange={(searchVal: string) => requestSearch(searchVal)}
+                onChange={(searchVal: string) =>
+                  requestSearch(searchVal, searchOption)
+                }
                 onCancelSearch={() => cancelSearch()}
               />
             )}
