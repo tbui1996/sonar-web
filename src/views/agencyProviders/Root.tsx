@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import {
   Button,
   Paper,
+  Box,
   Table,
   TableBody,
   TableCell,
@@ -10,8 +11,7 @@ import {
   Toolbar,
   TableRow,
   Select,
-  MenuItem,
-  InputLabel
+  MenuItem
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { zonedTimeToUtc, format } from 'date-fns-tz';
@@ -28,12 +28,15 @@ import CreateAgencyProviderDialog from './CreateAgencyProviderDialog';
 import EditAgencyProviderDialog from './EditAgencyProviderDialog';
 
 const useStyles = makeStyles((theme) => ({
-  deleteButtonRoot: {
+  searchRoot: {
     marginLeft: theme.spacing(1),
     '&.Mui-disabled': {
       pointerEvents: 'auto',
       cursor: 'help'
-    }
+    },
+    width: '180px',
+    height: '40px',
+    padding: '0px 0px 10px 0px'
   }
 }));
 
@@ -50,7 +53,7 @@ const AgencyProviders: React.FC = () => {
     agencyProviders
   );
   const [searched, setSearched] = useState<string>('');
-  const [searchOption, setSearchOpen] = useState('');
+  const [searchOption, setSearchOpen] = useState('Search By');
 
   const handleChange = (e: any) => {
     setSearchOpen(e?.target.value);
@@ -71,7 +74,6 @@ const AgencyProviders: React.FC = () => {
   const requestSearch = (searchedVal: string, searchOption: string) => {
     let filteredRows;
     const lowerCaseSearch = searchedVal.toLocaleLowerCase();
-
     if (searchOption === 'Provider Name') {
       filteredRows = agencyProviders?.filter(
         (row) =>
@@ -119,31 +121,23 @@ const AgencyProviders: React.FC = () => {
             >
               Add Agency Provider
             </Button>
-            <FormControl
-              fullWidth
-              sx={{
-                marginTop: 4,
-                paddingBottom: 10,
-                width: 1 / 7
-              }}
-              classes={{ root: classes.deleteButtonRoot }}
-            >
-              <InputLabel htmlFor="hey">Search By</InputLabel>
+            <FormControl classes={{ root: classes.searchRoot }}>
               <Select
                 labelId="searchBy"
                 id="searchBy"
                 value={searchOption}
                 onChange={handleChange}
-                inputProps={{}}
+                sx={{
+                  height: '40px'
+                }}
               >
-                <MenuItem value="Option to Search By">Search By</MenuItem>
+                <MenuItem value="Search By">Search By</MenuItem>
                 <MenuItem value="Provider Name">Provider Name</MenuItem>
                 <MenuItem value="Business Name">Business Name</MenuItem>
                 <MenuItem value="Dodd Number">DoDD Number</MenuItem>
-                Search By
               </Select>
             </FormControl>
-            {searchOption && searchOption !== 'Option to Search By' && (
+            {searchOption && searchOption !== 'Search By' && (
               <SearchBar
                 style={{}}
                 placeholder={`Search By ${searchOption}`}

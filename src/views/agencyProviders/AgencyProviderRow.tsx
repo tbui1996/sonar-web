@@ -42,7 +42,6 @@ const AgencyProviderRow: React.FC<AgencyProvderDetail> = ({
   lastModifiedTimestamp
 }) => {
   const theme = useTheme();
-  console.log(typeof doddNumber);
   return (
     <>
       <TableRow
