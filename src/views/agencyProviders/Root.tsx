@@ -139,7 +139,6 @@ const AgencyProviders: React.FC = () => {
             </FormControl>
             {searchOption && searchOption !== 'Search By' && (
               <SearchBar
-                style={{}}
                 placeholder={`Search By ${searchOption}`}
                 value={searched}
                 onChange={(searchVal: string) =>
