@@ -11,7 +11,7 @@ import {
   Tooltip,
   TableRow
 } from '@material-ui/core';
-import { zonedTimeToUtc, format } from 'date-fns-tz';
+import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
 import AppointmentRow from './AppointmentRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -27,6 +27,13 @@ const useStyles = makeStyles((theme) => ({
     }
   }
 }));
+
+const formatInTimeZone = (
+  date: string | number | Date,
+  fmt: string,
+  tz: string
+) => format(utcToZonedTime(date, tz), fmt, { timeZone: tz });
+
 const Appointments: React.FC = () => {
   const classes = useStyles();
   const { data: appointments } = useGetPatientAppointments();
@@ -154,7 +161,11 @@ const Appointments: React.FC = () => {
                     }
                     appointmentNotes={appointment.appointmentNotes}
                     suffix={appointment.suffix}
-                    dateOfBirth={appointment.dateOfBirth}
+                    dateOfBirth={formatInTimeZone(
+                      appointment.dateOfBirth,
+                      'yyyy-MM-dd',
+                      'UTC'
+                    )}
                     primaryLanguage={appointment.primaryLanguage}
                     preferredGender={appointment.preferredGender}
                     emailAddress={appointment.emailAddress}
