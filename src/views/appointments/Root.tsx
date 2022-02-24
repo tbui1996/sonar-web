@@ -118,27 +118,10 @@ const Appointments: React.FC = () => {
                 appointments.map((appointment, i) => (
                   <AppointmentRow
                     key={i}
-                    agencyProviderId={appointment.agencyProviderId}
-                    firstName={appointment.firstName}
-                    middleName={appointment.middleName}
-                    lastName={appointment.lastName}
-                    providerFullName={appointment.providerFullName}
+                    appointmentId={appointment.appointmentId}
                     appointmentCreated={format(
                       zonedTimeToUtc(
                         appointment.appointmentCreated,
-                        'America/New_York'
-                      ),
-                      "yyyy-MM-dd hh:mm aaaaa'm'"
-                    )}
-                    appointmentId={appointment.appointmentId}
-                    appointmentNotes={appointment.appointmentNotes}
-                    appointmentOtherPurpose={
-                      appointment.appointmentOtherPurpose
-                    }
-                    appointmentPurpose={appointment.appointmentPurpose}
-                    appointmentScheduled={format(
-                      zonedTimeToUtc(
-                        appointment.appointmentScheduled,
                         'America/New_York'
                       ),
                       "yyyy-MM-dd hh:mm aaaaa'm'"
@@ -151,9 +134,47 @@ const Appointments: React.FC = () => {
                       ),
                       "yyyy-MM-dd hh:mm aaaaa'm'"
                     )}
+                    appointmentScheduled={format(
+                      zonedTimeToUtc(
+                        appointment.appointmentScheduled,
+                        'America/New_York'
+                      ),
+                      "yyyy-MM-dd hh:mm aaaaa'm'"
+                    )}
+                    firstName={appointment.firstName}
+                    middleName={appointment.middleName}
+                    lastName={appointment.lastName}
                     circulatorDriverFullName={
                       appointment.circulatorDriverFullName
                     }
+                    providerFullName={appointment.providerFullName}
+                    appointmentPurpose={appointment.appointmentPurpose}
+                    appointmentOtherPurpose={
+                      appointment.appointmentOtherPurpose
+                    }
+                    appointmentNotes={appointment.appointmentNotes}
+                    suffix={appointment.suffix}
+                    dateOfBirth={appointment.dateOfBirth}
+                    primaryLanguage={appointment.primaryLanguage}
+                    preferredGender={appointment.preferredGender}
+                    emailAddress={appointment.emailAddress}
+                    homeAddress1={appointment.homeAddress1}
+                    homeAddress2={appointment.homeAddress2}
+                    homeCity={appointment.homeCity}
+                    homeState={appointment.homeState}
+                    homeZip={appointment.homeZip}
+                    signedCirculoConsentForm={
+                      appointment.signedCirculoConsentForm
+                    }
+                    circuloConsentFormLink={appointment.circuloConsentFormLink}
+                    signedStationMDConsentForm={
+                      appointment.signedStationMDConsentForm
+                    }
+                    stationMDConsentFormLink={
+                      appointment.stationMDConsentFormLink
+                    }
+                    completedGoSheet={appointment.completedGoSheet}
+                    markedAsActive={appointment.markedAsActive}
                     createdTimestamp={format(
                       zonedTimeToUtc(
                         appointment.createdTimestamp,
@@ -168,18 +189,36 @@ const Appointments: React.FC = () => {
                       ),
                       "yyyy-MM-dd hh:mm aaaaa'm'"
                     )}
-                    patientChiefComplaint={appointment.patientChiefComplaint}
+                    nationalProviderId={appointment.nationalProviderId}
+                    businessName={appointment.businessName}
+                    businessTIN={appointment.businessTIN}
+                    businessAddress1={appointment.businessAddress1}
+                    businessAddress2={appointment.businessAddress2}
+                    businessCity={appointment.businessCity}
+                    businessState={appointment.businessState}
+                    businessZip={appointment.businessZip}
                     patientId={appointment.patientId}
-                    patientPulseBeatsPerMinute={
-                      appointment.patientPulseBeatsPerMinute
+                    patientHomePhone={appointment.patientHomePhone}
+                    patientHomeLivingArrangement={
+                      appointment.patientHomeLivingArrangement
                     }
-                    patientRespirationsPerMinute={
-                      appointment.patientRespirationsPerMinute
+                    patientHomeCounty={appointment.patientHomeCounty}
+                    patientDiastolicBloodPressure={
+                      appointment.patientDiastolicBloodPressure
                     }
                     patientSystolicBloodPressure={
                       appointment.patientSystolicBloodPressure
                     }
+                    patientRespirationsPerMinute={
+                      appointment.patientRespirationsPerMinute
+                    }
+                    patientPulseBeatsPerMinute={
+                      appointment.patientPulseBeatsPerMinute
+                    }
                     patientWeightLbs={appointment.patientWeightLbs}
+                    patientChiefComplaint={appointment.patientChiefComplaint}
+                    insuranceId={appointment.insuranceId}
+                    agencyProviderId={appointment.agencyProviderId}
                   />
                 ))}
             </TableBody>
