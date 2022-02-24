@@ -62,28 +62,55 @@ const Appointments: React.FC = () => {
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox" />
-                <TableCell>Agency Proider Id</TableCell>
+                <TableCell>Appointment Created</TableCell>
+                <TableCell>Appointment Status</TableCell>
+                <TableCell>Appointment Status Changed On</TableCell>
+                <TableCell>Appointment Scheduled</TableCell>
                 <TableCell>Patient First Name</TableCell>
                 <TableCell>Patient Middle Name</TableCell>
                 <TableCell>Patient Last Name</TableCell>
                 <TableCell>Provider Full Name</TableCell>
-                <TableCell>Appointment Created</TableCell>
-                <TableCell>Appointment Id</TableCell>
-                <TableCell>Appointment Notes</TableCell>
-                <TableCell>Appointment Other Purpose</TableCell>
                 <TableCell>Appointment Purpose</TableCell>
-                <TableCell>Appointment Scheduled (EST)</TableCell>
-                <TableCell>Appointment Status</TableCell>
-                <TableCell>Appointment Status Changed On (EST)</TableCell>
-                <TableCell>Circulator Driver Full Name</TableCell>
-                <TableCell>Created Timestamp (EST)</TableCell>
-                <TableCell>Last Modified Timestamp (EST)</TableCell>
-                <TableCell>Patient Chief Complaint</TableCell>
-                <TableCell>Patient Id</TableCell>
-                <TableCell>Patient Pulse Beats Per Minute</TableCell>
-                <TableCell>Patient Respirations Per Minute</TableCell>
+                <TableCell>Appointment Other Purpose</TableCell>
+                <TableCell>Appointment Notes</TableCell>
+                <TableCell>Suffix</TableCell>
+                <TableCell>Date of Birth</TableCell>
+                <TableCell>Primary Language</TableCell>
+                <TableCell>Preferred Gender</TableCell>
+                <TableCell>Email Address</TableCell>
+                <TableCell>Home Address 1</TableCell>
+                <TableCell>Home Address 2</TableCell>
+                <TableCell>Home City</TableCell>
+                <TableCell>Home State</TableCell>
+                <TableCell>Home Zip</TableCell>
+                <TableCell>Signed Circulo Consent Form</TableCell>
+                <TableCell>Circulo Consent Form Link</TableCell>
+                <TableCell>Signed StationMD Consent Form</TableCell>
+                <TableCell>StationMD Consent Form Link</TableCell>
+                <TableCell>Completed Go Sheet</TableCell>
+                <TableCell>Marked As Active</TableCell>
+                <TableCell>Created Timestamp</TableCell>
+                <TableCell>Last Modified Timestamp</TableCell>
+                <TableCell>National Provider ID</TableCell>
+                <TableCell>Business Name</TableCell>
+                <TableCell>Business TIN</TableCell>
+                <TableCell>Business Address 1</TableCell>
+                <TableCell>Business Address 2</TableCell>
+                <TableCell>Business City</TableCell>
+                <TableCell>Business State</TableCell>
+                <TableCell>Business Zip</TableCell>
+                <TableCell>Patient ID</TableCell>
+                <TableCell>Patient Home Phone</TableCell>
+                <TableCell>Patient Home Living Arrangement</TableCell>
+                <TableCell>Patient Home County</TableCell>
+                <TableCell>Patient Diastolic Blood Pressure</TableCell>
                 <TableCell>Patient Systolic Blood Pressure</TableCell>
+                <TableCell>Patient Respirations Per Minute</TableCell>
+                <TableCell>Patient Pulse Beats Per Minute</TableCell>
                 <TableCell>Patient Weight Lbs</TableCell>
+                <TableCell>Patient Chief Complaint</TableCell>
+                <TableCell>Insurance ID</TableCell>
+                <TableCell>Agency Provider Id</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
