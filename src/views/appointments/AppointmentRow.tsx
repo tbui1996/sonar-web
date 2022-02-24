@@ -2,53 +2,111 @@ import React from 'react';
 import { TableCell, TableRow, useTheme, Checkbox } from '@material-ui/core';
 
 export interface AppointmentDetails {
+  appointmentId: string;
+  patientId: string;
   agencyProviderId: string;
+  circulatorDriverFullName: string;
+  appointmentCreated: string;
+  appointmentScheduled: string;
+  appointmentStatus: string;
+  appointmentStatusChangedOn: string;
+  appointmentPurpose: string;
+  appointmentOtherPurpose: string;
+  appointmentNotes: string;
+  patientDiastolicBloodPressure: number;
+  patientSystolicBloodPressure: number;
+  patientRespirationsPerMinute: number;
+  patientPulseBeatsPerMinute: number;
+  patientWeightLbs: number;
+  patientChiefComplaint: string;
+  createdTimestamp: string;
+  lastModifiedTimestamp: string;
   firstName: string;
   middleName: string;
   lastName: string;
   providerFullName: string;
-  appointmentCreated: string;
-  appointmentId: string;
-  appointmentNotes: string;
-  appointmentOtherPurpose: string;
-  appointmentPurpose: string;
-  appointmentScheduled: string;
-  appointmentStatus: string;
-  appointmentStatusChangedOn: string;
-  circulatorDriverFullName: string;
-  createdTimestamp: string;
-  lastModifiedTimestamp: string;
-  patientChiefComplaint: string;
-  patientId: string;
-  patientPulseBeatsPerMinute: number;
-  patientRespirationsPerMinute: number;
-  patientSystolicBloodPressure: number;
-  patientWeightLbs: number;
+  suffix: string;
+  dateOfBirth: string;
+  primaryLanguage: string;
+  preferredGender: string;
+  emailAddress: string;
+  homeAddress1: string;
+  homeAddress2: string;
+  homeCity: string;
+  homeState: string;
+  homeZip: string;
+  signedCirculoConsentForm: boolean;
+  circuloConsentFormLink: string;
+  signedStationMDConsentForm: boolean;
+  stationMDConsentFormLink: string;
+  completedGoSheet: boolean;
+  markedAsActive: boolean;
+  nationalProviderId: string;
+  businessName: string;
+  businessTIN: string;
+  businessAddress1: string;
+  businessAddress2: string;
+  businessCity: string;
+  businessState: string;
+  businessZip: string;
+  patientHomePhone: string;
+  patientHomeLivingArrangement: string;
+  patientHomeCounty: string;
+  insuranceId: string;
 }
 
 const AppointmentRow: React.FC<AppointmentDetails> = ({
+  appointmentId,
+  patientId,
   agencyProviderId,
+  circulatorDriverFullName,
+  appointmentCreated,
+  appointmentScheduled,
+  appointmentStatus,
+  appointmentStatusChangedOn,
+  appointmentPurpose,
+  appointmentOtherPurpose,
+  appointmentNotes,
+  patientDiastolicBloodPressure,
+  patientSystolicBloodPressure,
+  patientRespirationsPerMinute,
+  patientPulseBeatsPerMinute,
+  patientWeightLbs,
+  patientChiefComplaint,
+  createdTimestamp,
+  lastModifiedTimestamp,
   firstName,
   middleName,
   lastName,
   providerFullName,
-  appointmentCreated,
-  appointmentId,
-  appointmentNotes,
-  appointmentOtherPurpose,
-  appointmentPurpose,
-  appointmentScheduled,
-  appointmentStatus,
-  appointmentStatusChangedOn,
-  circulatorDriverFullName,
-  createdTimestamp,
-  lastModifiedTimestamp,
-  patientChiefComplaint,
-  patientId,
-  patientPulseBeatsPerMinute,
-  patientRespirationsPerMinute,
-  patientSystolicBloodPressure,
-  patientWeightLbs
+  suffix,
+  dateOfBirth,
+  primaryLanguage,
+  preferredGender,
+  emailAddress,
+  homeAddress1,
+  homeAddress2,
+  homeCity,
+  homeState,
+  homeZip,
+  signedCirculoConsentForm,
+  circuloConsentFormLink,
+  signedStationMDConsentForm,
+  stationMDConsentFormLink,
+  completedGoSheet,
+  markedAsActive,
+  nationalProviderId,
+  businessName,
+  businessTIN,
+  businessAddress1,
+  businessAddress2,
+  businessCity,
+  businessState,
+  businessZip,
+  patientHomePhone,
+  patientHomeLivingArrangement,
+  patientHomeCounty,
+  insuranceId
 }) => {
   const theme = useTheme();
 
@@ -69,28 +127,56 @@ const AppointmentRow: React.FC<AppointmentDetails> = ({
             }}
           />
         </TableCell>
-        <TableCell>{agencyProviderId}</TableCell>
+        <TableCell>{appointmentCreated}</TableCell>
+        <TableCell>{appointmentStatus}</TableCell>
+        <TableCell>{appointmentStatusChangedOn}</TableCell>
+        <TableCell>{appointmentScheduled}</TableCell>
         <TableCell>{firstName}</TableCell>
         <TableCell>{middleName}</TableCell>
         <TableCell>{lastName}</TableCell>
-        <TableCell>{providerFullName}</TableCell>
-        <TableCell>{appointmentCreated}</TableCell>
-        <TableCell>{appointmentId}</TableCell>
-        <TableCell>{appointmentNotes}</TableCell>
-        <TableCell>{appointmentOtherPurpose}</TableCell>
-        <TableCell>{appointmentPurpose}</TableCell>
-        <TableCell>{appointmentScheduled}</TableCell>
-        <TableCell>{appointmentStatus}</TableCell>
-        <TableCell>{appointmentStatusChangedOn}</TableCell>
         <TableCell>{circulatorDriverFullName}</TableCell>
+        <TableCell>{providerFullName}</TableCell>
+        <TableCell>{appointmentPurpose}</TableCell>
+        <TableCell>{appointmentOtherPurpose}</TableCell>
+        <TableCell>{appointmentNotes}</TableCell>
+        <TableCell>{suffix}</TableCell>
+        <TableCell>{dateOfBirth}</TableCell>
+        <TableCell>{primaryLanguage}</TableCell>
+        <TableCell>{preferredGender}</TableCell>
+        <TableCell>{emailAddress}</TableCell>
+        <TableCell>{homeAddress1}</TableCell>
+        <TableCell>{homeAddress2}</TableCell>
+        <TableCell>{homeCity}</TableCell>
+        <TableCell>{homeState}</TableCell>
+        <TableCell>{homeZip}</TableCell>
+        <TableCell>{signedCirculoConsentForm}</TableCell>
+        <TableCell>{circuloConsentFormLink}</TableCell>
+        <TableCell>{signedStationMDConsentForm}</TableCell>
+        <TableCell>{stationMDConsentFormLink}</TableCell>
+        <TableCell>{completedGoSheet}</TableCell>
+        <TableCell>{markedAsActive}</TableCell>
         <TableCell>{createdTimestamp}</TableCell>
         <TableCell>{lastModifiedTimestamp}</TableCell>
-        <TableCell>{patientChiefComplaint}</TableCell>
+        <TableCell>{nationalProviderId}</TableCell>
+        <TableCell>{businessName}</TableCell>
+        <TableCell>{businessTIN}</TableCell>
+        <TableCell>{businessAddress1}</TableCell>
+        <TableCell>{businessAddress2}</TableCell>
+        <TableCell>{businessCity}</TableCell>
+        <TableCell>{businessState}</TableCell>
+        <TableCell>{businessZip}</TableCell>
         <TableCell>{patientId}</TableCell>
-        <TableCell>{patientPulseBeatsPerMinute}</TableCell>
-        <TableCell>{patientRespirationsPerMinute}</TableCell>
+        <TableCell>{patientHomePhone}</TableCell>
+        <TableCell>{patientHomeLivingArrangement}</TableCell>
+        <TableCell>{patientHomeCounty}</TableCell>
+        <TableCell>{patientDiastolicBloodPressure}</TableCell>
         <TableCell>{patientSystolicBloodPressure}</TableCell>
+        <TableCell>{patientRespirationsPerMinute}</TableCell>
+        <TableCell>{patientPulseBeatsPerMinute}</TableCell>
         <TableCell>{patientWeightLbs}</TableCell>
+        <TableCell>{patientChiefComplaint}</TableCell>
+        <TableCell>{insuranceId}</TableCell>
+        <TableCell>{agencyProviderId}</TableCell>
       </TableRow>
     </>
   );
