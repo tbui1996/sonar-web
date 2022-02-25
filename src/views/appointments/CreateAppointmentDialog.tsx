@@ -5,15 +5,17 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  MenuItem,
   TextField,
   useTheme
 } from '@material-ui/core';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { LoadingButton } from '@material-ui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import useCreateAppointments from '../../hooks/domain/mutations/useCreateAppointments';
 import { AppointmentDetails } from './AppointmentRow';
+import useGetPatients from '../../hooks/domain/queries/useGetPatients';
 
 export interface CreateAppointmentDialogProps {
   isOpen: boolean;
@@ -58,11 +60,30 @@ type Form = Omit<
   | 'insuranceId'
 >;
 
-const schema = yup.object<Form>({
+interface AppointmentForm {
+  firstName: string;
+  lastName: string;
+  appointmentStatus: string;
+  appointmentScheduled: Date;
+  appointmentPurpose: string;
+  patientChiefComplaint: string;
+  businessName: string;
+  circulatorDriverFullName: string;
+  patientDiastolicBloodPressure: number;
+  patientSystolicBloodPressure: number;
+  patientRespirationsPerMinute: number;
+  patientPulseBeatsPerMinute: number;
+  patientWeightLbs: number;
+  agencyProviderId: string;
+  appointmentNotes: string;
+  appointmentOtherPurpose: string;
+  patientId: string;
+}
+const schema = yup.object<AppointmentForm>({
   firstName: yup.string().required().label('first name'),
   lastName: yup.string().required().label('last name'),
   appointmentStatus: yup.string().required().label('appointment status'),
-  appointmentScheduled: yup.string().required().label('appointment scheduled'),
+  appointmentScheduled: yup.date().required().label('appointment scheduled'),
   appointmentPurpose: yup.string().required().label('appointment purpose'),
   patientChiefComplaint: yup.string().required().label('Chief Complaint'),
   businessName: yup.string().required().label('business name'),
@@ -83,11 +104,13 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
   onClose
 }) => {
   const theme = useTheme();
+  const { data: patients } = useGetPatients();
   const {
     register,
     reset,
     handleSubmit,
     setError,
+    control,
     formState: { errors }
   } = useForm<AppointmentDetails>({
     mode: 'onTouched',
@@ -140,6 +163,33 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
       <DialogTitle>Create New Appointment</DialogTitle>
       <DialogContent>
         <form onSubmit={onFormSubmit}>
+          <Controller
+            control={control}
+            name="firstName"
+            render={({ field: { onChange, value, name } }) => (
+              <TextField
+                select
+                label="Patient Name"
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                onChange={(e) => {
+                  console.log('what is e grabbing', e.target.value);
+                  onChange(e);
+                }}
+                name={name}
+                value={value || ''}
+                id="firstName"
+                error={!!errors.firstName}
+              >
+                {patients?.map((patients, i) => (
+                  <MenuItem key={i} value={patients.patientId}>
+                    {patients.patientFirstName} {patients.patientLastName} (
+                    {patients.patientId})
+                  </MenuItem>
+                ))}
+              </TextField>
+            )}
+          />
           <TextField
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
@@ -148,6 +198,23 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             error={!!errors.appointmentPurpose}
             helperText={errors.appointmentPurpose?.message}
             {...register('appointmentPurpose')}
+          />
+          <TextField
+            sx={{ marginBottom: theme.spacing(2) }}
+            fullWidth
+            label="Appointment Scheduled"
+            id="appointmentScheduled"
+            type="date"
+            InputLabelProps={{
+              shrink: true
+            }}
+            error={!!errors.appointmentScheduled}
+            helperText={
+              errors.appointmentScheduled?.message
+                ? 'Appointment Scheduled is Required'
+                : ''
+            }
+            {...register('appointmentScheduled')}
           />
           <TextField
             sx={{ marginBottom: theme.spacing(2) }}
@@ -167,8 +234,37 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             helperText={errors.circulatorDriverFullName?.message}
             {...register('circulatorDriverFullName')}
           />
+          <TextField
+            sx={{ marginBottom: theme.spacing(2) }}
+            fullWidth
+            label="Other Purpose"
+            id="otherPurpose"
+            error={!!errors.appointmentOtherPurpose}
+            helperText={errors.appointmentOtherPurpose?.message}
+            {...register('appointmentOtherPurpose')}
+          />
+          <TextField
+            sx={{ marginBottom: theme.spacing(2) }}
+            fullWidth
+            label="Appointment Notes"
+            id="appointmentNotes"
+            error={!!errors.appointmentNotes}
+            helperText={errors.appointmentNotes?.message}
+            {...register('appointmentNotes')}
+          />
         </form>
       </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <LoadingButton
+          variant="contained"
+          onClick={onFormSubmit}
+          pending={isCreating}
+          data-testid="create"
+        >
+          Create
+        </LoadingButton>
+      </DialogActions>
     </Dialog>
   );
 };

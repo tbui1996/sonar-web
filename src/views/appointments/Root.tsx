@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Button,
   makeStyles,
@@ -17,6 +18,7 @@ import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import useGetPatientAppointments from '../../hooks/domain/queries/useGetPatientAppointments';
+import CreateAppointmentDialog from './CreateAppointmentDialog';
 
 const useStyles = makeStyles((theme) => ({
   deleteButtonRoot: {
@@ -37,6 +39,7 @@ const formatInTimeZone = (
 const Appointments: React.FC = () => {
   const classes = useStyles();
   const { data: appointments } = useGetPatientAppointments();
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   return (
     <Page title="Appointments | Sonar">
@@ -50,7 +53,12 @@ const Appointments: React.FC = () => {
       <Paper elevation={4}>
         <TableContainer>
           <Toolbar>
-            <Button variant="outlined">New Appointment</Button>
+            <Button
+              variant="outlined"
+              onClick={() => setIsCreateDialogOpen(true)}
+            >
+              New Appointment
+            </Button>
             <Tooltip title="Select appointments to delete them">
               <div>
                 <Button
@@ -236,6 +244,10 @@ const Appointments: React.FC = () => {
           </Table>
         </TableContainer>
       </Paper>
+      <CreateAppointmentDialog
+        isOpen={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+      />
     </Page>
   );
 };
