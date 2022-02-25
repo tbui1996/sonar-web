@@ -93,6 +93,11 @@ const DashboardRoutes = {
     },
     {
       exact: true,
+      path: PATH_DASHBOARD.modalities.agencyProviders.root,
+      component: lazy(() => import('../views/agencyProviders/Root'))
+    },
+    {
+      exact: true,
       path: PATH_DASHBOARD.modalities.flags.root,
       component: lazy(() => import('../views/flags/Root')),
       guard: DevelopmentAdminGuard
