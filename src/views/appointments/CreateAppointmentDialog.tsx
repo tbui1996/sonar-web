@@ -22,45 +22,6 @@ export interface CreateAppointmentDialogProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-// type Form = Omit<
-//   AppointmentDetails,
-//   | 'appointmentId'
-//   | 'appointmentCreated'
-//   | 'appointmentStatusChangedOn'
-//   | 'createdTimestamp'
-//   | 'lastModifiedTimestamp'
-//   | 'middleName'
-//   | 'providerFullName'
-//   | 'suffix'
-//   | 'dateOfBirth'
-//   | 'primaryLanguage'
-//   | 'preferredGender'
-//   | 'emailAddress'
-//   | 'homeAddress1'
-//   | 'homeAddress2'
-//   | 'homeCity'
-//   | 'homeState'
-//   | 'homeZip'
-//   | 'signedCirculoConsentForm'
-//   | 'circuloConsentFormLink'
-//   | 'signedStationMDConsentForm'
-//   | 'stationMDConsentFormLink'
-//   | 'completedGoSheet'
-//   | 'markedAsActive'
-//   | 'nationalProviderId'
-//   | 'businessTIN'
-//   | 'businessAddress1'
-//   | 'businessAddress2'
-//   | 'businessCity'
-//   | 'businessState'
-//   | 'businessZip'
-//   | 'patientHomePhone'
-//   | 'patientHomeLivingArrangement'
-//   | 'patientHomeCounty'
-//   | 'insuranceId'
-// >;
-
 interface AppointmentForm {
   firstName: string;
   lastName: string;
@@ -113,18 +74,12 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
     handleSubmit,
     setError,
     control,
-    watch,
     formState: { errors }
   } = useForm<AppointmentDetails>({
     mode: 'onTouched',
     resolver: yupResolver(schema)
   });
-  const watchAppointmentStatus = watch('appointmentStatus');
-  const watchPatientId = watch('patientId');
-  //   useEffect(() => {
-  //     console.log('does watch insert status: ', watchAppointmentStatus);
-  //     console.log('does watch insert patientid: ', watchPatientId);
-  //   });
+
   const {
     mutate: createAppointment,
     isLoading: isCreating
