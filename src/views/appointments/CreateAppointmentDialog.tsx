@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Button,
   Dialog,
@@ -16,6 +16,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import useCreateAppointments from '../../hooks/domain/mutations/useCreateAppointments';
 import { AppointmentDetails } from './AppointmentRow';
 import useGetPatients from '../../hooks/domain/queries/useGetPatients';
+import useGetAgencyProviders from '../../hooks/domain/queries/useGetAgencyProviders';
 
 export interface CreateAppointmentDialogProps {
   isOpen: boolean;
@@ -80,13 +81,13 @@ interface AppointmentForm {
   patientId: string;
 }
 const schema = yup.object<AppointmentForm>({
-  firstName: yup.string().required().label('first name'),
-  lastName: yup.string().required().label('last name'),
+  firstName: yup.string(),
+  lastName: yup.string(),
   appointmentStatus: yup.string().required().label('appointment status'),
   appointmentScheduled: yup.date().required().label('appointment scheduled'),
   appointmentPurpose: yup.string().required().label('appointment purpose'),
   patientChiefComplaint: yup.string().required().label('Chief Complaint'),
-  businessName: yup.string().required().label('business name'),
+  businessName: yup.string(),
   circulatorDriverFullName: yup.string(),
   patientDiastolicBloodPressure: yup.number(),
   patientSystolicBloodPressure: yup.number(),
@@ -105,7 +106,7 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
 }) => {
   const theme = useTheme();
   const { data: patients } = useGetPatients();
-  const [setlastName, isLastNameSet] = useState('');
+  const { data: agencyProviders } = useGetAgencyProviders();
   const {
     register,
     reset,
@@ -118,12 +119,10 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
     mode: 'onTouched',
     resolver: yupResolver(schema)
   });
-  const watchFirstName = watch('firstName');
-  const watchLastName = watch('lastName');
+  const watchAppointmentStatus = watch('appointmentStatus');
   const watchPatientId = watch('patientId');
   useEffect(() => {
-    console.log('does watch insert first name: ', watchFirstName);
-    console.log('does watch insert last name: ', watchLastName);
+    console.log('does watch insert status: ', watchAppointmentStatus);
     console.log('does watch insert patientid: ', watchPatientId);
   });
   const {
@@ -199,6 +198,35 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
               </TextField>
             )}
           />
+          <Controller
+            control={control}
+            name="agencyProviderId"
+            render={({ field: { onChange, value, name } }) => (
+              <TextField
+                select
+                label="Agency Provider"
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                onChange={(e) => {
+                  console.log('what is e grabbing: ', e.target.value);
+                  onChange(e);
+                }}
+                name={name}
+                value={value || ''}
+                id="agencyProviderId"
+                error={!!errors.agencyProviderId}
+              >
+                {agencyProviders?.map((agencyProvider, i) => (
+                  <MenuItem
+                    key={i}
+                    value={`${agencyProvider.agencyProviderId}`}
+                  >
+                    {agencyProvider.businessName}
+                  </MenuItem>
+                ))}
+              </TextField>
+            )}
+          />
           <TextField
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
@@ -207,6 +235,39 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             error={!!errors.appointmentPurpose}
             helperText={errors.appointmentPurpose?.message}
             {...register('appointmentPurpose')}
+          />
+          <Controller
+            control={control}
+            name="appointmentStatus"
+            render={({ field: { onChange, value, name } }) => (
+              <TextField
+                select
+                label="Appointment Status"
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                onChange={(e) => {
+                  console.log('what is e grabbing: ', e.target.value);
+                  onChange(e);
+                }}
+                name={name}
+                value={value || ''}
+                id="appointmentStatus"
+                error={!!errors.firstName}
+              >
+                <MenuItem value="Pending Confirmation">
+                  Pending Confirmation
+                </MenuItem>
+                <MenuItem value="Confirmed">Confirmed</MenuItem>
+                <MenuItem value="Completed">Completed</MenuItem>
+                <MenuItem value="Cancelled by Circulo">
+                  Cancelled by Circulo
+                </MenuItem>
+                <MenuItem value="Cancelled by Agency">
+                  Cancelled by Agency
+                </MenuItem>
+                <MenuItem value="No Show">No Show</MenuItem>
+              </TextField>
+            )}
           />
           <TextField
             sx={{ marginBottom: theme.spacing(2) }}
@@ -242,6 +303,51 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             error={!!errors.circulatorDriverFullName}
             helperText={errors.circulatorDriverFullName?.message}
             {...register('circulatorDriverFullName')}
+          />
+          <TextField
+            sx={{ marginBottom: theme.spacing(2) }}
+            fullWidth
+            label="Systolic BP"
+            id="systolicBP"
+            error={!!errors.patientSystolicBloodPressure}
+            helperText={errors.patientSystolicBloodPressure?.message}
+            {...register('patientSystolicBloodPressure')}
+          />
+          <TextField
+            sx={{ marginBottom: theme.spacing(2) }}
+            fullWidth
+            label="Diastolic BP"
+            id="disatolicBP"
+            error={!!errors.patientDiastolicBloodPressure}
+            helperText={errors.patientDiastolicBloodPressure?.message}
+            {...register('patientDiastolicBloodPressure')}
+          />
+          <TextField
+            sx={{ marginBottom: theme.spacing(2) }}
+            fullWidth
+            label="Respirations (RPM)"
+            id="respirations"
+            error={!!errors.patientRespirationsPerMinute}
+            helperText={errors.patientRespirationsPerMinute?.message}
+            {...register('patientRespirationsPerMinute')}
+          />
+          <TextField
+            sx={{ marginBottom: theme.spacing(2) }}
+            fullWidth
+            label="Pulse (BPM)"
+            id="pulse"
+            error={!!errors.patientPulseBeatsPerMinute}
+            helperText={errors.patientPulseBeatsPerMinute?.message}
+            {...register('patientPulseBeatsPerMinute')}
+          />
+          <TextField
+            sx={{ marginBottom: theme.spacing(2) }}
+            fullWidth
+            label="Weight (lbs)"
+            id="weight"
+            error={!!errors.patientWeightLbs}
+            helperText={errors.patientWeightLbs?.message}
+            {...register('patientWeightLbs')}
           />
           <TextField
             sx={{ marginBottom: theme.spacing(2) }}
