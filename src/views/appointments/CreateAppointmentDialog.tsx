@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Dialog,
@@ -22,43 +22,43 @@ export interface CreateAppointmentDialogProps {
   onClose: () => void;
 }
 
-type Form = Omit<
-  AppointmentDetails,
-  | 'appointmentId'
-  | 'appointmentCreated'
-  | 'appointmentStatusChangedOn'
-  | 'createdTimestamp'
-  | 'lastModifiedTimestamp'
-  | 'middleName'
-  | 'providerFullName'
-  | 'suffix'
-  | 'dateOfBirth'
-  | 'primaryLanguage'
-  | 'preferredGender'
-  | 'emailAddress'
-  | 'homeAddress1'
-  | 'homeAddress2'
-  | 'homeCity'
-  | 'homeState'
-  | 'homeZip'
-  | 'signedCirculoConsentForm'
-  | 'circuloConsentFormLink'
-  | 'signedStationMDConsentForm'
-  | 'stationMDConsentFormLink'
-  | 'completedGoSheet'
-  | 'markedAsActive'
-  | 'nationalProviderId'
-  | 'businessTIN'
-  | 'businessAddress1'
-  | 'businessAddress2'
-  | 'businessCity'
-  | 'businessState'
-  | 'businessZip'
-  | 'patientHomePhone'
-  | 'patientHomeLivingArrangement'
-  | 'patientHomeCounty'
-  | 'insuranceId'
->;
+// type Form = Omit<
+//   AppointmentDetails,
+//   | 'appointmentId'
+//   | 'appointmentCreated'
+//   | 'appointmentStatusChangedOn'
+//   | 'createdTimestamp'
+//   | 'lastModifiedTimestamp'
+//   | 'middleName'
+//   | 'providerFullName'
+//   | 'suffix'
+//   | 'dateOfBirth'
+//   | 'primaryLanguage'
+//   | 'preferredGender'
+//   | 'emailAddress'
+//   | 'homeAddress1'
+//   | 'homeAddress2'
+//   | 'homeCity'
+//   | 'homeState'
+//   | 'homeZip'
+//   | 'signedCirculoConsentForm'
+//   | 'circuloConsentFormLink'
+//   | 'signedStationMDConsentForm'
+//   | 'stationMDConsentFormLink'
+//   | 'completedGoSheet'
+//   | 'markedAsActive'
+//   | 'nationalProviderId'
+//   | 'businessTIN'
+//   | 'businessAddress1'
+//   | 'businessAddress2'
+//   | 'businessCity'
+//   | 'businessState'
+//   | 'businessZip'
+//   | 'patientHomePhone'
+//   | 'patientHomeLivingArrangement'
+//   | 'patientHomeCounty'
+//   | 'insuranceId'
+// >;
 
 interface AppointmentForm {
   firstName: string;
@@ -105,18 +105,27 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
 }) => {
   const theme = useTheme();
   const { data: patients } = useGetPatients();
+  const [setlastName, isLastNameSet] = useState('');
   const {
     register,
     reset,
     handleSubmit,
     setError,
     control,
+    watch,
     formState: { errors }
   } = useForm<AppointmentDetails>({
     mode: 'onTouched',
     resolver: yupResolver(schema)
   });
-
+  const watchFirstName = watch('firstName');
+  const watchLastName = watch('lastName');
+  const watchPatientId = watch('patientId');
+  useEffect(() => {
+    console.log('does watch insert first name: ', watchFirstName);
+    console.log('does watch insert last name: ', watchLastName);
+    console.log('does watch insert patientid: ', watchPatientId);
+  });
   const {
     mutate: createAppointment,
     isLoading: isCreating
@@ -165,7 +174,7 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
         <form onSubmit={onFormSubmit}>
           <Controller
             control={control}
-            name="firstName"
+            name="patientId"
             render={({ field: { onChange, value, name } }) => (
               <TextField
                 select
@@ -173,16 +182,16 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
                 sx={{ marginBottom: theme.spacing(2) }}
                 fullWidth
                 onChange={(e) => {
-                  console.log('what is e grabbing', e.target.value);
+                  console.log('what is e grabbing: ', e.target.value);
                   onChange(e);
                 }}
                 name={name}
                 value={value || ''}
-                id="firstName"
+                id="patientId"
                 error={!!errors.firstName}
               >
                 {patients?.map((patients, i) => (
-                  <MenuItem key={i} value={patients.patientId}>
+                  <MenuItem key={i} value={`${patients.patientId}`}>
                     {patients.patientFirstName} {patients.patientLastName} (
                     {patients.patientId})
                   </MenuItem>
