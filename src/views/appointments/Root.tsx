@@ -40,7 +40,7 @@ const Appointments: React.FC = () => {
   const classes = useStyles();
   const { data: appointments } = useGetPatientAppointments();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-
+  console.log({ appointments });
   return (
     <Page title="Appointments | Sonar">
       <HeaderDashboard
@@ -77,6 +77,7 @@ const Appointments: React.FC = () => {
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox" />
+                <TableCell>Appointment Id</TableCell>
                 <TableCell>Appointment Created</TableCell>
                 <TableCell>Appointment Status</TableCell>
                 <TableCell>Appointment Status Changed On</TableCell>

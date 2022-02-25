@@ -94,7 +94,7 @@ const schema = yup.object<AppointmentForm>({
   patientRespirationsPerMinute: yup.number(),
   patientPulseBeatsPerMinute: yup.number(),
   patientWeightLbs: yup.number(),
-  agencyProviderId: yup.string().required().label('agency provider id'),
+  agencyProviderId: yup.string(),
   patientId: yup.string().required().label('patient id'),
   appointmentNotes: yup.string(),
   appointmentOtherPurpose: yup.string()
@@ -121,10 +121,10 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
   });
   const watchAppointmentStatus = watch('appointmentStatus');
   const watchPatientId = watch('patientId');
-  useEffect(() => {
-    console.log('does watch insert status: ', watchAppointmentStatus);
-    console.log('does watch insert patientid: ', watchPatientId);
-  });
+  //   useEffect(() => {
+  //     console.log('does watch insert status: ', watchAppointmentStatus);
+  //     console.log('does watch insert patientid: ', watchPatientId);
+  //   });
   const {
     mutate: createAppointment,
     isLoading: isCreating
@@ -157,6 +157,7 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
   });
 
   const onFormSubmit = handleSubmit((data) => {
+    console.log({ data });
     createAppointment(data);
   });
 
@@ -307,6 +308,10 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             {...register('circulatorDriverFullName')}
           />
           <TextField
+            type="number"
+            InputLabelProps={{
+              shrink: true
+            }}
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
             label="Systolic BP"
@@ -316,6 +321,10 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             {...register('patientSystolicBloodPressure')}
           />
           <TextField
+            type="number"
+            InputLabelProps={{
+              shrink: true
+            }}
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
             label="Diastolic BP"
@@ -325,6 +334,10 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             {...register('patientDiastolicBloodPressure')}
           />
           <TextField
+            type="number"
+            InputLabelProps={{
+              shrink: true
+            }}
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
             label="Respirations (RPM)"
@@ -334,6 +347,10 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             {...register('patientRespirationsPerMinute')}
           />
           <TextField
+            type="number"
+            InputLabelProps={{
+              shrink: true
+            }}
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
             label="Pulse (BPM)"
@@ -343,6 +360,10 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             {...register('patientPulseBeatsPerMinute')}
           />
           <TextField
+            type="number"
+            InputLabelProps={{
+              shrink: true
+            }}
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
             label="Weight (lbs)"

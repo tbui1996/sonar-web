@@ -127,6 +127,7 @@ const AppointmentRow: React.FC<AppointmentDetails> = ({
             }}
           />
         </TableCell>
+        <TableCell>{appointmentId}</TableCell>
         <TableCell>{appointmentCreated}</TableCell>
         <TableCell>{appointmentStatus}</TableCell>
         <TableCell>{appointmentStatusChangedOn}</TableCell>
