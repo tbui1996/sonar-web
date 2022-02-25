@@ -85,6 +85,7 @@ const Appointments: React.FC = () => {
                 <TableCell>Patient First Name</TableCell>
                 <TableCell>Patient Middle Name</TableCell>
                 <TableCell>Patient Last Name</TableCell>
+                <TableCell>Circulator Driver Full Name</TableCell>
                 <TableCell>Provider Full Name</TableCell>
                 <TableCell>Appointment Purpose</TableCell>
                 <TableCell>Appointment Other Purpose</TableCell>
