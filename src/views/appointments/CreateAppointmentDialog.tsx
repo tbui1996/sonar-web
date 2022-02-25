@@ -176,12 +176,12 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             name="patientId"
             render={({ field: { onChange, value, name } }) => (
               <TextField
+                required
                 select
                 label="Patient Name"
                 sx={{ marginBottom: theme.spacing(2) }}
                 fullWidth
                 onChange={(e) => {
-                  console.log('what is e grabbing: ', e.target.value);
                   onChange(e);
                 }}
                 name={name}
@@ -208,7 +208,6 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
                 sx={{ marginBottom: theme.spacing(2) }}
                 fullWidth
                 onChange={(e) => {
-                  console.log('what is e grabbing: ', e.target.value);
                   onChange(e);
                 }}
                 name={name}
@@ -228,6 +227,7 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             )}
           />
           <TextField
+            required
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
             label="Appointment Purpose"
@@ -241,12 +241,12 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             name="appointmentStatus"
             render={({ field: { onChange, value, name } }) => (
               <TextField
+                required
                 select
                 label="Appointment Status"
                 sx={{ marginBottom: theme.spacing(2) }}
                 fullWidth
                 onChange={(e) => {
-                  console.log('what is e grabbing: ', e.target.value);
                   onChange(e);
                 }}
                 name={name}
@@ -270,6 +270,7 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             )}
           />
           <TextField
+            required
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
             label="Appointment Scheduled"
@@ -287,6 +288,7 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             {...register('appointmentScheduled')}
           />
           <TextField
+            required
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
             label="Chief Complaint"
