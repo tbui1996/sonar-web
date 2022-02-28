@@ -23,6 +23,7 @@ export interface CreateAppointmentDialogProps {
   onClose: () => void;
 }
 export interface AppointmentForm {
+  appointmentId: string;
   firstName: string;
   lastName: string;
   appointmentStatus: string;
@@ -43,6 +44,7 @@ export interface AppointmentForm {
 }
 
 const schema = yup.object<AppointmentForm>({
+  appointmentId: yup.string(),
   firstName: yup.string(),
   lastName: yup.string(),
   appointmentStatus: yup.string().required().label('appointment status'),
