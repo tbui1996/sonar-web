@@ -14,7 +14,6 @@ import * as yup from 'yup';
 import { LoadingButton } from '@material-ui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import useCreateAppointments from '../../hooks/domain/mutations/useCreateAppointments';
-import { AppointmentDetails } from './AppointmentRow';
 import useGetPatients from '../../hooks/domain/queries/useGetPatients';
 import useGetAgencyProviders from '../../hooks/domain/queries/useGetAgencyProviders';
 
@@ -22,7 +21,7 @@ export interface CreateAppointmentDialogProps {
   isOpen: boolean;
   onClose: () => void;
 }
-interface AppointmentForm {
+export interface AppointmentForm {
   firstName: string;
   lastName: string;
   appointmentStatus: string;
@@ -41,6 +40,7 @@ interface AppointmentForm {
   appointmentOtherPurpose: string;
   patientId: string;
 }
+
 const schema = yup.object<AppointmentForm>({
   firstName: yup.string(),
   lastName: yup.string(),
@@ -50,8 +50,8 @@ const schema = yup.object<AppointmentForm>({
   patientChiefComplaint: yup.string().required().label('Chief Complaint'),
   businessName: yup.string(),
   circulatorDriverFullName: yup.string(),
-  patientDiastolicBloodPressure: yup.number(),
   patientSystolicBloodPressure: yup.number(),
+  patientDiastolicBloodPressure: yup.number(),
   patientRespirationsPerMinute: yup.number(),
   patientPulseBeatsPerMinute: yup.number(),
   patientWeightLbs: yup.number(),
@@ -75,7 +75,7 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
     setError,
     control,
     formState: { errors }
-  } = useForm<AppointmentDetails>({
+  } = useForm<AppointmentForm>({
     mode: 'onTouched',
     resolver: yupResolver(schema)
   });
@@ -123,7 +123,7 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
   }, [reset, isOpen]);
 
   return (
-    <Dialog open={isOpen}>
+    <Dialog open={isOpen} fullWidth={true} maxWidth="md">
       <DialogTitle>Create New Appointment</DialogTitle>
       <DialogContent>
         <form onSubmit={onFormSubmit}>
@@ -262,70 +262,122 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
             helperText={errors.circulatorDriverFullName?.message}
             {...register('circulatorDriverFullName')}
           />
-          <TextField
-            type="number"
-            InputLabelProps={{
-              shrink: true
-            }}
-            sx={{ marginBottom: theme.spacing(2) }}
-            fullWidth
-            label="Systolic BP"
-            id="systolicBP"
-            error={!!errors.patientSystolicBloodPressure}
-            helperText={errors.patientSystolicBloodPressure?.message}
-            {...register('patientSystolicBloodPressure')}
+          <Controller
+            control={control}
+            name="patientSystolicBloodPressure"
+            render={({ field: { onChange, value, name } }) => (
+              <TextField
+                type="number"
+                InputLabelProps={{
+                  shrink: true
+                }}
+                onChange={(e) => {
+                  console.log('what is this bruh: ', e.target.value);
+                  onChange(e);
+                }}
+                name={name}
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="Systolic BP"
+                value={value}
+                id="systolicBP"
+                error={!!errors.patientSystolicBloodPressure}
+                helperText={errors.patientSystolicBloodPressure?.message}
+              />
+            )}
           />
-          <TextField
-            type="number"
-            InputLabelProps={{
-              shrink: true
-            }}
-            sx={{ marginBottom: theme.spacing(2) }}
-            fullWidth
-            label="Diastolic BP"
-            id="disatolicBP"
-            error={!!errors.patientDiastolicBloodPressure}
-            helperText={errors.patientDiastolicBloodPressure?.message}
-            {...register('patientDiastolicBloodPressure')}
+          <Controller
+            control={control}
+            name="patientDiastolicBloodPressure"
+            render={({ field: { onChange, value, name } }) => (
+              <TextField
+                type="number"
+                InputLabelProps={{
+                  shrink: true
+                }}
+                onChange={(e) => {
+                  onChange(e);
+                }}
+                name={name}
+                value={value || -1}
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="Diastolic BP"
+                id="disatolicBP"
+                error={!!errors.patientDiastolicBloodPressure}
+                helperText={errors.patientDiastolicBloodPressure?.message}
+              />
+            )}
           />
-          <TextField
-            type="number"
-            InputLabelProps={{
-              shrink: true
-            }}
-            sx={{ marginBottom: theme.spacing(2) }}
-            fullWidth
-            label="Respirations (RPM)"
-            id="respirations"
-            error={!!errors.patientRespirationsPerMinute}
-            helperText={errors.patientRespirationsPerMinute?.message}
-            {...register('patientRespirationsPerMinute')}
+          <Controller
+            control={control}
+            name="patientRespirationsPerMinute"
+            render={({ field: { onChange, value, name } }) => (
+              <TextField
+                type="number"
+                InputLabelProps={{
+                  shrink: true
+                }}
+                onChange={(e) => {
+                  onChange(e);
+                }}
+                name={name}
+                value={value || -1}
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="Respirations (RPM)"
+                id="respirations"
+                error={!!errors.patientRespirationsPerMinute}
+                helperText={errors.patientRespirationsPerMinute?.message}
+              />
+            )}
           />
-          <TextField
-            type="number"
-            InputLabelProps={{
-              shrink: true
-            }}
-            sx={{ marginBottom: theme.spacing(2) }}
-            fullWidth
-            label="Pulse (BPM)"
-            id="pulse"
-            error={!!errors.patientPulseBeatsPerMinute}
-            helperText={errors.patientPulseBeatsPerMinute?.message}
-            {...register('patientPulseBeatsPerMinute')}
+          <Controller
+            control={control}
+            name="patientPulseBeatsPerMinute"
+            render={({ field: { onChange, value, name } }) => (
+              <TextField
+                type="number"
+                InputLabelProps={{
+                  shrink: true
+                }}
+                onChange={(e) => {
+                  console.log({ value });
+                  onChange(e);
+                }}
+                name={name}
+                value={value || -1}
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="Pulse (BPM)"
+                id="pulse"
+                error={!!errors.patientPulseBeatsPerMinute}
+                helperText={errors.patientPulseBeatsPerMinute?.message}
+              />
+            )}
           />
-          <TextField
-            type="number"
-            InputLabelProps={{
-              shrink: true
-            }}
-            sx={{ marginBottom: theme.spacing(2) }}
-            fullWidth
-            label="Weight (lbs)"
-            id="weight"
-            error={!!errors.patientWeightLbs}
-            helperText={errors.patientWeightLbs?.message}
-            {...register('patientWeightLbs')}
+          <Controller
+            control={control}
+            name="patientWeightLbs"
+            render={({ field: { onChange, value, name } }) => (
+              <TextField
+                type="number"
+                InputLabelProps={{
+                  shrink: true
+                }}
+                onChange={(e) => {
+                  onChange(e);
+                }}
+                name={name}
+                value={value || ''}
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="Weight (lbs)"
+                id="weight"
+                error={!!errors.patientWeightLbs}
+                helperText={errors.patientWeightLbs?.message}
+              />
+            )}
           />
           <TextField
             sx={{ marginBottom: theme.spacing(2) }}

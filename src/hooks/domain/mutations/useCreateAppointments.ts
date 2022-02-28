@@ -6,16 +6,15 @@ import {
 } from 'react-query';
 import { AxiosResponse } from 'axios';
 import axiosInstance from '../../../utils/axios';
-import { AppointmentDetails } from '../../../views/appointments/AppointmentRow';
 import { useGetAppointmentsKey } from '../queries/useGetPatientAppointments';
+import { AppointmentForm } from '../../../views/appointments/CreateAppointmentDialog';
 
 const useCreateAppointment = (
-  options: UseMutationOptions<AxiosResponse, string, AppointmentDetails> = {}
-): UseMutationResult<AxiosResponse, string, AppointmentDetails> => {
+  options: UseMutationOptions<AxiosResponse, string, AppointmentForm> = {}
+): UseMutationResult<AxiosResponse, string, AppointmentForm> => {
   const queryClient = useQueryClient();
-  return useMutation<AxiosResponse, string, AppointmentDetails>(
-    (request: AppointmentDetails) =>
-      axiosInstance.post('/appointment', request),
+  return useMutation<AxiosResponse, string, AppointmentForm>(
+    (request: AppointmentForm) => axiosInstance.post('/appointment', request),
     {
       ...options,
       onSuccess: async (data, variables, context) => {
