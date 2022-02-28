@@ -37,18 +37,53 @@ const formatInTimeZone = (
   tz: string
 ) => format(utcToZonedTime(date, tz), fmt, { timeZone: tz });
 
+export type Bar = Omit<
+  AppointmentDetails,
+  | 'handleClick'
+  | 'middleName'
+  | 'providerFullName'
+  | 'createdTimestamp'
+  | 'suffix'
+  | 'dateOfBirth'
+  | 'primaryLanguage'
+  | 'preferredGender'
+  | 'emailAddress'
+  | 'homeAddress1'
+  | 'homeAddress2'
+  | 'homeCity'
+  | 'homeState'
+  | 'homeZip'
+  | 'signedCirculoConsentForm'
+  | 'circuloConsentFormLink'
+  | 'signedStationMDConsentForm'
+  | 'stationMDConsentFormLink'
+  | 'completedGoSheet'
+  | 'markedAsActive'
+  | 'nationalProviderId'
+  | 'businessTIN'
+  | 'businessAddress1'
+  | 'businessAddress2'
+  | 'businessCity'
+  | 'businessState'
+  | 'businessZip'
+  | 'patientHomePhone'
+  | 'patientHomeLivingArrangement'
+  | 'patientHomeCounty'
+  | 'insuranceId'
+  | 'appointmentCreated'
+  | 'lastModifiedTimestamp'
+  | 'appointmentStatusChangedOn'
+>;
+
 const Appointments: React.FC = () => {
   const classes = useStyles();
   const { data: appointments } = useGetPatientAppointments();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [
-    appointmentToEdit,
-    setAppointmentToEdit
-  ] = useState<AppointmentDetails | null>();
+  const [appointmentToEdit, setAppointmentToEdit] = useState<Bar | null>();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const handleClick = useCallback(
-    (appointment: AppointmentDetails) => {
+    (appointment: Bar) => {
       setAppointmentToEdit(appointment);
       setIsEditDialogOpen(true);
     },
@@ -269,7 +304,7 @@ const Appointments: React.FC = () => {
       {appointmentToEdit && isEditDialogOpen && (
         <EditAppointmentDialog
           onClose={() => setIsEditDialogOpen(false)}
-          appointment={setAppointmentToEdit}
+          appointment={appointmentToEdit}
         />
       )}
     </Page>

@@ -20,10 +20,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackbar } from 'notistack';
 import useEditAppointments from '../../hooks/domain/mutations/useEditAppointments';
 import { AppointmentDetails } from './AppointmentRow';
+import { Bar } from './Root';
 
 export interface EditAppointmentDialogProps {
   onClose: () => void;
-  appointment: AppointmentDetails;
+  appointment: Bar;
 }
 
 type Form = Omit<
@@ -63,7 +64,7 @@ type Form = Omit<
   | 'lastModifiedTimestamp'
   | 'appointmentStatusChangedOn'
 >;
-const schema = yup.object<Form>({
+const schema = yup.object<Bar>({
   appointmentId: yup.string(),
   firstName: yup.string(),
   lastName: yup.string(),
@@ -157,6 +158,8 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
                   </TextField>
                 )}
               />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
               <TextField
                 required
                 sx={{ marginBottom: theme.spacing(2) }}
@@ -166,6 +169,29 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
                 error={!!errors.patientChiefComplaint}
                 helperText={errors.patientChiefComplaint?.message}
                 {...register('patientChiefComplaint')}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
+              <TextField
+                required
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="Chief Complaint"
+                id="chiefComplaint"
+                error={!!errors.patientChiefComplaint}
+                helperText={errors.patientChiefComplaint?.message}
+                {...register('patientChiefComplaint')}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
+              <TextField
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="Circulator Driver Full Name"
+                id="circulatorDriverFullName"
+                error={!!errors.circulatorDriverFullName}
+                helperText={errors.circulatorDriverFullName?.message}
+                {...register('circulatorDriverFullName')}
               />
             </Grid>
           </Grid>
