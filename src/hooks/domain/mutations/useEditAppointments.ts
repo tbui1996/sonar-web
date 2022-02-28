@@ -7,14 +7,13 @@ import {
 import { AxiosResponse } from 'axios';
 import axiosInstance from '../../../utils/axios';
 import { useGetAppointmentsKey } from '../queries/useGetPatientAppointments';
-
-import { AppointmentForm } from '../../../views/appointments/CreateAppointmentDialog';
+import { AppointmentDetails } from '../../../views/appointments/AppointmentRow';
 
 const useEditAppointments = (
-  options: UseMutationOptions<AxiosResponse, string, AppointmentForm> = {}
-): UseMutationResult<AxiosResponse, string, AppointmentForm> => {
+  options: UseMutationOptions<AxiosResponse, string, AppointmentDetails> = {}
+): UseMutationResult<AxiosResponse, string, AppointmentDetails> => {
   const queryClient = useQueryClient();
-  return useMutation<AxiosResponse, string, AppointmentForm>(
+  return useMutation<AxiosResponse, string, AppointmentDetails>(
     (request) =>
       axiosInstance.put(`/appointment/${request.appointmentId}`, {
         appointmentId: request.appointmentId,

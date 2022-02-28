@@ -1,7 +1,15 @@
 import React from 'react';
-import { TableCell, TableRow, useTheme, Checkbox } from '@material-ui/core';
+import {
+  TableCell,
+  TableRow,
+  useTheme,
+  Checkbox,
+  IconButton
+} from '@material-ui/core';
+import { Edit } from '@material-ui/icons';
 
 export interface AppointmentDetails {
+  handleClick: () => void;
   appointmentId: string;
   patientId: string;
   agencyProviderId: string;
@@ -56,6 +64,7 @@ export interface AppointmentDetails {
 }
 
 const AppointmentRow: React.FC<AppointmentDetails> = ({
+  handleClick,
   appointmentId,
   patientId,
   agencyProviderId,
@@ -119,6 +128,11 @@ const AppointmentRow: React.FC<AppointmentDetails> = ({
           borderBottom: `1px solid ${theme.palette.primary.lighter}`
         }}
       >
+        <TableCell>
+          <IconButton onClick={handleClick} color="primary">
+            <Edit />
+          </IconButton>
+        </TableCell>
         <TableCell padding="checkbox">
           <Checkbox
             color="primary"

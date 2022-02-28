@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   Button,
   makeStyles,
@@ -13,12 +13,15 @@ import {
   TableRow
 } from '@material-ui/core';
 import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
-import AppointmentRow from './AppointmentRow';
+import AppointmentRow, { AppointmentDetails } from './AppointmentRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import useGetPatientAppointments from '../../hooks/domain/queries/useGetPatientAppointments';
-import CreateAppointmentDialog from './CreateAppointmentDialog';
+import CreateAppointmentDialog, {
+  AppointmentForm
+} from './CreateAppointmentDialog';
+import EditAppointmentDialog from './EditAppointmentDialog';
 
 const useStyles = makeStyles((theme) => ({
   deleteButtonRoot: {
@@ -40,6 +43,19 @@ const Appointments: React.FC = () => {
   const classes = useStyles();
   const { data: appointments } = useGetPatientAppointments();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [
+    appointmentToEdit,
+    setAppointmentToEdit
+  ] = useState<AppointmentDetails>();
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+  const handleClick = useCallback(
+    (appointment: AppointmentDetails) => {
+      setAppointmentToEdit(appointment);
+      setIsEditDialogOpen(true);
+    },
+    [setIsEditDialogOpen, setAppointmentToEdit]
+  );
   console.log({ appointments });
   return (
     <Page title="Appointments | Sonar">
@@ -77,6 +93,7 @@ const Appointments: React.FC = () => {
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox" />
+                <TableCell align="right">Edit</TableCell>
                 <TableCell>Appointment Id</TableCell>
                 <TableCell>Appointment Created</TableCell>
                 <TableCell>Appointment Status</TableCell>
@@ -135,6 +152,7 @@ const Appointments: React.FC = () => {
                 appointments.map((appointment, i) => (
                   <AppointmentRow
                     key={i}
+                    handleClick={() => handleClick(appointment)}
                     appointmentId={appointment.appointmentId}
                     appointmentCreated={format(
                       zonedTimeToUtc(
@@ -250,6 +268,12 @@ const Appointments: React.FC = () => {
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
       />
+      {appointmentToEdit && isEditDialogOpen && (
+        <EditAppointmentDialog
+          onClose={() => setIsEditDialogOpen(false)}
+          appointment={setAppointmentToEdit}
+        />
+      )}
     </Page>
   );
 };
