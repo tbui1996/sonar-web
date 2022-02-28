@@ -272,14 +272,13 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
                   shrink: true
                 }}
                 onChange={(e) => {
-                  console.log('what is this bruh: ', e.target.value);
                   onChange(e);
                 }}
                 name={name}
                 sx={{ marginBottom: theme.spacing(2) }}
                 fullWidth
                 label="Systolic BP"
-                value={value}
+                value={value || 0}
                 id="systolicBP"
                 error={!!errors.patientSystolicBloodPressure}
                 helperText={errors.patientSystolicBloodPressure?.message}
@@ -299,7 +298,7 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
                   onChange(e);
                 }}
                 name={name}
-                value={value || -1}
+                value={value || 0}
                 sx={{ marginBottom: theme.spacing(2) }}
                 fullWidth
                 label="Diastolic BP"
@@ -322,7 +321,7 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
                   onChange(e);
                 }}
                 name={name}
-                value={value || -1}
+                value={value || 0}
                 sx={{ marginBottom: theme.spacing(2) }}
                 fullWidth
                 label="Respirations (RPM)"
@@ -342,11 +341,10 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
                   shrink: true
                 }}
                 onChange={(e) => {
-                  console.log({ value });
                   onChange(e);
                 }}
                 name={name}
-                value={value || -1}
+                value={value || 0}
                 sx={{ marginBottom: theme.spacing(2) }}
                 fullWidth
                 label="Pulse (BPM)"
@@ -369,7 +367,7 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
                   onChange(e);
                 }}
                 name={name}
-                value={value || ''}
+                value={value || 0}
                 sx={{ marginBottom: theme.spacing(2) }}
                 fullWidth
                 label="Weight (lbs)"
