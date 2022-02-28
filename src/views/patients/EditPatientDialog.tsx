@@ -27,7 +27,10 @@ export interface EditPatientDialogProps {
 }
 type Form = Omit<
   PatientDetails,
-  'patientCreatedTimestamp' | 'patientLastModifiedTimestamp' | 'handleClick'
+  | 'patientCreatedTimestamp'
+  | 'patientLastModifiedTimestamp'
+  | 'handleClick'
+  | 'handleViewPatient'
 >;
 const schema = yup.object<Form>({
   patientId: yup.string(),
