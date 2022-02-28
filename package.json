@@ -89,6 +89,7 @@
     "jss-rtl": "^0.3.0",
     "lazysizes": "^5.3.0",
     "lodash": "^4.17.19",
+    "material-ui-search-bar": "^1.0.0",
     "mime-types": "^2.1.32",
     "notistack": "^1.0.5",
     "nprogress": "^0.2.0",
