@@ -169,6 +169,18 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
               />
             </Grid>
             <Grid item xs={12} md={6} lg={4} xl={2}>
+              <TextField
+                required
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="Appointment Purpose"
+                id="appointmentPurpose"
+                error={!!errors.appointmentPurpose}
+                helperText={errors.appointmentPurpose?.message}
+                {...register('appointmentPurpose')}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
               <Controller
                 control={control}
                 name="agencyProviderId"
@@ -319,6 +331,53 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
                     helperText={errors.patientPulseBeatsPerMinute?.message}
                   />
                 )}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
+              <Controller
+                control={control}
+                name="patientWeightLbs"
+                render={({ field: { onChange, value, name } }) => (
+                  <TextField
+                    type="number"
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    onChange={(e) => {
+                      onChange(e);
+                    }}
+                    name={name}
+                    value={value || 0}
+                    sx={{ marginBottom: theme.spacing(2) }}
+                    fullWidth
+                    label="Weight (lbs)"
+                    id="weight"
+                    error={!!errors.patientWeightLbs}
+                    helperText={errors.patientWeightLbs?.message}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
+              <TextField
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="Appointment Notes"
+                id="appointmentNotes"
+                error={!!errors.appointmentNotes}
+                helperText={errors.appointmentNotes?.message}
+                {...register('appointmentNotes')}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
+              <TextField
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="Other Purpose"
+                id="otherPurpose"
+                error={!!errors.appointmentOtherPurpose}
+                helperText={errors.appointmentOtherPurpose?.message}
+                {...register('appointmentOtherPurpose')}
               />
             </Grid>
           </Grid>
