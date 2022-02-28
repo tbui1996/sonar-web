@@ -125,8 +125,8 @@ const Appointments: React.FC = () => {
           <Table sx={{ minWidth: 480 }} arai-label="appointments">
             <TableHead>
               <TableRow>
+                <TableCell align="center">Edit</TableCell>
                 <TableCell padding="checkbox" />
-                <TableCell align="right">Edit</TableCell>
                 <TableCell>Appointment Id</TableCell>
                 <TableCell>Appointment Created</TableCell>
                 <TableCell>Appointment Status</TableCell>

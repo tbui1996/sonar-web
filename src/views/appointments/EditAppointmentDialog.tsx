@@ -20,6 +20,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackbar } from 'notistack';
 import useEditAppointments from '../../hooks/domain/mutations/useEditAppointments';
 import { AppointmentDetails } from './AppointmentRow';
+import useGetPatients from '../../hooks/domain/queries/useGetPatients';
+import useGetAgencyProviders from '../../hooks/domain/queries/useGetAgencyProviders';
 import { Bar } from './Root';
 
 export interface EditAppointmentDialogProps {
@@ -89,6 +91,8 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
   onClose,
   appointment
 }) => {
+  const { data: patients } = useGetPatients();
+  const { data: agencyProviders } = useGetAgencyProviders();
   const theme = useTheme();
   const {
     register,
@@ -154,21 +158,44 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
                     id="patientId"
                     error={!!errors.patientId}
                   >
-                    <MenuItem />
+                    {patients?.map((patients, i) => (
+                      <MenuItem key={i} value={`${patients.patientId}`}>
+                        {patients.patientFirstName} {patients.patientLastName} (
+                        {patients.patientId})
+                      </MenuItem>
+                    ))}
                   </TextField>
                 )}
               />
             </Grid>
             <Grid item xs={12} md={6} lg={4} xl={2}>
-              <TextField
-                required
-                sx={{ marginBottom: theme.spacing(2) }}
-                fullWidth
-                label="Chief Complaint"
-                id="chiefComplaint"
-                error={!!errors.patientChiefComplaint}
-                helperText={errors.patientChiefComplaint?.message}
-                {...register('patientChiefComplaint')}
+              <Controller
+                control={control}
+                name="agencyProviderId"
+                render={({ field: { onChange, value, name } }) => (
+                  <TextField
+                    select
+                    label="Agency Provider"
+                    sx={{ marginBottom: theme.spacing(2) }}
+                    fullWidth
+                    onChange={(e) => {
+                      onChange(e);
+                    }}
+                    name={name}
+                    value={value || ''}
+                    id="agencyProviderId"
+                    error={!!errors.agencyProviderId}
+                  >
+                    {agencyProviders?.map((agencyProvider, i) => (
+                      <MenuItem
+                        key={i}
+                        value={`${agencyProvider.agencyProviderId}`}
+                      >
+                        {agencyProvider.businessName}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
               />
             </Grid>
             <Grid item xs={12} md={6} lg={4} xl={2}>
@@ -192,6 +219,106 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
                 error={!!errors.circulatorDriverFullName}
                 helperText={errors.circulatorDriverFullName?.message}
                 {...register('circulatorDriverFullName')}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
+              <Controller
+                control={control}
+                name="patientSystolicBloodPressure"
+                render={({ field: { onChange, value, name } }) => (
+                  <TextField
+                    type="number"
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    onChange={(e) => {
+                      onChange(e);
+                    }}
+                    name={name}
+                    sx={{ marginBottom: theme.spacing(2) }}
+                    fullWidth
+                    label="Systolic BP"
+                    value={value}
+                    id="systolicBP"
+                    error={!!errors.patientSystolicBloodPressure}
+                    helperText={errors.patientSystolicBloodPressure?.message}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
+              <Controller
+                control={control}
+                name="patientDiastolicBloodPressure"
+                render={({ field: { onChange, value, name } }) => (
+                  <TextField
+                    type="number"
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    onChange={(e) => {
+                      onChange(e);
+                    }}
+                    name={name}
+                    value={value}
+                    sx={{ marginBottom: theme.spacing(2) }}
+                    fullWidth
+                    label="Diastolic BP"
+                    id="disatolicBP"
+                    error={!!errors.patientDiastolicBloodPressure}
+                    helperText={errors.patientDiastolicBloodPressure?.message}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
+              <Controller
+                control={control}
+                name="patientRespirationsPerMinute"
+                render={({ field: { onChange, value, name } }) => (
+                  <TextField
+                    type="number"
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    onChange={(e) => {
+                      onChange(e);
+                    }}
+                    name={name}
+                    value={value}
+                    sx={{ marginBottom: theme.spacing(2) }}
+                    fullWidth
+                    label="Respirations (RPM)"
+                    id="respirations"
+                    error={!!errors.patientRespirationsPerMinute}
+                    helperText={errors.patientRespirationsPerMinute?.message}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
+              <Controller
+                control={control}
+                name="patientPulseBeatsPerMinute"
+                render={({ field: { onChange, value, name } }) => (
+                  <TextField
+                    type="number"
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    onChange={(e) => {
+                      onChange(e);
+                    }}
+                    name={name}
+                    value={value}
+                    sx={{ marginBottom: theme.spacing(2) }}
+                    fullWidth
+                    label="Pulse (BPM)"
+                    id="pulse"
+                    error={!!errors.patientPulseBeatsPerMinute}
+                    helperText={errors.patientPulseBeatsPerMinute?.message}
+                  />
+                )}
               />
             </Grid>
           </Grid>
