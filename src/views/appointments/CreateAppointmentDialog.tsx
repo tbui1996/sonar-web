@@ -13,6 +13,7 @@ import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { LoadingButton } from '@material-ui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useSnackbar } from 'notistack';
 import useCreateAppointments from '../../hooks/domain/mutations/useCreateAppointments';
 import useGetPatients from '../../hooks/domain/queries/useGetPatients';
 import useGetAgencyProviders from '../../hooks/domain/queries/useGetAgencyProviders';
@@ -72,13 +73,14 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
     register,
     reset,
     handleSubmit,
-    setError,
     control,
     formState: { errors }
   } = useForm<AppointmentForm>({
     mode: 'onTouched',
     resolver: yupResolver(schema)
   });
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const {
     mutate: createAppointment,
@@ -88,26 +90,10 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
       onClose();
     },
     onError: (e) => {
-      let key: '' | 'patientId' = '';
-
-      if (
-        e.startsWith(
-          'Agency Provider with this national provider id already exists'
-        )
-      ) {
-        key = 'patientId';
-      }
-
-      if (key) {
-        setError(
-          key,
-          {
-            type: 'manual',
-            message: e
-          },
-          { shouldFocus: true }
-        );
-      }
+      enqueueSnackbar('Failed to save', {
+        variant: 'error',
+        autoHideDuration: 1_000
+      });
     }
   });
 
