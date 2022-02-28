@@ -18,9 +18,7 @@ import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import useGetPatientAppointments from '../../hooks/domain/queries/useGetPatientAppointments';
-import CreateAppointmentDialog, {
-  AppointmentForm
-} from './CreateAppointmentDialog';
+import CreateAppointmentDialog from './CreateAppointmentDialog';
 import EditAppointmentDialog from './EditAppointmentDialog';
 
 const useStyles = makeStyles((theme) => ({
@@ -46,7 +44,7 @@ const Appointments: React.FC = () => {
   const [
     appointmentToEdit,
     setAppointmentToEdit
-  ] = useState<AppointmentDetails>();
+  ] = useState<AppointmentDetails | null>();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const handleClick = useCallback(

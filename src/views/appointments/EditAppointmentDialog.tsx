@@ -20,7 +20,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackbar } from 'notistack';
 import useEditAppointments from '../../hooks/domain/mutations/useEditAppointments';
 import { AppointmentDetails } from './AppointmentRow';
-import { AppointmentForm } from './CreateAppointmentDialog';
+
 export interface EditAppointmentDialogProps {
   onClose: () => void;
   appointment: AppointmentDetails;
@@ -157,10 +157,30 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
                   </TextField>
                 )}
               />
+              <TextField
+                required
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="Chief Complaint"
+                id="chiefComplaint"
+                error={!!errors.patientChiefComplaint}
+                helperText={errors.patientChiefComplaint?.message}
+                {...register('patientChiefComplaint')}
+              />
             </Grid>
           </Grid>
         </form>
       </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <LoadingButton
+          variant="contained"
+          onClick={onFormSubmit}
+          data-test-id="edit-appointment"
+        >
+          Edit
+        </LoadingButton>
+      </DialogActions>
     </Dialog>
   );
 };

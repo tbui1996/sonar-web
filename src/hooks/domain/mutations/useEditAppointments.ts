@@ -17,6 +17,8 @@ const useEditAppointments = (
     (request) =>
       axiosInstance.put(`/appointment/${request.appointmentId}`, {
         appointmentId: request.appointmentId,
+        patientId: request.patientId,
+        agencyProviderId: request.agencyProviderId,
         firstName: request.firstName,
         lastName: request.lastName,
         appointmentStatus: request.appointmentStatus,
@@ -30,10 +32,8 @@ const useEditAppointments = (
         patientRespirationsPerMinute: request.patientRespirationsPerMinute,
         patientPulseBeatsPerMinute: request.patientPulseBeatsPerMinute,
         patientWeightLbs: request.patientWeightLbs,
-        agencyProviderId: request.agencyProviderId,
         appointmentNotes: request.appointmentNotes,
-        appointmentOtherPurpose: request.appointmentOtherPurpose,
-        patientId: request.patientId
+        appointmentOtherPurpose: request.appointmentOtherPurpose
       }),
     {
       ...options,
