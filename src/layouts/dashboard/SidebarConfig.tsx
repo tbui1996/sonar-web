@@ -97,6 +97,11 @@ const sidebarConfig = [
         title: 'Patients',
         href: PATH_DASHBOARD.modalities.patients.root,
         icon: ICONS.user
+      },
+      {
+        title: 'Agency Providers',
+        href: PATH_DASHBOARD.modalities.agencyProviders.root,
+        icon: ICONS.page
       }
     ]
   }
