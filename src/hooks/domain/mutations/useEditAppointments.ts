@@ -9,7 +9,7 @@ import axiosInstance from '../../../utils/axios';
 import { useGetAppointmentsKey } from '../queries/useGetPatientAppointments';
 import { AppointmentDetails } from '../../../views/appointments/AppointmentRow';
 
-type Bar = Omit<
+export type AppointmentDetailsRequest = Omit<
   AppointmentDetails,
   | 'handleClick'
   | 'middleName'
@@ -47,10 +47,14 @@ type Bar = Omit<
   | 'appointmentStatusChangedOn'
 >;
 const useEditAppointments = (
-  options: UseMutationOptions<AxiosResponse, string, Bar> = {}
-): UseMutationResult<AxiosResponse, string, Bar> => {
+  options: UseMutationOptions<
+    AxiosResponse,
+    string,
+    AppointmentDetailsRequest
+  > = {}
+): UseMutationResult<AxiosResponse, string, AppointmentDetailsRequest> => {
   const queryClient = useQueryClient();
-  return useMutation<AxiosResponse, string, Bar>(
+  return useMutation<AxiosResponse, string, AppointmentDetailsRequest>(
     (request) =>
       axiosInstance.put(`/appointment/${request.appointmentId}`, {
         appointmentId: request.appointmentId,

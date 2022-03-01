@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Button,
   Dialog,
@@ -18,55 +18,19 @@ import * as yup from 'yup';
 import { LoadingButton } from '@material-ui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackbar } from 'notistack';
-import useEditAppointments from '../../hooks/domain/mutations/useEditAppointments';
-import { AppointmentDetails } from './AppointmentRow';
+import { formatInTimeZone } from './Root';
+import useEditAppointments, {
+  AppointmentDetailsRequest
+} from '../../hooks/domain/mutations/useEditAppointments';
 import useGetPatients from '../../hooks/domain/queries/useGetPatients';
 import useGetAgencyProviders from '../../hooks/domain/queries/useGetAgencyProviders';
-import { Bar } from './Root';
 
 export interface EditAppointmentDialogProps {
   onClose: () => void;
-  appointment: Bar;
+  appointment: AppointmentDetailsRequest;
 }
 
-type Form = Omit<
-  AppointmentDetails,
-  | 'handleClick'
-  | 'middleName'
-  | 'providerFullName'
-  | 'createdTimestamp'
-  | 'suffix'
-  | 'dateOfBirth'
-  | 'primaryLanguage'
-  | 'preferredGender'
-  | 'emailAddress'
-  | 'homeAddress1'
-  | 'homeAddress2'
-  | 'homeCity'
-  | 'homeState'
-  | 'homeZip'
-  | 'signedCirculoConsentForm'
-  | 'circuloConsentFormLink'
-  | 'signedStationMDConsentForm'
-  | 'stationMDConsentFormLink'
-  | 'completedGoSheet'
-  | 'markedAsActive'
-  | 'nationalProviderId'
-  | 'businessTIN'
-  | 'businessAddress1'
-  | 'businessAddress2'
-  | 'businessCity'
-  | 'businessState'
-  | 'businessZip'
-  | 'patientHomePhone'
-  | 'patientHomeLivingArrangement'
-  | 'patientHomeCounty'
-  | 'insuranceId'
-  | 'appointmentCreated'
-  | 'lastModifiedTimestamp'
-  | 'appointmentStatusChangedOn'
->;
-const schema = yup.object<Bar>({
+const schema = yup.object<AppointmentDetailsRequest>({
   appointmentId: yup.string(),
   firstName: yup.string(),
   lastName: yup.string(),
@@ -93,13 +57,14 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
 }) => {
   const { data: patients } = useGetPatients();
   const { data: agencyProviders } = useGetAgencyProviders();
+  console.log('what is the actual format', appointment.appointmentScheduled);
   const theme = useTheme();
   const {
     register,
     handleSubmit,
     control,
     formState: { errors }
-  } = useForm<Form>({
+  } = useForm<AppointmentDetailsRequest>({
     mode: 'onTouched',
     resolver: yupResolver(schema),
     defaultValues: appointment
@@ -118,7 +83,17 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
     }
   });
 
+  useEffect(() => {
+    formatInTimeZone(
+      appointment.appointmentScheduled,
+      "yyyy-MM-dd'T'HH:mm",
+      'UTC'
+    );
+    console.log('in useEffect: ', appointment.appointmentScheduled);
+  });
+
   const onFormSubmit = handleSubmit((data) => editAppointments(data));
+  console.log({ onFormSubmit });
   return (
     <Dialog open fullScreen>
       <IconButton
@@ -215,6 +190,26 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
                 required
                 sx={{ marginBottom: theme.spacing(2) }}
                 fullWidth
+                label="Appointment Scheduled"
+                id="appointmentScheduled"
+                type="datetime-local"
+                InputLabelProps={{
+                  shrink: true
+                }}
+                error={!!errors.appointmentScheduled}
+                helperText={
+                  errors.appointmentScheduled?.message
+                    ? 'Appointment Scheduled is Required'
+                    : ''
+                }
+                {...register('appointmentScheduled')}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
+              <TextField
+                required
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
                 label="Chief Complaint"
                 id="chiefComplaint"
                 error={!!errors.patientChiefComplaint}
@@ -233,6 +228,33 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
                 {...register('circulatorDriverFullName')}
               />
             </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
+              <TextField
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="Appointment Notes"
+                id="appointmentNotes"
+                error={!!errors.appointmentNotes}
+                helperText={errors.appointmentNotes?.message}
+                {...register('appointmentNotes')}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
+              <TextField
+                sx={{ marginBottom: theme.spacing(2) }}
+                fullWidth
+                label="Other Purpose"
+                id="otherPurpose"
+                error={!!errors.appointmentOtherPurpose}
+                helperText={errors.appointmentOtherPurpose?.message}
+                {...register('appointmentOtherPurpose')}
+              />
+            </Grid>
+          </Grid>
+          <Grid container spacing={1}>
+            <Typography item component={Grid} xs={12} variant="h3">
+              Patient Info
+            </Typography>
             <Grid item xs={12} md={6} lg={4} xl={2}>
               <Controller
                 control={control}
@@ -356,28 +378,6 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
                     helperText={errors.patientWeightLbs?.message}
                   />
                 )}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} lg={4} xl={2}>
-              <TextField
-                sx={{ marginBottom: theme.spacing(2) }}
-                fullWidth
-                label="Appointment Notes"
-                id="appointmentNotes"
-                error={!!errors.appointmentNotes}
-                helperText={errors.appointmentNotes?.message}
-                {...register('appointmentNotes')}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} lg={4} xl={2}>
-              <TextField
-                sx={{ marginBottom: theme.spacing(2) }}
-                fullWidth
-                label="Other Purpose"
-                id="otherPurpose"
-                error={!!errors.appointmentOtherPurpose}
-                helperText={errors.appointmentOtherPurpose?.message}
-                {...register('appointmentOtherPurpose')}
               />
             </Grid>
           </Grid>

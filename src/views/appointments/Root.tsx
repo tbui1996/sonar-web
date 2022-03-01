@@ -13,13 +13,14 @@ import {
   TableRow
 } from '@material-ui/core';
 import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
-import AppointmentRow, { AppointmentDetails } from './AppointmentRow';
+import AppointmentRow from './AppointmentRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import useGetPatientAppointments from '../../hooks/domain/queries/useGetPatientAppointments';
 import CreateAppointmentDialog from './CreateAppointmentDialog';
 import EditAppointmentDialog from './EditAppointmentDialog';
+import { AppointmentDetailsRequest } from '../../hooks/domain/mutations/useEditAppointments';
 
 const useStyles = makeStyles((theme) => ({
   deleteButtonRoot: {
@@ -31,59 +32,30 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const formatInTimeZone = (
+export const formatInTimeZone = (
   date: string | number | Date,
   fmt: string,
   tz: string
 ) => format(utcToZonedTime(date, tz), fmt, { timeZone: tz });
 
-export type Bar = Omit<
-  AppointmentDetails,
-  | 'handleClick'
-  | 'middleName'
-  | 'providerFullName'
-  | 'createdTimestamp'
-  | 'suffix'
-  | 'dateOfBirth'
-  | 'primaryLanguage'
-  | 'preferredGender'
-  | 'emailAddress'
-  | 'homeAddress1'
-  | 'homeAddress2'
-  | 'homeCity'
-  | 'homeState'
-  | 'homeZip'
-  | 'signedCirculoConsentForm'
-  | 'circuloConsentFormLink'
-  | 'signedStationMDConsentForm'
-  | 'stationMDConsentFormLink'
-  | 'completedGoSheet'
-  | 'markedAsActive'
-  | 'nationalProviderId'
-  | 'businessTIN'
-  | 'businessAddress1'
-  | 'businessAddress2'
-  | 'businessCity'
-  | 'businessState'
-  | 'businessZip'
-  | 'patientHomePhone'
-  | 'patientHomeLivingArrangement'
-  | 'patientHomeCounty'
-  | 'insuranceId'
-  | 'appointmentCreated'
-  | 'lastModifiedTimestamp'
-  | 'appointmentStatusChangedOn'
->;
-
 const Appointments: React.FC = () => {
   const classes = useStyles();
   const { data: appointments } = useGetPatientAppointments();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [appointmentToEdit, setAppointmentToEdit] = useState<Bar | null>();
+  const [
+    appointmentToEdit,
+    setAppointmentToEdit
+  ] = useState<AppointmentDetailsRequest | null>();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const handleClick = useCallback(
-    (appointment: Bar) => {
+    (appointment: AppointmentDetailsRequest) => {
+      appointment.appointmentScheduled = formatInTimeZone(
+        appointment.appointmentScheduled,
+        "yyyy-MM-dd'T'HH:mm",
+        'America/New_York'
+      );
+      console.log('is this EST: ', appointment.appointmentScheduled);
       setAppointmentToEdit(appointment);
       setIsEditDialogOpen(true);
     },
