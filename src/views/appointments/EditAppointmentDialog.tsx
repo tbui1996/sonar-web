@@ -57,7 +57,10 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
 }) => {
   const { data: patients } = useGetPatients();
   const { data: agencyProviders } = useGetAgencyProviders();
-  console.log('what is the actual format', appointment.appointmentScheduled);
+  console.log(
+    'what is the actual format',
+    typeof appointment.appointmentScheduled
+  );
   const theme = useTheme();
   const {
     register,

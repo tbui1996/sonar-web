@@ -45,6 +45,8 @@ export type AppointmentDetailsRequest = Omit<
   | 'appointmentCreated'
   | 'lastModifiedTimestamp'
   | 'appointmentStatusChangedOn'
+  | 'isSelected'
+  | 'onSelect'
 >;
 const useEditAppointments = (
   options: UseMutationOptions<

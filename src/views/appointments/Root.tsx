@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import {
+  Box,
   Button,
   makeStyles,
   Paper,
@@ -10,17 +11,20 @@ import {
   TableHead,
   Toolbar,
   Tooltip,
-  TableRow
+  TableRow,
+  Typography
 } from '@material-ui/core';
 import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
 import AppointmentRow from './AppointmentRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
+import useDeleteAppointment from '../../hooks/domain/mutations/useDeleteAppointments';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import useGetPatientAppointments from '../../hooks/domain/queries/useGetPatientAppointments';
 import CreateAppointmentDialog from './CreateAppointmentDialog';
 import EditAppointmentDialog from './EditAppointmentDialog';
 import { AppointmentDetailsRequest } from '../../hooks/domain/mutations/useEditAppointments';
+import ConfirmDialog from '../../components/general/app/ConfirmDialog';
 
 const useStyles = makeStyles((theme) => ({
   deleteButtonRoot: {
@@ -47,15 +51,33 @@ const Appointments: React.FC = () => {
     setAppointmentToEdit
   ] = useState<AppointmentDetailsRequest | null>();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const {
+    mutateAsync: deleteAppointment,
+    isLoading: isDeleting
+  } = useDeleteAppointment();
+  const [selectedAppointmentIds, setSelectedAppointmentIds] = useState<
+    Record<string, boolean>
+  >({});
+
+  const selectedAppointments = appointments?.filter(
+    (f) => selectedAppointmentIds[f.appointmentId]
+  );
+
+  const toggleAppointmentSelection = (appointmentId: string) =>
+    setSelectedAppointmentIds((cur) => ({
+      ...cur,
+      [appointmentId]: !cur[appointmentId]
+    }));
 
   const handleClick = useCallback(
     (appointment: AppointmentDetailsRequest) => {
       appointment.appointmentScheduled = formatInTimeZone(
         appointment.appointmentScheduled,
         "yyyy-MM-dd'T'HH:mm",
-        'America/New_York'
+        'UTC'
       );
-      console.log('is this EST: ', appointment.appointmentScheduled);
+      console.log('WHYYYYY: ', appointment.appointmentScheduled);
       setAppointmentToEdit(appointment);
       setIsEditDialogOpen(true);
     },
@@ -88,6 +110,7 @@ const Appointments: React.FC = () => {
                     root: classes.deleteButtonRoot
                   }}
                   variant="contained"
+                  onClick={() => setIsDeleteConfirmOpen(true)}
                 >
                   Delete Selected
                 </Button>
@@ -157,6 +180,12 @@ const Appointments: React.FC = () => {
                 appointments.map((appointment, i) => (
                   <AppointmentRow
                     key={i}
+                    onSelect={() =>
+                      toggleAppointmentSelection(appointment.appointmentId)
+                    }
+                    isSelected={
+                      !!selectedAppointmentIds[appointment.appointmentId]
+                    }
                     handleClick={() => handleClick(appointment)}
                     appointmentId={appointment.appointmentId}
                     appointmentCreated={format(
@@ -273,6 +302,36 @@ const Appointments: React.FC = () => {
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
       />
+      {selectedAppointments && (
+        <ConfirmDialog
+          isConfirming={isDeleting}
+          open={isDeleteConfirmOpen}
+          title="Are you sure you want to delete these appointments?"
+          description={
+            <Box>
+              <Typography variant="subtitle2">
+                By confirming the following appointments will be deleted:
+              </Typography>
+              <ul style={{ padding: '8px 16px 0 16px' }}>
+                {selectedAppointments.map((f) => (
+                  <li key={f.appointmentId}>
+                    {f.firstName} {f.lastName}
+                  </li>
+                ))}
+              </ul>
+            </Box>
+          }
+          onConfirm={async () => {
+            await Promise.all(
+              selectedAppointments.map((appointment) =>
+                deleteAppointment({ appointmentId: appointment.appointmentId })
+              )
+            );
+            setIsDeleteConfirmOpen(false);
+          }}
+          onCancel={() => setIsDeleteConfirmOpen(false)}
+        />
+      )}
       {appointmentToEdit && isEditDialogOpen && (
         <EditAppointmentDialog
           onClose={() => setIsEditDialogOpen(false)}

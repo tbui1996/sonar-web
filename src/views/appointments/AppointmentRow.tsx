@@ -10,6 +10,8 @@ import { Edit } from '@material-ui/icons';
 
 export interface AppointmentDetails {
   handleClick: () => void;
+  isSelected: boolean;
+  onSelect: () => void;
   appointmentId: string;
   patientId: string;
   agencyProviderId: string;
@@ -65,6 +67,8 @@ export interface AppointmentDetails {
 
 const AppointmentRow: React.FC<AppointmentDetails> = ({
   handleClick,
+  isSelected,
+  onSelect,
   appointmentId,
   patientId,
   agencyProviderId,
@@ -136,6 +140,8 @@ const AppointmentRow: React.FC<AppointmentDetails> = ({
         <TableCell padding="checkbox">
           <Checkbox
             color="primary"
+            checked={isSelected}
+            onClick={onSelect}
             inputProps={{
               'aria-label': `select appointment with id ${appointmentId}`
             }}
