@@ -1,6 +1,6 @@
 import {
   Button,
-  makeStyles,
+  Drawer,
   Paper,
   Table,
   TableBody,
@@ -8,11 +8,11 @@ import {
   TableContainer,
   TableHead,
   Toolbar,
-  Tooltip,
   TableRow
 } from '@material-ui/core';
 import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import SearchBar from 'material-ui-search-bar';
 import CreatePatientDialog from './CreatePatientDialog';
 import PatientRow, { PatientDetails } from './PatientRow';
 import Page from '../../components/Page';
@@ -20,16 +20,9 @@ import HeaderDashboard from '../../components/HeaderDashboard';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import useGetPatients from '../../hooks/domain/queries/useGetPatients';
 import EditPatientDialog from './EditPatientDialog';
+import ViewPatientDialog from './ViewPatientDialog';
 
-const useStyles = makeStyles((theme) => ({
-  deleteButtonRoot: {
-    marginLeft: theme.spacing(1),
-    '&.Mui-disabled': {
-      pointerEvents: 'auto',
-      cursor: 'help'
-    }
-  }
-}));
+const DRAWER_WIDTH = 400;
 
 const formatInTimeZone = (
   date: string | number | Date,
@@ -38,11 +31,18 @@ const formatInTimeZone = (
 ) => format(utcToZonedTime(date, tz), fmt, { timeZone: tz });
 
 const Patients: React.FC = () => {
-  const classes = useStyles();
   const { data: patients } = useGetPatients();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [patientToEdit, setPatientToEdit] = useState<PatientDetails | null>();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [patientToView, setPatientToView] = useState<PatientDetails | null>();
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [rows, setRows] = useState<PatientDetails[] | undefined>(patients);
+  const [searched, setSearched] = useState<string>('');
+
+  useEffect(() => {
+    setRows(patients);
+  }, [setRows, patients]);
 
   const handleClick = useCallback(
     (patient: PatientDetails) => {
@@ -57,6 +57,37 @@ const Patients: React.FC = () => {
     },
     [setIsEditDialogOpen, setPatientToEdit]
   );
+
+  const requestSearch = (searchedVal: string) => {
+    const lowerCaseSearch = searchedVal.toLocaleLowerCase();
+    const filteredRows = patients?.filter(
+      (row) =>
+        row.patientLastName.toLowerCase().includes(lowerCaseSearch) ||
+        row.patientMiddleName.toLowerCase().includes(lowerCaseSearch) ||
+        row.patientFirstName.toLowerCase().includes(lowerCaseSearch)
+    );
+    setRows(filteredRows);
+  };
+
+  const cancelSearch = () => {
+    setSearched('');
+    requestSearch(searched);
+  };
+
+  const handleViewPatient = useCallback(
+    (patient: PatientDetails) => {
+      patient.patientDateOfBirth = formatInTimeZone(
+        patient.patientDateOfBirth,
+        'yyyy-MM-dd',
+        'UTC'
+      );
+
+      setPatientToView(patient);
+      setIsViewDialogOpen(true);
+    },
+    [setPatientToView, setIsViewDialogOpen]
+  );
+
   return (
     <Page title="Patients | Sonar">
       <HeaderDashboard
@@ -75,24 +106,18 @@ const Patients: React.FC = () => {
             >
               Add Patient
             </Button>
-            <Tooltip title="Select Patients to delete them">
-              <div>
-                <Button
-                  sx={{ marginLeft: '8px' }}
-                  classes={{
-                    root: classes.deleteButtonRoot
-                  }}
-                  variant="contained"
-                >
-                  Delete Selected
-                </Button>
-              </div>
-            </Tooltip>
+            <SearchBar
+              placeholder="Search By Full Name"
+              value={searched}
+              onChange={(searchVal: string) => requestSearch(searchVal)}
+              onCancelSearch={() => cancelSearch()}
+            />
           </Toolbar>
           <Table sx={{ minWidth: 480 }} arai-label="Patients">
             <TableHead>
               <TableRow>
                 <TableCell>Edit</TableCell>
+                <TableCell>View</TableCell>
                 <TableCell>Patient ID</TableCell>
                 <TableCell>Insurance ID</TableCell>
                 <TableCell>First Name</TableCell>
@@ -122,59 +147,60 @@ const Patients: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {patients &&
-                patients.map((patient, i) => (
+              {rows &&
+                rows?.map((row, i) => (
                   <PatientRow
-                    key={i}
-                    handleClick={() => handleClick(patient)}
-                    patientId={patient.patientId}
-                    insuranceId={patient.insuranceId}
-                    patientFirstName={patient.patientFirstName}
-                    patientMiddleName={patient.patientMiddleName}
-                    patientLastName={patient.patientLastName}
-                    patientSuffix={patient.patientSuffix}
+                    key={row.patientFirstName}
+                    handleClick={() => handleClick(row)}
+                    handleViewPatient={() => handleViewPatient(row)}
+                    patientId={row.patientId}
+                    insuranceId={row.insuranceId}
+                    patientFirstName={row.patientFirstName}
+                    patientMiddleName={row.patientMiddleName}
+                    patientLastName={row.patientLastName}
+                    patientSuffix={row.patientSuffix}
                     patientDateOfBirth={formatInTimeZone(
-                      patient.patientDateOfBirth,
+                      row.patientDateOfBirth,
                       'yyyy-MM-dd',
                       'UTC'
                     )}
-                    patientPrimaryLanguage={patient.patientPrimaryLanguage}
-                    patientPreferredGender={patient.patientPreferredGender}
-                    patientEmailAddress={patient.patientEmailAddress}
-                    patientHomePhone={patient.patientHomePhone}
+                    patientPrimaryLanguage={row.patientPrimaryLanguage}
+                    patientPreferredGender={row.patientPreferredGender}
+                    patientEmailAddress={row.patientEmailAddress}
+                    patientHomePhone={row.patientHomePhone}
                     patientHomeLivingArrangement={
-                      patient.patientHomeLivingArrangement
+                      row.patientHomeLivingArrangement
                     }
-                    patientHomeAddress1={patient.patientHomeAddress1}
-                    patientHomeAddress2={patient.patientHomeAddress2}
-                    patientHomeCity={patient.patientHomeCity}
-                    patientHomeCounty={patient.patientHomeCounty}
-                    patientHomeState={patient.patientHomeState}
-                    patientHomeZip={patient.patientHomeZip}
+                    patientHomeAddress1={row.patientHomeAddress1}
+                    patientHomeAddress2={row.patientHomeAddress2}
+                    patientHomeCity={row.patientHomeCity}
+                    patientHomeCounty={row.patientHomeCounty}
+                    patientHomeState={row.patientHomeState}
+                    patientHomeZip={row.patientHomeZip}
                     patientSignedCirculoConsentForm={
-                      patient.patientSignedCirculoConsentForm
+                      row.patientSignedCirculoConsentForm
                     }
                     patientCirculoConsentFormLink={
-                      patient.patientCirculoConsentFormLink
+                      row.patientCirculoConsentFormLink
                     }
                     patientSignedStationMDConsentForm={
-                      patient.patientSignedStationMDConsentForm
+                      row.patientSignedStationMDConsentForm
                     }
                     patientStationMDConsentFormLink={
-                      patient.patientStationMDConsentFormLink
+                      row.patientStationMDConsentFormLink
                     }
-                    patientCompletedGoSheet={patient.patientCompletedGoSheet}
-                    patientMarkedAsActive={patient.patientMarkedAsActive}
+                    patientCompletedGoSheet={row.patientCompletedGoSheet}
+                    patientMarkedAsActive={row.patientMarkedAsActive}
                     patientCreatedTimestamp={format(
                       zonedTimeToUtc(
-                        patient.patientCreatedTimestamp,
+                        row.patientCreatedTimestamp,
                         'America/New_York'
                       ),
                       "yyyy-MM-dd hh:mm aaaaa'm'"
                     )}
                     patientLastModifiedTimestamp={format(
                       zonedTimeToUtc(
-                        patient.patientLastModifiedTimestamp,
+                        row.patientLastModifiedTimestamp,
                         'America/New_York'
                       ),
                       "yyyy-MM-dd hh:mm aaaaa'm'"
@@ -194,6 +220,20 @@ const Patients: React.FC = () => {
           onClose={() => setIsEditDialogOpen(false)}
           patient={patientToEdit}
         />
+      )}
+      {patientToView && isViewDialogOpen && (
+        <Drawer
+          anchor="right"
+          open={isViewDialogOpen}
+          PaperProps={{
+            sx: { width: DRAWER_WIDTH }
+          }}
+        >
+          <ViewPatientDialog
+            onClose={() => setIsViewDialogOpen(false)}
+            patient={patientToView}
+          />
+        </Drawer>
       )}
     </Page>
   );
