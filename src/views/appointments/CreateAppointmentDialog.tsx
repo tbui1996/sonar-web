@@ -9,7 +9,6 @@ import {
   TextField,
   useTheme
 } from '@material-ui/core';
-import DateTimePicker from '@mui/lab/DateTimePicker';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { LoadingButton } from '@material-ui/lab';
@@ -214,12 +213,13 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
               </TextField>
             )}
           />
-          <DateTimePicker
+          <TextField
             required
             sx={{ marginBottom: theme.spacing(2) }}
             fullWidth
             label="Appointment Scheduled"
             id="appointmentScheduled"
+            type="datetime-local"
             InputLabelProps={{
               shrink: true
             }}
