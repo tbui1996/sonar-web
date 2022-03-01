@@ -62,6 +62,7 @@
     "@material-ui/lab": "^5.0.0-alpha.30",
     "@material-ui/system": "^5.0.0-alpha.29",
     "@material-ui/utils": "^5.0.0-alpha.29",
+    "@mui/lab": "^5.0.0-alpha.71",
     "@mui/material": "^5.2.7",
     "@mui/styles": "^5.2.3",
     "@mui/x-data-grid": "5.0.1",
