@@ -8,6 +8,7 @@ import { AxiosResponse } from 'axios';
 import axiosInstance from '../../../utils/axios';
 import { useGetAppointmentsKey } from '../queries/useGetPatientAppointments';
 import { AppointmentDetails } from '../../../views/appointments/AppointmentRow';
+import { formatInTimeZone } from '../../../views/appointments/Root';
 
 export type AppointmentDetailsRequest = Omit<
   AppointmentDetails,
@@ -65,7 +66,11 @@ const useEditAppointments = (
         firstName: request.firstName,
         lastName: request.lastName,
         appointmentStatus: request.appointmentStatus,
-        appointmentScheduled: request.appointmentScheduled,
+        appointmentScheduled: (request.appointmentScheduled = formatInTimeZone(
+          request.appointmentScheduled,
+          "yyyy-MM-dd'T'HH:mm",
+          'UTC'
+        )),
         appointmentPurpose: request.appointmentPurpose,
         patientchiefComplaint: request.patientChiefComplaint,
         businessName: request.businessName,

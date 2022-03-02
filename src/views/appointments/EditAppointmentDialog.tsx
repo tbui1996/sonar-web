@@ -57,15 +57,12 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
 }) => {
   const { data: patients } = useGetPatients();
   const { data: agencyProviders } = useGetAgencyProviders();
-  console.log(
-    'what is the actual format',
-    typeof appointment.appointmentScheduled
-  );
   const theme = useTheme();
   const {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors }
   } = useForm<AppointmentDetailsRequest>({
     mode: 'onTouched',
@@ -73,7 +70,8 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
     defaultValues: appointment
   });
   const { enqueueSnackbar } = useSnackbar();
-
+  const watchAppointmentScheduled = watch('appointmentScheduled');
+  console.log({ watchAppointmentScheduled });
   const { mutate: editAppointments } = useEditAppointments({
     onSuccess: () => {
       onClose();
@@ -86,17 +84,9 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
     }
   });
 
-  useEffect(() => {
-    formatInTimeZone(
-      appointment.appointmentScheduled,
-      "yyyy-MM-dd'T'HH:mm",
-      'UTC'
-    );
-    console.log('in useEffect: ', appointment.appointmentScheduled);
-  });
-
+  // change back to UTC
   const onFormSubmit = handleSubmit((data) => editAppointments(data));
-  console.log({ onFormSubmit });
+
   return (
     <Dialog open fullScreen>
       <IconButton
@@ -172,7 +162,7 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
                       onChange(e);
                     }}
                     name={name}
-                    value={value || ''}
+                    value={value}
                     id="agencyProviderId"
                     error={!!errors.agencyProviderId}
                   >
@@ -189,23 +179,40 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
               />
             </Grid>
             <Grid item xs={12} md={6} lg={4} xl={2}>
-              <TextField
-                required
-                sx={{ marginBottom: theme.spacing(2) }}
-                fullWidth
-                label="Appointment Scheduled"
-                id="appointmentScheduled"
-                type="datetime-local"
-                InputLabelProps={{
-                  shrink: true
-                }}
-                error={!!errors.appointmentScheduled}
-                helperText={
-                  errors.appointmentScheduled?.message
-                    ? 'Appointment Scheduled is Required'
-                    : ''
-                }
-                {...register('appointmentScheduled')}
+              <Controller
+                control={control}
+                name="appointmentScheduled"
+                render={({ field: { onChange, value, name } }) => (
+                  <TextField
+                    required
+                    sx={{ marginBottom: theme.spacing(2) }}
+                    fullWidth
+                    label="Appointment Scheduled"
+                    name={name}
+                    value={value}
+                    onChange={(e) => {
+                      onChange(
+                        (value = formatInTimeZone(
+                          e.target.value,
+                          "yyyy-MM-dd'T'HH:mm",
+                          'America/New_York'
+                        ))
+                      );
+                      console.log('what does this give me: ', value);
+                    }}
+                    id="appointmentScheduled"
+                    type="datetime-local"
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    error={!!errors.appointmentScheduled}
+                    helperText={
+                      errors.appointmentScheduled?.message
+                        ? 'Appointment Scheduled is Required'
+                        : ''
+                    }
+                  />
+                )}
               />
             </Grid>
             <Grid item xs={12} md={6} lg={4} xl={2}>
@@ -372,7 +379,7 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
                       onChange(e);
                     }}
                     name={name}
-                    value={value || 0}
+                    value={value}
                     sx={{ marginBottom: theme.spacing(2) }}
                     fullWidth
                     label="Weight (lbs)"

@@ -75,9 +75,8 @@ const Appointments: React.FC = () => {
       appointment.appointmentScheduled = formatInTimeZone(
         appointment.appointmentScheduled,
         "yyyy-MM-dd'T'HH:mm",
-        'UTC'
+        'America/New_York'
       );
-      console.log('WHYYYYY: ', appointment.appointmentScheduled);
       setAppointmentToEdit(appointment);
       setIsEditDialogOpen(true);
     },
