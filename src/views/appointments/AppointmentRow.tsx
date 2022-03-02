@@ -183,7 +183,7 @@ const AppointmentRow: React.FC<AppointmentDetails> = ({
         <TableCell>{createdTimestamp}</TableCell>
         <TableCell>{lastModifiedTimestamp}</TableCell>
         <TableCell>{nationalProviderId}</TableCell>
-        <TableCell>{businessName}</TableCell>
+        <TableCell>{businessName === 'None' ? '' : businessName}</TableCell>
         <TableCell>{businessTIN}</TableCell>
         <TableCell>{businessAddress1}</TableCell>
         <TableCell>{businessAddress2}</TableCell>
