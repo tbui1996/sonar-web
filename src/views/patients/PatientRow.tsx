@@ -1,9 +1,10 @@
 import React from 'react';
 import { TableCell, TableRow, useTheme, IconButton } from '@material-ui/core';
-import { Edit, Check, Close } from '@material-ui/icons';
+import { Edit, Check, Close, Search } from '@material-ui/icons';
 
 export interface PatientDetails {
   handleClick: () => void;
+  handleViewPatient: () => void;
   patientId: string;
   insuranceId: string;
   patientFirstName: string;
@@ -34,6 +35,7 @@ export interface PatientDetails {
 
 const PatientRow: React.FC<PatientDetails> = ({
   handleClick,
+  handleViewPatient,
   patientId,
   insuranceId,
   patientFirstName,
@@ -74,6 +76,11 @@ const PatientRow: React.FC<PatientDetails> = ({
         <TableCell>
           <IconButton onClick={handleClick} color="primary">
             <Edit />
+          </IconButton>
+        </TableCell>
+        <TableCell>
+          <IconButton onClick={handleViewPatient} color="primary">
+            <Search />
           </IconButton>
         </TableCell>
 
