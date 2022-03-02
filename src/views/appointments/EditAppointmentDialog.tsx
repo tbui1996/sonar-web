@@ -224,6 +224,41 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
               />
             </Grid>
             <Grid item xs={12} md={6} lg={4} xl={2}>
+              <Controller
+                control={control}
+                name="appointmentStatus"
+                render={({ field: { onChange, value, name } }) => (
+                  <TextField
+                    required
+                    select
+                    label="Appointment Status"
+                    sx={{ marginBottom: theme.spacing(2) }}
+                    fullWidth
+                    onChange={(e) => {
+                      onChange(e);
+                    }}
+                    name={name}
+                    value={value || ''}
+                    id="appointmentStatus"
+                    error={!!errors.firstName}
+                  >
+                    <MenuItem value="Pending Confirmation">
+                      Pending Confirmation
+                    </MenuItem>
+                    <MenuItem value="Confirmed">Confirmed</MenuItem>
+                    <MenuItem value="Completed">Completed</MenuItem>
+                    <MenuItem value="Cancelled by Circulo">
+                      Cancelled by Circulo
+                    </MenuItem>
+                    <MenuItem value="Cancelled by Agency">
+                      Cancelled by Agency
+                    </MenuItem>
+                    <MenuItem value="No Show">No Show</MenuItem>
+                  </TextField>
+                )}
+              />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4} xl={2}>
               <TextField
                 sx={{ marginBottom: theme.spacing(2) }}
                 fullWidth
