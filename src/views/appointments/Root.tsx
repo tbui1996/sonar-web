@@ -82,7 +82,7 @@ const Appointments: React.FC = () => {
     },
     [setIsEditDialogOpen, setAppointmentToEdit]
   );
-  console.log({ appointments });
+
   return (
     <Page title="Appointments | Sonar">
       <HeaderDashboard

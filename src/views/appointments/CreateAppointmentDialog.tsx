@@ -100,7 +100,6 @@ const CreateAppointmentDialog: React.FC<CreateAppointmentDialogProps> = ({
   });
 
   const onFormSubmit = handleSubmit((data) => {
-    console.log({ data });
     createAppointment(data);
   });
 
