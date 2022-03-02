@@ -6,7 +6,7 @@ import {
   Checkbox,
   IconButton
 } from '@material-ui/core';
-import { Edit } from '@material-ui/icons';
+import { Edit, Check, Close } from '@material-ui/icons';
 
 export interface AppointmentDetails {
   handleClick: () => void;
@@ -170,12 +170,16 @@ const AppointmentRow: React.FC<AppointmentDetails> = ({
         <TableCell>{homeCity}</TableCell>
         <TableCell>{homeState}</TableCell>
         <TableCell>{homeZip}</TableCell>
-        <TableCell>{signedCirculoConsentForm}</TableCell>
+        <TableCell>
+          {signedCirculoConsentForm ? <Check /> : <Close />}
+        </TableCell>
         <TableCell>{circuloConsentFormLink}</TableCell>
-        <TableCell>{signedStationMDConsentForm}</TableCell>
+        <TableCell>
+          {signedStationMDConsentForm ? <Check /> : <Close />}
+        </TableCell>
         <TableCell>{stationMDConsentFormLink}</TableCell>
-        <TableCell>{completedGoSheet}</TableCell>
-        <TableCell>{markedAsActive}</TableCell>
+        <TableCell>{completedGoSheet ? <Check /> : <Close />}</TableCell>
+        <TableCell>{markedAsActive ? <Check /> : <Close />}</TableCell>
         <TableCell>{createdTimestamp}</TableCell>
         <TableCell>{lastModifiedTimestamp}</TableCell>
         <TableCell>{nationalProviderId}</TableCell>
