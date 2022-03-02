@@ -62,7 +62,6 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
     register,
     handleSubmit,
     control,
-    watch,
     formState: { errors }
   } = useForm<AppointmentDetailsRequest>({
     mode: 'onTouched',
@@ -70,8 +69,7 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
     defaultValues: appointment
   });
   const { enqueueSnackbar } = useSnackbar();
-  const watchAppointmentScheduled = watch('appointmentScheduled');
-  console.log({ watchAppointmentScheduled });
+
   const { mutate: editAppointments } = useEditAppointments({
     onSuccess: () => {
       onClose();
@@ -84,7 +82,6 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
     }
   });
 
-  // change back to UTC
   const onFormSubmit = handleSubmit((data) => editAppointments(data));
 
   return (
@@ -198,7 +195,6 @@ const EditAppointmentDialog: React.FC<EditAppointmentDialogProps> = ({
                           'America/New_York'
                         ))
                       );
-                      console.log('what does this give me: ', value);
                     }}
                     id="appointmentScheduled"
                     type="datetime-local"
