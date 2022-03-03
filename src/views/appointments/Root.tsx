@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Box,
   Drawer,
@@ -16,6 +16,7 @@ import {
   Typography
 } from '@material-ui/core';
 import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
+import SearchBar from 'material-ui-search-bar';
 import AppointmentRow, { AppointmentDetails } from './AppointmentRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -68,6 +69,14 @@ const Appointments: React.FC = () => {
     setAppointmentToView
   ] = useState<AppointmentDetails | null>();
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [rows, setRows] = useState<AppointmentDetails[] | undefined>(
+    appointments
+  );
+  const [searched, setSearched] = useState<string>('');
+
+  useEffect(() => {
+    setRows(appointments);
+  }, [setRows, appointments]);
 
   const selectedAppointments = appointments?.filter(
     (f) => selectedAppointmentIds[f.appointmentId]
@@ -99,6 +108,21 @@ const Appointments: React.FC = () => {
     },
     [setAppointmentToView, setIsViewDialogOpen]
   );
+
+  const requestSearch = (searchedVal: string) => {
+    const lowerCaseSearch = searchedVal.toLocaleLowerCase();
+    const filteredRows = appointments?.filter(
+      (row) =>
+        row.firstName.toLowerCase().includes(lowerCaseSearch) ||
+        row.lastName.toLowerCase().includes(lowerCaseSearch)
+    );
+    setRows(filteredRows);
+  };
+
+  const cancelSearch = () => {
+    setSearched('');
+    requestSearch(searched);
+  };
 
   return (
     <Page title="Appointments | Sonar">
@@ -132,12 +156,19 @@ const Appointments: React.FC = () => {
                 </Button>
               </div>
             </Tooltip>
+            <SearchBar
+              placeholder="Search"
+              value={searched}
+              onChange={(searchVal: string) => requestSearch(searchVal)}
+              onCancelSearch={() => cancelSearch()}
+            />
           </Toolbar>
           <Table sx={{ minWidth: 480 }} arai-label="appointments">
             <TableHead>
               <TableRow>
                 <TableCell align="center">Edit</TableCell>
-                <TableCell padding="checkbox" />
+                <TableCell align="left">View</TableCell>
+                <TableCell padding="checkbox">Delete</TableCell>
                 <TableCell>Appointment Id</TableCell>
                 <TableCell>Appointment Created</TableCell>
                 <TableCell>Appointment Status</TableCell>
@@ -192,8 +223,8 @@ const Appointments: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {appointments &&
-                appointments.map((appointment, i) => (
+              {rows &&
+                rows?.map((appointment, i) => (
                   <AppointmentRow
                     key={i}
                     onSelect={() =>
