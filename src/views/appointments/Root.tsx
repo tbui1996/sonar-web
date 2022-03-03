@@ -1,9 +1,11 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, Key } from 'react';
 import {
   Box,
   Drawer,
   Button,
   makeStyles,
+  MenuItem,
+  Select,
   Paper,
   Table,
   TableBody,
@@ -17,6 +19,8 @@ import {
 } from '@material-ui/core';
 import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
 import SearchBar from 'material-ui-search-bar';
+import FormControl from '@mui/material/FormControl';
+import { Pagination } from '@material-ui/lab';
 import AppointmentRow, { AppointmentDetails } from './AppointmentRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -28,6 +32,7 @@ import EditAppointmentDialog from './EditAppointmentDialog';
 import { AppointmentDetailsRequest } from '../../hooks/domain/mutations/useEditAppointments';
 import ConfirmDialog from '../../components/general/app/ConfirmDialog';
 import ViewAppointmentDialog from './ViewAppointmentDialog';
+import usePagination from './Pagination';
 
 const DRAWER_WIDTH = 400;
 
@@ -38,6 +43,16 @@ const useStyles = makeStyles((theme) => ({
       pointerEvents: 'auto',
       cursor: 'help'
     }
+  },
+  searchRoot: {
+    marginLeft: theme.spacing(1),
+    '&.Mui-disabled': {
+      pointerEvents: 'auto',
+      cursor: 'help'
+    },
+    width: '180px',
+    height: '40px',
+    padding: '0px 0px 10px 0px'
   }
 }));
 
@@ -51,10 +66,9 @@ const Appointments: React.FC = () => {
   const classes = useStyles();
   const { data: appointments } = useGetPatientAppointments();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [
-    appointmentToEdit,
-    setAppointmentToEdit
-  ] = useState<AppointmentDetailsRequest | null>();
+  const [appointmentToEdit, setAppointmentToEdit] = useState<
+    AppointmentDetailsRequest | undefined
+  >();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const {
@@ -64,15 +78,30 @@ const Appointments: React.FC = () => {
   const [selectedAppointmentIds, setSelectedAppointmentIds] = useState<
     Record<string, boolean>
   >({});
-  const [
-    appointmentToView,
-    setAppointmentToView
-  ] = useState<AppointmentDetails | null>();
+  const [appointmentToView, setAppointmentToView] = useState<
+    AppointmentDetails | undefined
+  >();
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [rows, setRows] = useState<AppointmentDetails[] | undefined>(
     appointments
   );
   const [searched, setSearched] = useState<string>('');
+  const [searchOption, setSearchOpen] = useState('Search By');
+
+  const [page, setPage] = useState(1);
+  const PER_PAGE = 1;
+
+  const count = Math.ceil((appointments?.length || 1) / PER_PAGE);
+  const _DATA = usePagination(appointments, PER_PAGE);
+
+  const handlePageChange = (e: any, p: any) => {
+    setPage(p);
+    _DATA.jump(p);
+  };
+
+  const handleChange = (e: any) => {
+    setSearchOpen(e?.target.value);
+  };
 
   useEffect(() => {
     setRows(appointments);
@@ -109,19 +138,29 @@ const Appointments: React.FC = () => {
     [setAppointmentToView, setIsViewDialogOpen]
   );
 
-  const requestSearch = (searchedVal: string) => {
+  const requestSearch = (searchedVal: string, searchOption: string) => {
+    let filteredRows;
     const lowerCaseSearch = searchedVal.toLocaleLowerCase();
-    const filteredRows = appointments?.filter(
-      (row) =>
-        row.firstName.toLowerCase().includes(lowerCaseSearch) ||
-        row.lastName.toLowerCase().includes(lowerCaseSearch)
-    );
+    if (searchOption === 'Patient Name') {
+      filteredRows = appointments?.filter(
+        (row) =>
+          row.firstName.toLowerCase().includes(lowerCaseSearch) ||
+          row.lastName.toLowerCase().includes(lowerCaseSearch)
+      );
+    }
+
+    if (searchOption === 'Provider Name') {
+      filteredRows = appointments?.filter((row) =>
+        row.providerFullName.toLowerCase().includes(lowerCaseSearch)
+      );
+    }
+
     setRows(filteredRows);
   };
 
   const cancelSearch = () => {
     setSearched('');
-    requestSearch(searched);
+    requestSearch(searched, searchOption);
   };
 
   return (
@@ -156,12 +195,31 @@ const Appointments: React.FC = () => {
                 </Button>
               </div>
             </Tooltip>
-            <SearchBar
-              placeholder="Search"
-              value={searched}
-              onChange={(searchVal: string) => requestSearch(searchVal)}
-              onCancelSearch={() => cancelSearch()}
-            />
+            <FormControl classes={{ root: classes.searchRoot }}>
+              <Select
+                labelId="searchBy"
+                id="searchBy"
+                value={searchOption}
+                onChange={handleChange}
+                sx={{
+                  height: '40px'
+                }}
+              >
+                <MenuItem value="Search By">Search By</MenuItem>
+                <MenuItem value="Patient Name">Patient Name</MenuItem>
+                <MenuItem value="Provider Name">Provider Name</MenuItem>
+              </Select>
+            </FormControl>
+            {searchOption && searchOption !== 'Search By' && (
+              <SearchBar
+                placeholder={`Search by ${searchOption}`}
+                value={searched}
+                onChange={(searchVal: string) =>
+                  requestSearch(searchVal, searchOption)
+                }
+                onCancelSearch={() => cancelSearch()}
+              />
+            )}
           </Toolbar>
           <Table sx={{ minWidth: 480 }} arai-label="appointments">
             <TableHead>
@@ -223,131 +281,155 @@ const Appointments: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows &&
-                rows?.map((appointment, i) => (
-                  <AppointmentRow
-                    key={i}
-                    onSelect={() =>
-                      toggleAppointmentSelection(appointment.appointmentId)
-                    }
-                    isSelected={
-                      !!selectedAppointmentIds[appointment.appointmentId]
-                    }
-                    handleClick={() => handleClick(appointment)}
-                    handleViewAppointment={() =>
-                      handleViewAppointment(appointment)
-                    }
-                    appointmentId={appointment.appointmentId}
-                    appointmentCreated={format(
-                      zonedTimeToUtc(
-                        appointment.appointmentCreated,
-                        'America/New_York'
-                      ),
-                      "yyyy-MM-dd hh:mm aaaaa'm'"
-                    )}
-                    appointmentStatus={appointment.appointmentStatus}
-                    appointmentStatusChangedOn={format(
-                      zonedTimeToUtc(
-                        appointment.appointmentStatusChangedOn,
-                        'America/New_York'
-                      ),
-                      "yyyy-MM-dd hh:mm aaaaa'm'"
-                    )}
-                    appointmentScheduled={format(
-                      zonedTimeToUtc(
-                        appointment.appointmentScheduled,
-                        'America/New_York'
-                      ),
-                      "yyyy-MM-dd hh:mm aaaaa'm'"
-                    )}
-                    firstName={appointment.firstName}
-                    middleName={appointment.middleName}
-                    lastName={appointment.lastName}
-                    circulatorDriverFullName={
-                      appointment.circulatorDriverFullName
-                    }
-                    providerFullName={appointment.providerFullName}
-                    appointmentPurpose={appointment.appointmentPurpose}
-                    appointmentOtherPurpose={
-                      appointment.appointmentOtherPurpose
-                    }
-                    appointmentNotes={appointment.appointmentNotes}
-                    suffix={appointment.suffix}
-                    dateOfBirth={formatInTimeZone(
-                      appointment.dateOfBirth,
-                      'yyyy-MM-dd',
-                      'UTC'
-                    )}
-                    primaryLanguage={appointment.primaryLanguage}
-                    preferredGender={appointment.preferredGender}
-                    emailAddress={appointment.emailAddress}
-                    homeAddress1={appointment.homeAddress1}
-                    homeAddress2={appointment.homeAddress2}
-                    homeCity={appointment.homeCity}
-                    homeState={appointment.homeState}
-                    homeZip={appointment.homeZip}
-                    signedCirculoConsentForm={
-                      appointment.signedCirculoConsentForm
-                    }
-                    circuloConsentFormLink={appointment.circuloConsentFormLink}
-                    signedStationMDConsentForm={
-                      appointment.signedStationMDConsentForm
-                    }
-                    stationMDConsentFormLink={
-                      appointment.stationMDConsentFormLink
-                    }
-                    completedGoSheet={appointment.completedGoSheet}
-                    markedAsActive={appointment.markedAsActive}
-                    createdTimestamp={format(
-                      zonedTimeToUtc(
-                        appointment.createdTimestamp,
-                        'America/New_York'
-                      ),
-                      "yyyy-MM-dd hh:mm aaaaa'm'"
-                    )}
-                    lastModifiedTimestamp={format(
-                      zonedTimeToUtc(
-                        appointment.lastModifiedTimestamp,
-                        'America/New_York'
-                      ),
-                      "yyyy-MM-dd hh:mm aaaaa'm'"
-                    )}
-                    nationalProviderId={appointment.nationalProviderId}
-                    businessName={appointment.businessName}
-                    businessTIN={appointment.businessTIN}
-                    businessAddress1={appointment.businessAddress1}
-                    businessAddress2={appointment.businessAddress2}
-                    businessCity={appointment.businessCity}
-                    businessState={appointment.businessState}
-                    businessZip={appointment.businessZip}
-                    patientId={appointment.patientId}
-                    patientHomePhone={appointment.patientHomePhone}
-                    patientHomeLivingArrangement={
-                      appointment.patientHomeLivingArrangement
-                    }
-                    patientHomeCounty={appointment.patientHomeCounty}
-                    patientDiastolicBloodPressure={
-                      appointment.patientDiastolicBloodPressure
-                    }
-                    patientSystolicBloodPressure={
-                      appointment.patientSystolicBloodPressure
-                    }
-                    patientRespirationsPerMinute={
-                      appointment.patientRespirationsPerMinute
-                    }
-                    patientPulseBeatsPerMinute={
-                      appointment.patientPulseBeatsPerMinute
-                    }
-                    patientWeightLbs={appointment.patientWeightLbs}
-                    patientChiefComplaint={appointment.patientChiefComplaint}
-                    insuranceId={appointment.insuranceId}
-                    agencyProviderId={appointment.agencyProviderId}
-                  />
-                ))}
+              {_DATA.currentData() &&
+                _DATA
+                  .currentData()!
+                  .map(
+                    (
+                      appointment: AppointmentDetails,
+                      i: Key | null | undefined
+                    ) => (
+                      <AppointmentRow
+                        key={i}
+                        onSelect={() =>
+                          toggleAppointmentSelection(appointment?.appointmentId)
+                        }
+                        isSelected={
+                          !!selectedAppointmentIds[appointment?.appointmentId]
+                        }
+                        handleClick={() => handleClick(appointment)}
+                        handleViewAppointment={() =>
+                          handleViewAppointment(appointment)
+                        }
+                        appointmentId={appointment.appointmentId}
+                        appointmentCreated={format(
+                          zonedTimeToUtc(
+                            appointment.appointmentCreated,
+                            'America/New_York'
+                          ),
+                          "yyyy-MM-dd hh:mm aaaaa'm'"
+                        )}
+                        appointmentStatus={appointment.appointmentStatus}
+                        appointmentStatusChangedOn={format(
+                          zonedTimeToUtc(
+                            appointment.appointmentStatusChangedOn,
+                            'America/New_York'
+                          ),
+                          "yyyy-MM-dd hh:mm aaaaa'm'"
+                        )}
+                        appointmentScheduled={format(
+                          zonedTimeToUtc(
+                            appointment.appointmentScheduled,
+                            'America/New_York'
+                          ),
+                          "yyyy-MM-dd hh:mm aaaaa'm'"
+                        )}
+                        firstName={appointment.firstName}
+                        middleName={appointment.middleName}
+                        lastName={appointment.lastName}
+                        circulatorDriverFullName={
+                          appointment.circulatorDriverFullName
+                        }
+                        providerFullName={appointment.providerFullName}
+                        appointmentPurpose={appointment.appointmentPurpose}
+                        appointmentOtherPurpose={
+                          appointment.appointmentOtherPurpose
+                        }
+                        appointmentNotes={appointment.appointmentNotes}
+                        suffix={appointment.suffix}
+                        dateOfBirth={formatInTimeZone(
+                          appointment.dateOfBirth,
+                          'yyyy-MM-dd',
+                          'UTC'
+                        )}
+                        primaryLanguage={appointment.primaryLanguage}
+                        preferredGender={appointment.preferredGender}
+                        emailAddress={appointment.emailAddress}
+                        homeAddress1={appointment.homeAddress1}
+                        homeAddress2={appointment.homeAddress2}
+                        homeCity={appointment.homeCity}
+                        homeState={appointment.homeState}
+                        homeZip={appointment.homeZip}
+                        signedCirculoConsentForm={
+                          appointment.signedCirculoConsentForm
+                        }
+                        circuloConsentFormLink={
+                          appointment.circuloConsentFormLink
+                        }
+                        signedStationMDConsentForm={
+                          appointment.signedStationMDConsentForm
+                        }
+                        stationMDConsentFormLink={
+                          appointment.stationMDConsentFormLink
+                        }
+                        completedGoSheet={appointment.completedGoSheet}
+                        markedAsActive={appointment.markedAsActive}
+                        createdTimestamp={format(
+                          zonedTimeToUtc(
+                            appointment.createdTimestamp,
+                            'America/New_York'
+                          ),
+                          "yyyy-MM-dd hh:mm aaaaa'm'"
+                        )}
+                        lastModifiedTimestamp={format(
+                          zonedTimeToUtc(
+                            appointment.lastModifiedTimestamp,
+                            'America/New_York'
+                          ),
+                          "yyyy-MM-dd hh:mm aaaaa'm'"
+                        )}
+                        nationalProviderId={appointment.nationalProviderId}
+                        businessName={appointment.businessName}
+                        businessTIN={appointment.businessTIN}
+                        businessAddress1={appointment.businessAddress1}
+                        businessAddress2={appointment.businessAddress2}
+                        businessCity={appointment.businessCity}
+                        businessState={appointment.businessState}
+                        businessZip={appointment.businessZip}
+                        patientId={appointment.patientId}
+                        patientHomePhone={appointment.patientHomePhone}
+                        patientHomeLivingArrangement={
+                          appointment.patientHomeLivingArrangement
+                        }
+                        patientHomeCounty={appointment.patientHomeCounty}
+                        patientDiastolicBloodPressure={
+                          appointment.patientDiastolicBloodPressure
+                        }
+                        patientSystolicBloodPressure={
+                          appointment.patientSystolicBloodPressure
+                        }
+                        patientRespirationsPerMinute={
+                          appointment.patientRespirationsPerMinute
+                        }
+                        patientPulseBeatsPerMinute={
+                          appointment.patientPulseBeatsPerMinute
+                        }
+                        patientWeightLbs={appointment.patientWeightLbs}
+                        patientChiefComplaint={
+                          appointment.patientChiefComplaint
+                        }
+                        insuranceId={appointment.insuranceId}
+                        agencyProviderId={appointment.agencyProviderId}
+                      />
+                    )
+                  )}
             </TableBody>
           </Table>
         </TableContainer>
       </Paper>
+      <Pagination
+        count={count}
+        size="medium"
+        page={page}
+        sx={{
+          paddingTop: '5px',
+          display: 'flex',
+          justifyContent: 'center'
+        }}
+        variant="outlined"
+        shape="rounded"
+        onChange={handlePageChange}
+      />
       <CreateAppointmentDialog
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
