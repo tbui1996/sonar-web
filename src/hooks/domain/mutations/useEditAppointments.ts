@@ -13,6 +13,7 @@ import { formatInTimeZone } from '../../../views/appointments/Root';
 export type AppointmentDetailsRequest = Omit<
   AppointmentDetails,
   | 'handleClick'
+  | 'handleViewAppointment'
   | 'middleName'
   | 'providerFullName'
   | 'createdTimestamp'
