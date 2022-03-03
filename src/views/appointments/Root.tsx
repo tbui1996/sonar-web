@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import {
   Box,
+  Drawer,
   Button,
   makeStyles,
   Paper,
@@ -15,7 +16,7 @@ import {
   Typography
 } from '@material-ui/core';
 import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
-import AppointmentRow from './AppointmentRow';
+import AppointmentRow, { AppointmentDetails } from './AppointmentRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
 import useDeleteAppointment from '../../hooks/domain/mutations/useDeleteAppointments';
@@ -25,6 +26,9 @@ import CreateAppointmentDialog from './CreateAppointmentDialog';
 import EditAppointmentDialog from './EditAppointmentDialog';
 import { AppointmentDetailsRequest } from '../../hooks/domain/mutations/useEditAppointments';
 import ConfirmDialog from '../../components/general/app/ConfirmDialog';
+import ViewAppointmentDialog from './ViewAppointmentDialog';
+
+const DRAWER_WIDTH = 400;
 
 const useStyles = makeStyles((theme) => ({
   deleteButtonRoot: {
@@ -59,6 +63,11 @@ const Appointments: React.FC = () => {
   const [selectedAppointmentIds, setSelectedAppointmentIds] = useState<
     Record<string, boolean>
   >({});
+  const [
+    appointmentToView,
+    setAppointmentToView
+  ] = useState<AppointmentDetails | null>();
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
 
   const selectedAppointments = appointments?.filter(
     (f) => selectedAppointmentIds[f.appointmentId]
@@ -81,6 +90,14 @@ const Appointments: React.FC = () => {
       setIsEditDialogOpen(true);
     },
     [setIsEditDialogOpen, setAppointmentToEdit]
+  );
+
+  const handleViewAppointment = useCallback(
+    (appointment: AppointmentDetails) => {
+      setAppointmentToView(appointment);
+      setIsViewDialogOpen(true);
+    },
+    [setAppointmentToView, setIsViewDialogOpen]
   );
 
   return (
@@ -186,6 +203,9 @@ const Appointments: React.FC = () => {
                       !!selectedAppointmentIds[appointment.appointmentId]
                     }
                     handleClick={() => handleClick(appointment)}
+                    handleViewAppointment={() =>
+                      handleViewAppointment(appointment)
+                    }
                     appointmentId={appointment.appointmentId}
                     appointmentCreated={format(
                       zonedTimeToUtc(
@@ -336,6 +356,20 @@ const Appointments: React.FC = () => {
           onClose={() => setIsEditDialogOpen(false)}
           appointment={appointmentToEdit}
         />
+      )}
+      {appointmentToView && isViewDialogOpen && (
+        <Drawer
+          anchor="right"
+          open={isViewDialogOpen}
+          PaperProps={{
+            sx: { width: DRAWER_WIDTH }
+          }}
+        >
+          <ViewAppointmentDialog
+            onClose={() => setIsViewDialogOpen(false)}
+            appointment={appointmentToView}
+          />
+        </Drawer>
       )}
     </Page>
   );

@@ -6,10 +6,11 @@ import {
   Checkbox,
   IconButton
 } from '@material-ui/core';
-import { Edit, Check, Close } from '@material-ui/icons';
+import { Edit, Check, Close, Search } from '@material-ui/icons';
 
 export interface AppointmentDetails {
   handleClick: () => void;
+  handleViewAppointment: () => void;
   isSelected: boolean;
   onSelect: () => void;
   appointmentId: string;
@@ -67,6 +68,7 @@ export interface AppointmentDetails {
 
 const AppointmentRow: React.FC<AppointmentDetails> = ({
   handleClick,
+  handleViewAppointment,
   isSelected,
   onSelect,
   appointmentId,
@@ -135,6 +137,11 @@ const AppointmentRow: React.FC<AppointmentDetails> = ({
         <TableCell>
           <IconButton onClick={handleClick} color="primary">
             <Edit />
+          </IconButton>
+        </TableCell>
+        <TableCell>
+          <IconButton onClick={handleViewAppointment} color="primary">
+            <Search />
           </IconButton>
         </TableCell>
         <TableCell padding="checkbox">
