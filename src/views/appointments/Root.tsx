@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, Key } from 'react';
+import { useState, useCallback, useEffect, Key, useRef } from 'react';
 import {
   Box,
   Drawer,
@@ -9,6 +9,7 @@ import {
   Paper,
   Table,
   TableBody,
+  Pagination,
   TableCell,
   TableContainer,
   TableHead,
@@ -20,7 +21,7 @@ import {
 import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
 import SearchBar from 'material-ui-search-bar';
 import FormControl from '@mui/material/FormControl';
-import { Pagination } from '@material-ui/lab';
+import throttle from 'lodash/throttle';
 import AppointmentRow, { AppointmentDetails } from './AppointmentRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -82,30 +83,44 @@ const Appointments: React.FC = () => {
     AppointmentDetails | undefined
   >();
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  const [rows, setRows] = useState<AppointmentDetails[] | undefined>(
-    appointments
-  );
+
+  const [page, setPage] = useState(0);
+  const PER_PAGE = 2;
+
+  const [collection, setCollection] = useState<AppointmentDetails[]>();
+
+  const [filterCollection, setFilteredCollection] = useState<
+    AppointmentDetails[]
+  >();
+
+  console.log({ filterCollection });
+
+  const searchData = (val: any) => {
+    const query = val.toLowerCase();
+    console.log('what du heck is query: ', query);
+    setPage(0);
+    if (query === '') {
+      setFilteredCollection(appointments);
+    } else {
+      const apts = collection;
+      const data = apts?.filter((item) =>
+        item.providerFullName.toLowerCase().includes(query)
+      );
+      setFilteredCollection(data);
+    }
+  };
+
   const [searched, setSearched] = useState<string>('');
   const [searchOption, setSearchOpen] = useState('Search By');
-
-  const [page, setPage] = useState(1);
-  const PER_PAGE = 1;
-
-  const count = Math.ceil((appointments?.length || 1) / PER_PAGE);
-  const _DATA = usePagination(appointments, PER_PAGE);
-
-  const handlePageChange = (e: any, p: any) => {
-    setPage(p);
-    _DATA.jump(p);
-  };
 
   const handleChange = (e: any) => {
     setSearchOpen(e?.target.value);
   };
 
   useEffect(() => {
-    setRows(appointments);
-  }, [setRows, appointments]);
+    setCollection(appointments);
+    setFilteredCollection(appointments);
+  }, [searched, appointments, setPage]);
 
   const selectedAppointments = appointments?.filter(
     (f) => selectedAppointmentIds[f.appointmentId]
@@ -138,29 +153,9 @@ const Appointments: React.FC = () => {
     [setAppointmentToView, setIsViewDialogOpen]
   );
 
-  const requestSearch = (searchedVal: string, searchOption: string) => {
-    let filteredRows;
-    const lowerCaseSearch = searchedVal.toLocaleLowerCase();
-    if (searchOption === 'Patient Name') {
-      filteredRows = appointments?.filter(
-        (row) =>
-          row.firstName.toLowerCase().includes(lowerCaseSearch) ||
-          row.lastName.toLowerCase().includes(lowerCaseSearch)
-      );
-    }
-
-    if (searchOption === 'Provider Name') {
-      filteredRows = appointments?.filter((row) =>
-        row.providerFullName.toLowerCase().includes(lowerCaseSearch)
-      );
-    }
-
-    setRows(filteredRows);
-  };
-
   const cancelSearch = () => {
+    setFilteredCollection(collection);
     setSearched('');
-    requestSearch(searched, searchOption);
   };
 
   return (
@@ -214,9 +209,7 @@ const Appointments: React.FC = () => {
               <SearchBar
                 placeholder={`Search by ${searchOption}`}
                 value={searched}
-                onChange={(searchVal: string) =>
-                  requestSearch(searchVal, searchOption)
-                }
+                onChange={(e) => searchData(e)}
                 onCancelSearch={() => cancelSearch()}
               />
             )}
@@ -281,9 +274,9 @@ const Appointments: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {_DATA.currentData() &&
-                _DATA
-                  .currentData()!
+              {filterCollection &&
+                filterCollection
+                  .slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE)
                   .map(
                     (
                       appointment: AppointmentDetails,
@@ -415,21 +408,17 @@ const Appointments: React.FC = () => {
                   )}
             </TableBody>
           </Table>
+          <Pagination
+            page={page + 1}
+            onChange={(event, value) => setPage(value - 1)}
+            count={Math.ceil((filterCollection?.length || 0) / PER_PAGE)}
+            shape="rounded"
+            size="small"
+            sx={{ paddingBottom: '12px' }}
+          />
         </TableContainer>
       </Paper>
-      <Pagination
-        count={count}
-        size="medium"
-        page={page}
-        sx={{
-          paddingTop: '5px',
-          display: 'flex',
-          justifyContent: 'center'
-        }}
-        variant="outlined"
-        shape="rounded"
-        onChange={handlePageChange}
-      />
+
       <CreateAppointmentDialog
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
