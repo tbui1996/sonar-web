@@ -91,9 +91,7 @@ const Appointments: React.FC = () => {
     AppointmentDetails[]
   >();
 
-  console.log({ filterCollection });
-
-  const searchData = (val: any) => {
+  const searchData = (val: any, searchOption: string) => {
     const query = val.toLowerCase();
     console.log('what du heck is query: ', query);
     setPage(0);
@@ -101,10 +99,21 @@ const Appointments: React.FC = () => {
       setFilteredCollection(appointments);
     } else {
       const apts = collection;
-      const data = apts?.filter((item) =>
-        item.providerFullName.toLowerCase().includes(query)
-      );
-      setFilteredCollection(data);
+      if (searchOption === 'Provider Name') {
+        const data = apts?.filter((item) =>
+          item.providerFullName.toLowerCase().includes(query)
+        );
+        setFilteredCollection(data);
+      }
+      if (searchOption === 'Patient Name') {
+        const data = apts?.filter(
+          (item) =>
+            item.firstName.toLowerCase().includes(query) ||
+            item.middleName.toLowerCase().includes(query) ||
+            item.lastName.toLowerCase().includes(query)
+        );
+        setFilteredCollection(data);
+      }
     }
   };
 
@@ -207,7 +216,7 @@ const Appointments: React.FC = () => {
               <SearchBar
                 placeholder={`Search by ${searchOption}`}
                 value={searched}
-                onChange={(e) => searchData(e)}
+                onChange={(e) => searchData(e, searchOption)}
                 onCancelSearch={() => cancelSearch()}
               />
             )}
