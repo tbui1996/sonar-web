@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, Key, useRef } from 'react';
+import { useState, useCallback, useEffect, Key } from 'react';
 import {
   Box,
   Drawer,
@@ -21,7 +21,6 @@ import {
 import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
 import SearchBar from 'material-ui-search-bar';
 import FormControl from '@mui/material/FormControl';
-import throttle from 'lodash/throttle';
 import AppointmentRow, { AppointmentDetails } from './AppointmentRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -33,7 +32,6 @@ import EditAppointmentDialog from './EditAppointmentDialog';
 import { AppointmentDetailsRequest } from '../../hooks/domain/mutations/useEditAppointments';
 import ConfirmDialog from '../../components/general/app/ConfirmDialog';
 import ViewAppointmentDialog from './ViewAppointmentDialog';
-import usePagination from './Pagination';
 
 const DRAWER_WIDTH = 400;
 
