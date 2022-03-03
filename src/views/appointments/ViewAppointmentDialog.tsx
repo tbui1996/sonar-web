@@ -7,7 +7,7 @@ import {
   Card,
   useTheme
 } from '@material-ui/core';
-import { CheckBox, Close, CheckBoxOutlineBlank } from '@material-ui/icons';
+import { Close } from '@material-ui/icons';
 import { AppointmentDetails } from './AppointmentRow';
 
 export interface ViewAppointmentDialogProps {
@@ -47,7 +47,7 @@ const ViewAppointmentDialog: React.FC<ViewAppointmentDialogProps> = ({
           variant="h4"
           sx={{ color: 'text.secondary', paddingLeft: '0.5rem' }}
         >
-          View Patient
+          View Appointment
         </Typography>
       </Box>
       <Card
@@ -60,79 +60,20 @@ const ViewAppointmentDialog: React.FC<ViewAppointmentDialogProps> = ({
           margin: '0.5rem'
         }}
       >
-        Patient Info
-        <TableCell>Insurance Id: {patient.insuranceId}</TableCell>
-        <TableCell>Language: {patient.patientPrimaryLanguage}</TableCell>
+        Appointment Info
+        <TableCell>Insurance Id: {appointment.insuranceId}</TableCell>
         <TableCell>
-          Name: {patient.patientFirstName} {patient.patientMiddleName}{' '}
-          {patient.patientLastName}
-        </TableCell>
-        <TableCell>DOB: {patient.patientDateOfBirth}</TableCell>
-        <TableCell>Email: {patient.patientEmailAddress}</TableCell>
-        <TableCell>City: {patient.patientHomeCity}</TableCell>
-        <TableCell>State: {patient.patientHomeState}</TableCell>
-        <TableCell>Zipcode: {patient.patientHomeZip}</TableCell>
-      </Card>
-      <Card
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'left',
-          justifyContent: 'left',
-          padding: '1.5rem',
-          margin: '0.5rem'
-        }}
-      >
-        Patient Checklist
-        <TableCell>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {patient.insuranceId ? (
-              <CheckBox fontSize="small" />
-            ) : (
-              <CheckBoxOutlineBlank />
-            )}{' '}
-            Insurance Id
-          </Box>
+          Patient Name: {appointment.firstName} {appointment.lastName}
         </TableCell>
         <TableCell>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {patient.patientSignedStationMDConsentForm ? (
-              <CheckBox fontSize="small" />
-            ) : (
-              <CheckBoxOutlineBlank />
-            )}{' '}
-            Station MD Consent Form
-          </Box>
+          Appointment Status: {appointment.appointmentStatus}
+        </TableCell>
+        <TableCell>Agency Provider: {appointment.providerFullName}</TableCell>
+        <TableCell>
+          Appointment Type: {appointment.appointmentPurpose}
         </TableCell>
         <TableCell>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {patient.patientSignedCirculoConsentForm ? (
-              <CheckBox fontSize="small" />
-            ) : (
-              <CheckBoxOutlineBlank />
-            )}{' '}
-            Circulo Consent Form
-          </Box>
-        </TableCell>
-        <TableCell>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {patient.patientCompletedGoSheet ? (
-              <CheckBox fontSize="small" />
-            ) : (
-              <CheckBoxOutlineBlank />
-            )}{' '}
-            Go Sheet
-          </Box>
-        </TableCell>
-        <TableCell>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {patient.patientMarkedAsActive ? (
-              <CheckBox fontSize="small" />
-            ) : (
-              <CheckBoxOutlineBlank />
-            )}{' '}
-            Active
-          </Box>
+          Circulator Driver: {appointment.circulatorDriverFullName}
         </TableCell>
       </Card>
     </>
