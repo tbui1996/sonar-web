@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Button,
   Paper,
@@ -8,9 +8,14 @@ import {
   TableContainer,
   TableHead,
   Toolbar,
-  TableRow
+  TableRow,
+  Select,
+  MenuItem
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { zonedTimeToUtc, format } from 'date-fns-tz';
+import SearchBar from 'material-ui-search-bar';
+import FormControl from '@mui/material/FormControl';
 import AgencyProviderRow from './AgencyProviderRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -21,7 +26,21 @@ import useGetAgencyProviders, {
 import CreateAgencyProviderDialog from './CreateAgencyProviderDialog';
 import EditAgencyProviderDialog from './EditAgencyProviderDialog';
 
+const useStyles = makeStyles((theme) => ({
+  searchRoot: {
+    marginLeft: theme.spacing(1),
+    '&.Mui-disabled': {
+      pointerEvents: 'auto',
+      cursor: 'help'
+    },
+    width: '180px',
+    height: '40px',
+    padding: '0px 0px 10px 0px'
+  }
+}));
+
 const AgencyProviders: React.FC = () => {
+  const classes = useStyles();
   const { data: agencyProviders } = useGetAgencyProviders();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [
@@ -29,6 +48,19 @@ const AgencyProviders: React.FC = () => {
     setAgencyProviderToEdit
   ] = useState<AgencyProviderDetails>();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [rows, setRows] = useState<AgencyProviderDetails[] | undefined>(
+    agencyProviders
+  );
+  const [searched, setSearched] = useState<string>('');
+  const [searchOption, setSearchOpen] = useState('Search By');
+
+  const handleChange = (e: any) => {
+    setSearchOpen(e?.target.value);
+  };
+
+  useEffect(() => {
+    setRows(agencyProviders);
+  }, [setRows, agencyProviders]);
 
   const handleClick = useCallback(
     (agencyProvider: AgencyProviderDetails) => {
@@ -37,6 +69,38 @@ const AgencyProviders: React.FC = () => {
     },
     [setIsEditDialogOpen, setAgencyProviderToEdit]
   );
+
+  const requestSearch = (searchedVal: string, searchOption: string) => {
+    let filteredRows;
+    const lowerCaseSearch = searchedVal.toLocaleLowerCase();
+    if (searchOption === 'Provider Name') {
+      filteredRows = agencyProviders?.filter(
+        (row) =>
+          row.firstName.toLowerCase().includes(lowerCaseSearch) ||
+          row.middleName.toLowerCase().includes(lowerCaseSearch) ||
+          row.lastName.toLowerCase().includes(lowerCaseSearch)
+      );
+    }
+
+    if (searchOption === 'Business Name') {
+      filteredRows = agencyProviders?.filter((row) =>
+        row.businessName.toLowerCase().includes(lowerCaseSearch)
+      );
+    }
+
+    if (searchOption === 'Dodd Number') {
+      filteredRows = agencyProviders?.filter((row) =>
+        row.doddNumber.includes(searchedVal)
+      );
+    }
+
+    setRows(filteredRows);
+  };
+
+  const cancelSearch = () => {
+    setSearched('');
+    requestSearch(searched, searchOption);
+  };
 
   return (
     <Page title="Agency Provider | Sonar">
@@ -56,6 +120,32 @@ const AgencyProviders: React.FC = () => {
             >
               Add Agency Provider
             </Button>
+            <FormControl classes={{ root: classes.searchRoot }}>
+              <Select
+                labelId="searchBy"
+                id="searchBy"
+                value={searchOption}
+                onChange={handleChange}
+                sx={{
+                  height: '40px'
+                }}
+              >
+                <MenuItem value="Search By">Search By</MenuItem>
+                <MenuItem value="Provider Name">Provider Name</MenuItem>
+                <MenuItem value="Business Name">Business Name</MenuItem>
+                <MenuItem value="Dodd Number">DoDD Number</MenuItem>
+              </Select>
+            </FormControl>
+            {searchOption && searchOption !== 'Search By' && (
+              <SearchBar
+                placeholder={`Search By ${searchOption}`}
+                value={searched}
+                onChange={(searchVal: string) =>
+                  requestSearch(searchVal, searchOption)
+                }
+                onCancelSearch={() => cancelSearch()}
+              />
+            )}
           </Toolbar>
           <Table sx={{ minWidth: 480 }} arai-label="agencyProviders">
             <TableHead>
