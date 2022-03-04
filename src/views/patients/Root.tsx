@@ -1,6 +1,8 @@
 import {
   Button,
   Drawer,
+  makeStyles,
+  Pagination,
   Paper,
   Table,
   TableBody,
@@ -24,6 +26,12 @@ import ViewPatientDialog from './ViewPatientDialog';
 
 const DRAWER_WIDTH = 400;
 
+const useStyles = makeStyles((theme) => ({
+  justify: {
+    justifyContent: 'center'
+  }
+}));
+
 const formatInTimeZone = (
   date: string | number | Date,
   fmt: string,
@@ -31,18 +39,28 @@ const formatInTimeZone = (
 ) => format(utcToZonedTime(date, tz), fmt, { timeZone: tz });
 
 const Patients: React.FC = () => {
+  const classes = useStyles();
   const { data: patients } = useGetPatients();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [patientToEdit, setPatientToEdit] = useState<PatientDetails | null>();
+  const [patientToEdit, setPatientToEdit] = useState<PatientDetails>();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [patientToView, setPatientToView] = useState<PatientDetails | null>();
+  const [patientToView, setPatientToView] = useState<PatientDetails>();
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  const [rows, setRows] = useState<PatientDetails[] | undefined>(patients);
   const [searched, setSearched] = useState<string>('');
 
+  const [collection, setCollection] = useState<PatientDetails[]>();
+
+  const [filteredCollection, setFilteredCollection] = useState<
+    PatientDetails[]
+  >();
+
+  const [page, setPage] = useState(0);
+  const PER_PAGE = 2;
+
   useEffect(() => {
-    setRows(patients);
-  }, [setRows, patients]);
+    setCollection(patients);
+    setFilteredCollection(patients);
+  }, [setCollection, patients]);
 
   const handleClick = useCallback(
     (patient: PatientDetails) => {
@@ -60,18 +78,24 @@ const Patients: React.FC = () => {
 
   const requestSearch = (searchedVal: string) => {
     const lowerCaseSearch = searchedVal.toLocaleLowerCase();
-    const filteredRows = patients?.filter(
-      (row) =>
-        row.patientLastName.toLowerCase().includes(lowerCaseSearch) ||
-        row.patientMiddleName.toLowerCase().includes(lowerCaseSearch) ||
-        row.patientFirstName.toLowerCase().includes(lowerCaseSearch)
-    );
-    setRows(filteredRows);
+    setPage(0);
+    if (lowerCaseSearch === '') {
+      setFilteredCollection(patients);
+    } else {
+      const pts = collection;
+      const filteredRows = pts?.filter(
+        (row) =>
+          row.patientLastName.toLowerCase().includes(lowerCaseSearch) ||
+          row.patientMiddleName.toLowerCase().includes(lowerCaseSearch) ||
+          row.patientFirstName.toLowerCase().includes(lowerCaseSearch)
+      );
+      setFilteredCollection(filteredRows);
+    }
   };
 
   const cancelSearch = () => {
     setSearched('');
-    requestSearch(searched);
+    setFilteredCollection(collection);
   };
 
   const handleViewPatient = useCallback(
@@ -147,70 +171,81 @@ const Patients: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows &&
-                rows?.map((row, i) => (
-                  <PatientRow
-                    key={row.patientFirstName}
-                    handleClick={() => handleClick(row)}
-                    handleViewPatient={() => handleViewPatient(row)}
-                    patientId={row.patientId}
-                    insuranceId={row.insuranceId}
-                    patientFirstName={row.patientFirstName}
-                    patientMiddleName={row.patientMiddleName}
-                    patientLastName={row.patientLastName}
-                    patientSuffix={row.patientSuffix}
-                    patientDateOfBirth={formatInTimeZone(
-                      row.patientDateOfBirth,
-                      'yyyy-MM-dd',
-                      'UTC'
-                    )}
-                    patientPrimaryLanguage={row.patientPrimaryLanguage}
-                    patientPreferredGender={row.patientPreferredGender}
-                    patientEmailAddress={row.patientEmailAddress}
-                    patientHomePhone={row.patientHomePhone}
-                    patientHomeLivingArrangement={
-                      row.patientHomeLivingArrangement
-                    }
-                    patientHomeAddress1={row.patientHomeAddress1}
-                    patientHomeAddress2={row.patientHomeAddress2}
-                    patientHomeCity={row.patientHomeCity}
-                    patientHomeCounty={row.patientHomeCounty}
-                    patientHomeState={row.patientHomeState}
-                    patientHomeZip={row.patientHomeZip}
-                    patientSignedCirculoConsentForm={
-                      row.patientSignedCirculoConsentForm
-                    }
-                    patientCirculoConsentFormLink={
-                      row.patientCirculoConsentFormLink
-                    }
-                    patientSignedStationMDConsentForm={
-                      row.patientSignedStationMDConsentForm
-                    }
-                    patientStationMDConsentFormLink={
-                      row.patientStationMDConsentFormLink
-                    }
-                    patientCompletedGoSheet={row.patientCompletedGoSheet}
-                    patientMarkedAsActive={row.patientMarkedAsActive}
-                    patientCreatedTimestamp={format(
-                      zonedTimeToUtc(
-                        row.patientCreatedTimestamp,
-                        'America/New_York'
-                      ),
-                      "yyyy-MM-dd hh:mm aaaaa'm'"
-                    )}
-                    patientLastModifiedTimestamp={format(
-                      zonedTimeToUtc(
-                        row.patientLastModifiedTimestamp,
-                        'America/New_York'
-                      ),
-                      "yyyy-MM-dd hh:mm aaaaa'm'"
-                    )}
-                  />
-                ))}
+              {filteredCollection &&
+                filteredCollection
+                  .slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE)
+                  .map((row, i) => (
+                    <PatientRow
+                      key={row.patientFirstName}
+                      handleClick={() => handleClick(row)}
+                      handleViewPatient={() => handleViewPatient(row)}
+                      patientId={row.patientId}
+                      insuranceId={row.insuranceId}
+                      patientFirstName={row.patientFirstName}
+                      patientMiddleName={row.patientMiddleName}
+                      patientLastName={row.patientLastName}
+                      patientSuffix={row.patientSuffix}
+                      patientDateOfBirth={formatInTimeZone(
+                        row.patientDateOfBirth,
+                        'yyyy-MM-dd',
+                        'UTC'
+                      )}
+                      patientPrimaryLanguage={row.patientPrimaryLanguage}
+                      patientPreferredGender={row.patientPreferredGender}
+                      patientEmailAddress={row.patientEmailAddress}
+                      patientHomePhone={row.patientHomePhone}
+                      patientHomeLivingArrangement={
+                        row.patientHomeLivingArrangement
+                      }
+                      patientHomeAddress1={row.patientHomeAddress1}
+                      patientHomeAddress2={row.patientHomeAddress2}
+                      patientHomeCity={row.patientHomeCity}
+                      patientHomeCounty={row.patientHomeCounty}
+                      patientHomeState={row.patientHomeState}
+                      patientHomeZip={row.patientHomeZip}
+                      patientSignedCirculoConsentForm={
+                        row.patientSignedCirculoConsentForm
+                      }
+                      patientCirculoConsentFormLink={
+                        row.patientCirculoConsentFormLink
+                      }
+                      patientSignedStationMDConsentForm={
+                        row.patientSignedStationMDConsentForm
+                      }
+                      patientStationMDConsentFormLink={
+                        row.patientStationMDConsentFormLink
+                      }
+                      patientCompletedGoSheet={row.patientCompletedGoSheet}
+                      patientMarkedAsActive={row.patientMarkedAsActive}
+                      patientCreatedTimestamp={format(
+                        zonedTimeToUtc(
+                          row.patientCreatedTimestamp,
+                          'America/New_York'
+                        ),
+                        "yyyy-MM-dd hh:mm aaaaa'm'"
+                      )}
+                      patientLastModifiedTimestamp={format(
+                        zonedTimeToUtc(
+                          row.patientLastModifiedTimestamp,
+                          'America/New_York'
+                        ),
+                        "yyyy-MM-dd hh:mm aaaaa'm'"
+                      )}
+                    />
+                  ))}
             </TableBody>
           </Table>
         </TableContainer>
       </Paper>
+      <Pagination
+        classes={{ ul: classes.justify }}
+        page={page + 1}
+        onChange={(event, value) => setPage(value - 1)}
+        count={Math.ceil((filteredCollection?.length || 0) / PER_PAGE)}
+        shape="rounded"
+        size="small"
+        sx={{ paddingBottom: '12px' }}
+      />
       <CreatePatientDialog
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}

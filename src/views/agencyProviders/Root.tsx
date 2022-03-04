@@ -52,9 +52,7 @@ const AgencyProviders: React.FC = () => {
     setAgencyProviderToEdit
   ] = useState<AgencyProviderDetails>();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [rows, setRows] = useState<AgencyProviderDetails[] | undefined>(
-    agencyProviders
-  );
+
   const [searched, setSearched] = useState<string>('');
   const [searchOption, setSearchOpen] = useState('Search By');
 
@@ -74,7 +72,7 @@ const AgencyProviders: React.FC = () => {
   useEffect(() => {
     setCollection(agencyProviders);
     setFilteredCollection(agencyProviders);
-  }, [setRows, agencyProviders]);
+  }, [setCollection, agencyProviders]);
 
   const handleClick = useCallback(
     (agencyProvider: AgencyProviderDetails) => {
