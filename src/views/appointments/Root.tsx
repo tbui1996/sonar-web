@@ -68,9 +68,10 @@ const Appointments: React.FC = () => {
   const classes = useStyles();
   const { data: appointments } = useGetPatientAppointments();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [appointmentToEdit, setAppointmentToEdit] = useState<
-    AppointmentDetailsRequest | undefined
-  >();
+  const [
+    appointmentToEdit,
+    setAppointmentToEdit
+  ] = useState<AppointmentDetailsRequest>();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const {
@@ -80,9 +81,10 @@ const Appointments: React.FC = () => {
   const [selectedAppointmentIds, setSelectedAppointmentIds] = useState<
     Record<string, boolean>
   >({});
-  const [appointmentToView, setAppointmentToView] = useState<
-    AppointmentDetails | undefined
-  >();
+  const [
+    appointmentToView,
+    setAppointmentToView
+  ] = useState<AppointmentDetails>();
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
 
   const [page, setPage] = useState(0);
