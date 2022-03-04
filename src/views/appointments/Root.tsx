@@ -88,7 +88,7 @@ const Appointments: React.FC = () => {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
 
   const [page, setPage] = useState(0);
-  const PER_PAGE = 2;
+  const PER_PAGE = 10;
 
   const [collection, setCollection] = useState<AppointmentDetails[]>();
 

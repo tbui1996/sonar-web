@@ -55,7 +55,7 @@ const Patients: React.FC = () => {
   >();
 
   const [page, setPage] = useState(0);
-  const PER_PAGE = 2;
+  const PER_PAGE = 10;
 
   useEffect(() => {
     setCollection(patients);
