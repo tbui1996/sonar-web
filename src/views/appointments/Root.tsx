@@ -98,7 +98,6 @@ const Appointments: React.FC = () => {
 
   const searchData = (val: any, searchOption: string) => {
     const query = val.toLowerCase();
-    console.log('what du heck is query: ', query);
     setPage(0);
     if (query === '') {
       setFilteredCollection(appointments);
