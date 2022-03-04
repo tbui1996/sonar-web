@@ -5,6 +5,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  Pagination,
   TableContainer,
   TableHead,
   Toolbar,
@@ -36,6 +37,9 @@ const useStyles = makeStyles((theme) => ({
     width: '180px',
     height: '40px',
     padding: '0px 0px 10px 0px'
+  },
+  justify: {
+    justifyContent: 'center'
   }
 }));
 
@@ -58,8 +62,18 @@ const AgencyProviders: React.FC = () => {
     setSearchOpen(e?.target.value);
   };
 
+  const [page, setPage] = useState(0);
+  const PER_PAGE = 2;
+
+  const [collection, setCollection] = useState<AgencyProviderDetails[]>();
+
+  const [filterCollection, setFilteredCollection] = useState<
+    AgencyProviderDetails[]
+  >();
+
   useEffect(() => {
-    setRows(agencyProviders);
+    setCollection(agencyProviders);
+    setFilteredCollection(agencyProviders);
   }, [setRows, agencyProviders]);
 
   const handleClick = useCallback(
@@ -73,33 +87,40 @@ const AgencyProviders: React.FC = () => {
   const requestSearch = (searchedVal: string, searchOption: string) => {
     let filteredRows;
     const lowerCaseSearch = searchedVal.toLocaleLowerCase();
-    if (searchOption === 'Provider Name') {
-      filteredRows = agencyProviders?.filter(
-        (row) =>
-          row.firstName.toLowerCase().includes(lowerCaseSearch) ||
-          row.middleName.toLowerCase().includes(lowerCaseSearch) ||
-          row.lastName.toLowerCase().includes(lowerCaseSearch)
-      );
-    }
+    setPage(0);
+    if (lowerCaseSearch === '') {
+      setFilteredCollection(agencyProviders);
+    } else {
+      const storeAgencyProvder = collection;
+      if (searchOption === 'Provider Name') {
+        filteredRows = storeAgencyProvder?.filter(
+          (row) =>
+            row.firstName.toLowerCase().includes(lowerCaseSearch) ||
+            row.middleName.toLowerCase().includes(lowerCaseSearch) ||
+            row.lastName.toLowerCase().includes(lowerCaseSearch)
+        );
+        setFilteredCollection(filteredRows);
+      }
 
-    if (searchOption === 'Business Name') {
-      filteredRows = agencyProviders?.filter((row) =>
-        row.businessName.toLowerCase().includes(lowerCaseSearch)
-      );
-    }
+      if (searchOption === 'Business Name') {
+        filteredRows = storeAgencyProvder?.filter((row) =>
+          row.businessName.toLowerCase().includes(lowerCaseSearch)
+        );
+        setFilteredCollection(filteredRows);
+      }
 
-    if (searchOption === 'Dodd Number') {
-      filteredRows = agencyProviders?.filter((row) =>
-        row.doddNumber.includes(searchedVal)
-      );
+      if (searchOption === 'Dodd Number') {
+        filteredRows = storeAgencyProvder?.filter((row) =>
+          row.doddNumber.includes(searchedVal)
+        );
+        setFilteredCollection(filteredRows);
+      }
     }
-
-    setRows(filteredRows);
   };
 
   const cancelSearch = () => {
     setSearched('');
-    requestSearch(searched, searchOption);
+    setFilteredCollection(collection);
   };
 
   return (
@@ -170,9 +191,10 @@ const AgencyProviders: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {agencyProviders &&
-                agencyProviders
+              {filterCollection &&
+                filterCollection
                   .filter((agencyProvider) => agencyProvider.doddNumber !== '0')
+                  .slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE)
                   .map((agencyProvider, i) => (
                     <AgencyProviderRow
                       key={i}
@@ -211,6 +233,15 @@ const AgencyProviders: React.FC = () => {
           </Table>
         </TableContainer>
       </Paper>
+      <Pagination
+        classes={{ ul: classes.justify }}
+        page={page + 1}
+        onChange={(event, value) => setPage(value - 1)}
+        count={Math.ceil((filterCollection?.length || 0) / PER_PAGE)}
+        shape="rounded"
+        size="small"
+        sx={{ paddingBottom: '12px' }}
+      />
       <CreateAgencyProviderDialog
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
