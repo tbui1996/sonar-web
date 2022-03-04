@@ -52,6 +52,9 @@ const useStyles = makeStyles((theme) => ({
     width: '180px',
     height: '40px',
     padding: '0px 0px 10px 0px'
+  },
+  justify: {
+    justifyContent: 'center'
   }
 }));
 
@@ -415,17 +418,17 @@ const Appointments: React.FC = () => {
                   )}
             </TableBody>
           </Table>
-          <Pagination
-            page={page + 1}
-            onChange={(event, value) => setPage(value - 1)}
-            count={Math.ceil((filterCollection?.length || 0) / PER_PAGE)}
-            shape="rounded"
-            size="small"
-            sx={{ paddingBottom: '12px' }}
-          />
         </TableContainer>
       </Paper>
-
+      <Pagination
+        classes={{ ul: classes.justify }}
+        page={page + 1}
+        onChange={(event, value) => setPage(value - 1)}
+        count={Math.ceil((filterCollection?.length || 0) / PER_PAGE)}
+        shape="rounded"
+        size="small"
+        sx={{ paddingBottom: '12px' }}
+      />
       <CreateAppointmentDialog
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
