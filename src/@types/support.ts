@@ -91,6 +91,6 @@ export type Patient = {
   name: string;
   lastName: string;
   address: string;
-  medicaidID: string;
+  insuranceID: string;
   birthday: Date;
 };
