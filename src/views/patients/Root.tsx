@@ -13,7 +13,7 @@ import {
   TableRow
 } from '@material-ui/core';
 import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import SearchBar from 'material-ui-search-bar';
 import CreatePatientDialog from './CreatePatientDialog';
 import PatientRow, { PatientDetails } from './PatientRow';
@@ -50,16 +50,11 @@ const Patients: React.FC = () => {
 
   const [collection, setCollection] = useState<PatientDetails[]>();
 
-  const [filteredCollection, setFilteredCollection] = useState<
-    PatientDetails[]
-  >();
-
   const [page, setPage] = useState(0);
   const PER_PAGE = 10;
 
   useEffect(() => {
     setCollection(patients);
-    setFilteredCollection(patients);
   }, [setCollection, patients]);
 
   const handleClick = useCallback(
@@ -76,27 +71,18 @@ const Patients: React.FC = () => {
     [setIsEditDialogOpen, setPatientToEdit]
   );
 
-  const requestSearch = (searchedVal: string) => {
-    const lowerCaseSearch = searchedVal.toLocaleLowerCase();
+  const filteredRows = useMemo(() => {
+    const query = searched.toLowerCase();
     setPage(0);
-    if (lowerCaseSearch === '') {
-      setFilteredCollection(patients);
-    } else {
-      const pts = collection;
-      const filteredRows = pts?.filter(
-        (row) =>
-          row.patientLastName.toLowerCase().includes(lowerCaseSearch) ||
-          row.patientMiddleName.toLowerCase().includes(lowerCaseSearch) ||
-          row.patientFirstName.toLowerCase().includes(lowerCaseSearch)
-      );
-      setFilteredCollection(filteredRows);
-    }
-  };
+    const pt = collection;
 
-  const cancelSearch = () => {
-    setSearched('');
-    setFilteredCollection(collection);
-  };
+    return pt?.filter(
+      (item) =>
+        item.patientFirstName.toLowerCase().includes(query) ||
+        item.patientMiddleName.toLowerCase().includes(query) ||
+        item.patientLastName.toLowerCase().includes(query)
+    );
+  }, [searched, collection]);
 
   const handleViewPatient = useCallback(
     (patient: PatientDetails) => {
@@ -133,8 +119,8 @@ const Patients: React.FC = () => {
             <SearchBar
               placeholder="Search By Full Name"
               value={searched}
-              onChange={(searchVal: string) => requestSearch(searchVal)}
-              onCancelSearch={() => cancelSearch()}
+              onChange={(searchVal: string) => setSearched(searchVal)}
+              onCancelSearch={() => setSearched('')}
             />
           </Toolbar>
           <Table sx={{ minWidth: 480 }} arai-label="Patients">
@@ -171,8 +157,8 @@ const Patients: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredCollection &&
-                filteredCollection
+              {filteredRows &&
+                filteredRows
                   .slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE)
                   .map((row, i) => (
                     <PatientRow
@@ -241,7 +227,7 @@ const Patients: React.FC = () => {
         classes={{ ul: classes.justify }}
         page={page + 1}
         onChange={(event, value) => setPage(value - 1)}
-        count={Math.ceil((filteredCollection?.length || 0) / PER_PAGE)}
+        count={Math.ceil((filteredRows?.length || 0) / PER_PAGE)}
         shape="rounded"
         size="small"
         sx={{ paddingBottom: '12px' }}
