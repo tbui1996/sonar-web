@@ -93,10 +93,6 @@ const AgencyProviders: React.FC = () => {
     return agencyProviders;
   }, [agencyProviders, searchOption, searched]);
 
-  const cancelSearch = () => {
-    setSearched('');
-  };
-
   return (
     <Page title="Agency Provider | Sonar">
       <HeaderDashboard
@@ -136,7 +132,7 @@ const AgencyProviders: React.FC = () => {
                 placeholder={`Search By ${searchOption}`}
                 value={searched}
                 onChange={(searchVal: string) => setSearched(searchVal)}
-                onCancelSearch={() => cancelSearch()}
+                onCancelSearch={() => setSearched('')}
               />
             )}
           </Toolbar>
