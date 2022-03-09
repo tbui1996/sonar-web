@@ -23,7 +23,6 @@ import EditAgencyProviderDialog from './EditAgencyProviderDialog';
 
 const AgencyProviders: React.FC = () => {
   const { data: agencyProviders } = useGetAgencyProviders();
-  console.log({ agencyProviders });
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [
     agencyProviderToEdit,
@@ -82,40 +81,42 @@ const AgencyProviders: React.FC = () => {
             </TableHead>
             <TableBody>
               {agencyProviders &&
-                agencyProviders.map((agencyProvider, i) => (
-                  <AgencyProviderRow
-                    key={i}
-                    handleClick={() => handleClick(agencyProvider)}
-                    agencyProviderId={agencyProvider.agencyProviderId}
-                    doddNumber={agencyProvider.doddNumber}
-                    nationalProviderId={agencyProvider.nationalProviderId}
-                    firstName={agencyProvider.firstName}
-                    middleName={agencyProvider.middleName}
-                    lastName={agencyProvider.lastName}
-                    suffix={agencyProvider.suffix}
-                    businessName={agencyProvider.businessName}
-                    businessTIN={agencyProvider.businessTIN}
-                    businessAddress1={agencyProvider.businessAddress1}
-                    businessAddress2={agencyProvider.businessAddress2}
-                    businessCity={agencyProvider.businessCity}
-                    businessState={agencyProvider.businessState}
-                    businessZip={agencyProvider.businessZip}
-                    createdTimestamp={format(
-                      zonedTimeToUtc(
-                        agencyProvider.createdTimestamp,
-                        'America/New_York'
-                      ),
-                      "yyyy-MM-dd hh:mm aaaaa'm'"
-                    )}
-                    lastModifiedTimestamp={format(
-                      zonedTimeToUtc(
-                        agencyProvider.lastModifiedTimestamp,
-                        'America/New_York'
-                      ),
-                      "yyyy-MM-dd hh:mm aaaaa'm'"
-                    )}
-                  />
-                ))}
+                agencyProviders
+                  .filter((agencyProvider) => agencyProvider.doddNumber !== '0')
+                  .map((agencyProvider, i) => (
+                    <AgencyProviderRow
+                      key={i}
+                      handleClick={() => handleClick(agencyProvider)}
+                      agencyProviderId={agencyProvider.agencyProviderId}
+                      doddNumber={agencyProvider.doddNumber}
+                      nationalProviderId={agencyProvider.nationalProviderId}
+                      firstName={agencyProvider.firstName}
+                      middleName={agencyProvider.middleName}
+                      lastName={agencyProvider.lastName}
+                      suffix={agencyProvider.suffix}
+                      businessName={agencyProvider.businessName}
+                      businessTIN={agencyProvider.businessTIN}
+                      businessAddress1={agencyProvider.businessAddress1}
+                      businessAddress2={agencyProvider.businessAddress2}
+                      businessCity={agencyProvider.businessCity}
+                      businessState={agencyProvider.businessState}
+                      businessZip={agencyProvider.businessZip}
+                      createdTimestamp={format(
+                        zonedTimeToUtc(
+                          agencyProvider.createdTimestamp,
+                          'America/New_York'
+                        ),
+                        "yyyy-MM-dd hh:mm aaaaa'm'"
+                      )}
+                      lastModifiedTimestamp={format(
+                        zonedTimeToUtc(
+                          agencyProvider.lastModifiedTimestamp,
+                          'America/New_York'
+                        ),
+                        "yyyy-MM-dd hh:mm aaaaa'm'"
+                      )}
+                    />
+                  ))}
             </TableBody>
           </Table>
         </TableContainer>
