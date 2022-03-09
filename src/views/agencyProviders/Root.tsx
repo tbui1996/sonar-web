@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, ChangeEvent } from 'react';
+import { useState, useCallback, useMemo, useEffect, ChangeEvent } from 'react';
 import {
   Button,
   Paper,
@@ -71,6 +71,8 @@ const AgencyProviders: React.FC = () => {
   const PER_PAGE = 10;
   const [collection, setCollection] = useState<AgencyProviderDetails[]>();
   const [filterCollection, setFilteredCollection] = useState<
+    AgencyProviderDetails[]
+  >();
   useEffect(() => {
     setCollection(agencyProviders);
     setFilteredCollection(agencyProviders);
