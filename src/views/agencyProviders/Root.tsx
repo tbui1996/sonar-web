@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, ChangeEvent } from 'react';
 import {
   Button,
   Paper,
@@ -8,9 +8,15 @@ import {
   TableContainer,
   TableHead,
   Toolbar,
-  TableRow
+  TableRow,
+  Select,
+  MenuItem
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { zonedTimeToUtc, format } from 'date-fns-tz';
+import SearchBar from 'material-ui-search-bar';
+import FormControl from '@mui/material/FormControl';
+import { SyntheticEvent } from 'react-draft-wysiwyg';
 import AgencyProviderRow from './AgencyProviderRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -21,7 +27,17 @@ import useGetAgencyProviders, {
 import CreateAgencyProviderDialog from './CreateAgencyProviderDialog';
 import EditAgencyProviderDialog from './EditAgencyProviderDialog';
 
+const useStyles = makeStyles((theme) => ({
+  searchRoot: {
+    marginLeft: theme.spacing(1),
+    width: '180px',
+    height: '40px',
+    padding: '0px 0px 2.25px 0px'
+  }
+}));
+
 const AgencyProviders: React.FC = () => {
+  const classes = useStyles();
   const { data: agencyProviders } = useGetAgencyProviders();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [
@@ -30,6 +46,19 @@ const AgencyProviders: React.FC = () => {
   ] = useState<AgencyProviderDetails>();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
+  const [searched, setSearched] = useState<string>('');
+  const [searchOption, setSearchOption] = useState('Search By');
+
+  const handleChange = (
+    event: ChangeEvent<{
+      name?: string | undefined;
+      value: string;
+      event: Event | SyntheticEvent;
+    }>
+  ) => {
+    setSearchOption(event?.target.value);
+  };
+
   const handleClick = useCallback(
     (agencyProvider: AgencyProviderDetails) => {
       setAgencyProviderToEdit(agencyProvider);
@@ -37,6 +66,32 @@ const AgencyProviders: React.FC = () => {
     },
     [setIsEditDialogOpen, setAgencyProviderToEdit]
   );
+
+  const filteredRows = useMemo(() => {
+    const lowerCaseSearch = searched.toLocaleLowerCase();
+    if (searchOption === 'Provider Name') {
+      return agencyProviders?.filter(
+        (row) =>
+          row.firstName.toLowerCase().includes(lowerCaseSearch) ||
+          row.middleName.toLowerCase().includes(lowerCaseSearch) ||
+          row.lastName.toLowerCase().includes(lowerCaseSearch)
+      );
+    }
+
+    if (searchOption === 'Business Name') {
+      return agencyProviders?.filter((row) =>
+        row.businessName.toLowerCase().includes(lowerCaseSearch)
+      );
+    }
+
+    if (searchOption === 'Dodd Number') {
+      return agencyProviders?.filter((row) =>
+        row.doddNumber.includes(searched)
+      );
+    }
+
+    return agencyProviders;
+  }, [agencyProviders, searchOption, searched]);
 
   return (
     <Page title="Agency Provider | Sonar">
@@ -56,6 +111,30 @@ const AgencyProviders: React.FC = () => {
             >
               Add Agency Provider
             </Button>
+            <FormControl classes={{ root: classes.searchRoot }}>
+              <Select
+                labelId="searchBy"
+                id="searchBy"
+                value={searchOption}
+                onChange={handleChange}
+                sx={{
+                  height: '40px'
+                }}
+              >
+                <MenuItem value="Search By">Search By</MenuItem>
+                <MenuItem value="Provider Name">Provider Name</MenuItem>
+                <MenuItem value="Business Name">Business Name</MenuItem>
+                <MenuItem value="Dodd Number">DoDD Number</MenuItem>
+              </Select>
+            </FormControl>
+            {searchOption && searchOption !== 'Search By' && (
+              <SearchBar
+                placeholder={`Search By ${searchOption}`}
+                value={searched}
+                onChange={(searchVal: string) => setSearched(searchVal)}
+                onCancelSearch={() => setSearched('')}
+              />
+            )}
           </Toolbar>
           <Table sx={{ minWidth: 480 }} arai-label="agencyProviders">
             <TableHead>
@@ -80,43 +159,41 @@ const AgencyProviders: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {agencyProviders &&
-                agencyProviders
-                  .filter((agencyProvider) => agencyProvider.doddNumber !== '0')
-                  .map((agencyProvider, i) => (
-                    <AgencyProviderRow
-                      key={i}
-                      handleClick={() => handleClick(agencyProvider)}
-                      agencyProviderId={agencyProvider.agencyProviderId}
-                      doddNumber={agencyProvider.doddNumber}
-                      nationalProviderId={agencyProvider.nationalProviderId}
-                      firstName={agencyProvider.firstName}
-                      middleName={agencyProvider.middleName}
-                      lastName={agencyProvider.lastName}
-                      suffix={agencyProvider.suffix}
-                      businessName={agencyProvider.businessName}
-                      businessTIN={agencyProvider.businessTIN}
-                      businessAddress1={agencyProvider.businessAddress1}
-                      businessAddress2={agencyProvider.businessAddress2}
-                      businessCity={agencyProvider.businessCity}
-                      businessState={agencyProvider.businessState}
-                      businessZip={agencyProvider.businessZip}
-                      createdTimestamp={format(
-                        zonedTimeToUtc(
-                          agencyProvider.createdTimestamp,
-                          'America/New_York'
-                        ),
-                        "yyyy-MM-dd hh:mm aaaaa'm'"
-                      )}
-                      lastModifiedTimestamp={format(
-                        zonedTimeToUtc(
-                          agencyProvider.lastModifiedTimestamp,
-                          'America/New_York'
-                        ),
-                        "yyyy-MM-dd hh:mm aaaaa'm'"
-                      )}
-                    />
-                  ))}
+              {filteredRows &&
+                filteredRows.map((agencyProvider, i) => (
+                  <AgencyProviderRow
+                    key={i}
+                    handleClick={() => handleClick(agencyProvider)}
+                    agencyProviderId={agencyProvider.agencyProviderId}
+                    doddNumber={agencyProvider.doddNumber}
+                    nationalProviderId={agencyProvider.nationalProviderId}
+                    firstName={agencyProvider.firstName}
+                    middleName={agencyProvider.middleName}
+                    lastName={agencyProvider.lastName}
+                    suffix={agencyProvider.suffix}
+                    businessName={agencyProvider.businessName}
+                    businessTIN={agencyProvider.businessTIN}
+                    businessAddress1={agencyProvider.businessAddress1}
+                    businessAddress2={agencyProvider.businessAddress2}
+                    businessCity={agencyProvider.businessCity}
+                    businessState={agencyProvider.businessState}
+                    businessZip={agencyProvider.businessZip}
+                    createdTimestamp={format(
+                      zonedTimeToUtc(
+                        agencyProvider.createdTimestamp,
+                        'America/New_York'
+                      ),
+                      "yyyy-MM-dd hh:mm aaaaa'm'"
+                    )}
+                    lastModifiedTimestamp={format(
+                      zonedTimeToUtc(
+                        agencyProvider.lastModifiedTimestamp,
+                        'America/New_York'
+                      ),
+                      "yyyy-MM-dd hh:mm aaaaa'm'"
+                    )}
+                  />
+                ))}
             </TableBody>
           </Table>
         </TableContainer>
