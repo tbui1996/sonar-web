@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useMemo, ChangeEvent } from 'react';
 import {
   Button,
   Paper,
@@ -17,6 +17,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { zonedTimeToUtc, format } from 'date-fns-tz';
 import SearchBar from 'material-ui-search-bar';
 import FormControl from '@mui/material/FormControl';
+import { SyntheticEvent } from 'react-draft-wysiwyg';
 import AgencyProviderRow from './AgencyProviderRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -54,26 +55,26 @@ const AgencyProviders: React.FC = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const [searched, setSearched] = useState<string>('');
-  const [searchOption, setSearchOpen] = useState('Search By');
+  const [searchOption, setSearchOption] = useState('Search By');
 
-  const handleChange = (e: any) => {
-    setSearchOpen(e?.target.value);
+  const handleChange = (
+    event: ChangeEvent<{
+      name?: string | undefined;
+      value: string;
+      event: Event | SyntheticEvent;
+    }>
+  ) => {
+    setSearchOption(event?.target.value);
   };
 
   const [page, setPage] = useState(0);
   const PER_PAGE = 10;
-
   const [collection, setCollection] = useState<AgencyProviderDetails[]>();
-
   const [filterCollection, setFilteredCollection] = useState<
-    AgencyProviderDetails[]
-  >();
-
   useEffect(() => {
     setCollection(agencyProviders);
     setFilteredCollection(agencyProviders);
   }, [setCollection, agencyProviders]);
-
   const handleClick = useCallback(
     (agencyProvider: AgencyProviderDetails) => {
       setAgencyProviderToEdit(agencyProvider);
@@ -82,44 +83,31 @@ const AgencyProviders: React.FC = () => {
     [setIsEditDialogOpen, setAgencyProviderToEdit]
   );
 
-  const requestSearch = (searchedVal: string, searchOption: string) => {
-    let filteredRows;
-    const lowerCaseSearch = searchedVal.toLocaleLowerCase();
-    setPage(0);
-    if (lowerCaseSearch === '') {
-      setFilteredCollection(agencyProviders);
-    } else {
-      const storeAgencyProvder = collection;
-      if (searchOption === 'Provider Name') {
-        filteredRows = storeAgencyProvder?.filter(
-          (row) =>
-            row.firstName.toLowerCase().includes(lowerCaseSearch) ||
-            row.middleName.toLowerCase().includes(lowerCaseSearch) ||
-            row.lastName.toLowerCase().includes(lowerCaseSearch)
-        );
-        setFilteredCollection(filteredRows);
-      }
-
-      if (searchOption === 'Business Name') {
-        filteredRows = storeAgencyProvder?.filter((row) =>
-          row.businessName.toLowerCase().includes(lowerCaseSearch)
-        );
-        setFilteredCollection(filteredRows);
-      }
-
-      if (searchOption === 'Dodd Number') {
-        filteredRows = storeAgencyProvder?.filter((row) =>
-          row.doddNumber.includes(searchedVal)
-        );
-        setFilteredCollection(filteredRows);
-      }
+  const filteredRows = useMemo(() => {
+    const lowerCaseSearch = searched.toLocaleLowerCase();
+    if (searchOption === 'Provider Name') {
+      return agencyProviders?.filter(
+        (row) =>
+          row.firstName.toLowerCase().includes(lowerCaseSearch) ||
+          row.middleName.toLowerCase().includes(lowerCaseSearch) ||
+          row.lastName.toLowerCase().includes(lowerCaseSearch)
+      );
     }
-  };
 
-  const cancelSearch = () => {
-    setSearched('');
-    setFilteredCollection(collection);
-  };
+    if (searchOption === 'Business Name') {
+      return agencyProviders?.filter((row) =>
+        row.businessName.toLowerCase().includes(lowerCaseSearch)
+      );
+    }
+
+    if (searchOption === 'Dodd Number') {
+      return agencyProviders?.filter((row) =>
+        row.doddNumber.includes(searched)
+      );
+    }
+
+    return agencyProviders;
+  }, [agencyProviders, searchOption, searched]);
 
   return (
     <Page title="Agency Provider | Sonar">
@@ -159,10 +147,8 @@ const AgencyProviders: React.FC = () => {
               <SearchBar
                 placeholder={`Search By ${searchOption}`}
                 value={searched}
-                onChange={(searchVal: string) =>
-                  requestSearch(searchVal, searchOption)
-                }
-                onCancelSearch={() => cancelSearch()}
+                onChange={(searchVal: string) => setSearched(searchVal)}
+                onCancelSearch={() => setSearched('')}
               />
             )}
           </Toolbar>
@@ -189,44 +175,41 @@ const AgencyProviders: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filterCollection &&
-                filterCollection
-                  .filter((agencyProvider) => agencyProvider.doddNumber !== '0')
-                  .slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE)
-                  .map((agencyProvider, i) => (
-                    <AgencyProviderRow
-                      key={i}
-                      handleClick={() => handleClick(agencyProvider)}
-                      agencyProviderId={agencyProvider.agencyProviderId}
-                      doddNumber={agencyProvider.doddNumber}
-                      nationalProviderId={agencyProvider.nationalProviderId}
-                      firstName={agencyProvider.firstName}
-                      middleName={agencyProvider.middleName}
-                      lastName={agencyProvider.lastName}
-                      suffix={agencyProvider.suffix}
-                      businessName={agencyProvider.businessName}
-                      businessTIN={agencyProvider.businessTIN}
-                      businessAddress1={agencyProvider.businessAddress1}
-                      businessAddress2={agencyProvider.businessAddress2}
-                      businessCity={agencyProvider.businessCity}
-                      businessState={agencyProvider.businessState}
-                      businessZip={agencyProvider.businessZip}
-                      createdTimestamp={format(
-                        zonedTimeToUtc(
-                          agencyProvider.createdTimestamp,
-                          'America/New_York'
-                        ),
-                        "yyyy-MM-dd hh:mm aaaaa'm'"
-                      )}
-                      lastModifiedTimestamp={format(
-                        zonedTimeToUtc(
-                          agencyProvider.lastModifiedTimestamp,
-                          'America/New_York'
-                        ),
-                        "yyyy-MM-dd hh:mm aaaaa'm'"
-                      )}
-                    />
-                  ))}
+              {filteredRows &&
+                filteredRows.map((agencyProvider, i) => (
+                  <AgencyProviderRow
+                    key={i}
+                    handleClick={() => handleClick(agencyProvider)}
+                    agencyProviderId={agencyProvider.agencyProviderId}
+                    doddNumber={agencyProvider.doddNumber}
+                    nationalProviderId={agencyProvider.nationalProviderId}
+                    firstName={agencyProvider.firstName}
+                    middleName={agencyProvider.middleName}
+                    lastName={agencyProvider.lastName}
+                    suffix={agencyProvider.suffix}
+                    businessName={agencyProvider.businessName}
+                    businessTIN={agencyProvider.businessTIN}
+                    businessAddress1={agencyProvider.businessAddress1}
+                    businessAddress2={agencyProvider.businessAddress2}
+                    businessCity={agencyProvider.businessCity}
+                    businessState={agencyProvider.businessState}
+                    businessZip={agencyProvider.businessZip}
+                    createdTimestamp={format(
+                      zonedTimeToUtc(
+                        agencyProvider.createdTimestamp,
+                        'America/New_York'
+                      ),
+                      "yyyy-MM-dd hh:mm aaaaa'm'"
+                    )}
+                    lastModifiedTimestamp={format(
+                      zonedTimeToUtc(
+                        agencyProvider.lastModifiedTimestamp,
+                        'America/New_York'
+                      ),
+                      "yyyy-MM-dd hh:mm aaaaa'm'"
+                    )}
+                  />
+                ))}
             </TableBody>
           </Table>
         </TableContainer>
