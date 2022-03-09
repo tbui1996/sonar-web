@@ -44,7 +44,7 @@ const setup = () => {
   );
 
   const title = screen.getByText(/Associate file/i);
-  const input = screen.getByPlaceholderText(/Enter Insurance ID/i);
+  const input = screen.getByPlaceholderText(/Enter Medicaid ID/i);
   const cancelButton = screen.getByRole('button', {
     name: /cancel/i
   });
@@ -68,7 +68,7 @@ test('Renders with no crashing', () => {
   expect(title).toBeInTheDocument();
 });
 
-test('Should call updateData when user enters insurance ID input', () => {
+test('Should call updateData when user enters medicaid ID input', () => {
   const { input } = setup();
   userEvent.type(input, '987654');
   expect(mockedUpdateData).toHaveBeenCalled();
@@ -96,7 +96,7 @@ test('Submit button should be disabled if no changes and after file association 
       handleTableDisplay={mockedHandleTableDisplay}
     />
   );
-  const input = screen.getByPlaceholderText(/Enter Insurance ID/i);
+  const input = screen.getByPlaceholderText(/Enter Medicaid ID/i);
   userEvent.type(input, '4');
   const submitButton = screen.getByRole('button', {
     name: /submit/i

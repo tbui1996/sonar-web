@@ -80,8 +80,8 @@ export default function FileAssociate({
           fullWidth
           required
           disabled={loading}
-          label="Insurance ID"
-          placeholder="Enter Insurance ID"
+          label="Medicaid ID"
+          placeholder="Enter Medicaid ID"
           variant="outlined"
           value={data.memberId}
           onChange={onChangeHandler}

@@ -101,7 +101,7 @@ test('The table should display new associated id after submitting form', async (
     expect(screen.getByText(/Associate file/i)).toBeInTheDocument()
   );
 
-  const idInput = screen.getByPlaceholderText(/Enter Insurance ID/i);
+  const idInput = screen.getByPlaceholderText(/Enter Medicaid ID/i);
   userEvent.type(idInput, '99999');
 
   const submitButton = screen.getByRole('button', {

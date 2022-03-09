@@ -98,11 +98,11 @@ export default function AccordionSidebar({ activeSession }: AccordionProps) {
                   variant="overline"
                   className={classes.patientInfoTitle}
                 >
-                  Insurance ID:
+                  Medicaid ID:
                 </Typography>
                 <Typography variant="body2">
-                  {patientInfo.insuranceID
-                    ? patientInfo.insuranceID
+                  {patientInfo.medicaidID
+                    ? patientInfo.medicaidID
                     : 'Unavailable'}
                 </Typography>
               </div>
