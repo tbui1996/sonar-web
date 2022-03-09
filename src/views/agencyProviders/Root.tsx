@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, ChangeEvent } from 'react';
+import { useState, useCallback, useMemo, ChangeEvent } from 'react';
 import {
   Button,
   Paper,
@@ -45,11 +45,9 @@ const AgencyProviders: React.FC = () => {
     setAgencyProviderToEdit
   ] = useState<AgencyProviderDetails>();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [rows, setRows] = useState<AgencyProviderDetails[] | undefined>(
-    agencyProviders
-  );
+
   const [searched, setSearched] = useState<string>('');
-  const [searchOption, setSearchOpen] = useState('Search By');
+  const [searchOption, setSearchOption] = useState('Search By');
 
   const handleChange = (
     event: ChangeEvent<{
@@ -58,12 +56,8 @@ const AgencyProviders: React.FC = () => {
       event: Event | SyntheticEvent;
     }>
   ) => {
-    setSearchOpen(event?.target.value);
+    setSearchOption(event?.target.value);
   };
-
-  useEffect(() => {
-    setRows(agencyProviders);
-  }, [agencyProviders]);
 
   const handleClick = useCallback(
     (agencyProvider: AgencyProviderDetails) => {
@@ -73,11 +67,10 @@ const AgencyProviders: React.FC = () => {
     [setIsEditDialogOpen, setAgencyProviderToEdit]
   );
 
-  const requestSearch = (searchedVal: string, searchOption: string) => {
-    let filteredRows;
-    const lowerCaseSearch = searchedVal.toLocaleLowerCase();
+  const filteredRows = useMemo(() => {
+    const lowerCaseSearch = searched.toLocaleLowerCase();
     if (searchOption === 'Provider Name') {
-      filteredRows = agencyProviders?.filter(
+      return agencyProviders?.filter(
         (row) =>
           row.firstName.toLowerCase().includes(lowerCaseSearch) ||
           row.middleName.toLowerCase().includes(lowerCaseSearch) ||
@@ -86,23 +79,22 @@ const AgencyProviders: React.FC = () => {
     }
 
     if (searchOption === 'Business Name') {
-      filteredRows = agencyProviders?.filter((row) =>
+      return agencyProviders?.filter((row) =>
         row.businessName.toLowerCase().includes(lowerCaseSearch)
       );
     }
 
     if (searchOption === 'Dodd Number') {
-      filteredRows = agencyProviders?.filter((row) =>
-        row.doddNumber.includes(searchedVal)
+      return agencyProviders?.filter((row) =>
+        row.doddNumber.includes(searched)
       );
     }
 
-    setRows(filteredRows);
-  };
+    return agencyProviders;
+  }, [agencyProviders, searchOption, searched]);
 
   const cancelSearch = () => {
     setSearched('');
-    requestSearch(searched, searchOption);
   };
 
   return (
@@ -143,9 +135,7 @@ const AgencyProviders: React.FC = () => {
               <SearchBar
                 placeholder={`Search By ${searchOption}`}
                 value={searched}
-                onChange={(searchVal: string) =>
-                  requestSearch(searchVal, searchOption)
-                }
+                onChange={(searchVal: string) => setSearched(searchVal)}
                 onCancelSearch={() => cancelSearch()}
               />
             )}
@@ -173,8 +163,8 @@ const AgencyProviders: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows &&
-                rows.map((agencyProvider, i) => (
+              {filteredRows &&
+                filteredRows.map((agencyProvider, i) => (
                   <AgencyProviderRow
                     key={i}
                     handleClick={() => handleClick(agencyProvider)}
