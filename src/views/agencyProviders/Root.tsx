@@ -220,7 +220,7 @@ const AgencyProviders: React.FC = () => {
         classes={{ ul: classes.justify }}
         page={page + 1}
         onChange={(event, value) => setPage(value - 1)}
-        count={Math.ceil((filterCollection?.length || 0) / PER_PAGE)}
+        count={Math.ceil((filteredRows?.length || 0) / PER_PAGE)}
         shape="rounded"
         size="small"
         sx={{ paddingBottom: '12px' }}
