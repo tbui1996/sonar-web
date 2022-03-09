@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, ChangeEvent } from 'react';
+import { useState, useCallback, useMemo, useEffect, ChangeEvent } from 'react';
 import {
   Button,
   Paper,
@@ -70,6 +70,8 @@ const AgencyProviders: React.FC = () => {
   const [page, setPage] = useState(0);
   const PER_PAGE = 10;
 
+  const [collection, setCollection] = useState<AgencyProviderDetails[]>();
+
   const handleClick = useCallback(
     (agencyProvider: AgencyProviderDetails) => {
       setAgencyProviderToEdit(agencyProvider);
@@ -78,10 +80,16 @@ const AgencyProviders: React.FC = () => {
     [setIsEditDialogOpen, setAgencyProviderToEdit]
   );
 
+  useEffect(() => {
+    setCollection(agencyProviders);
+  }, [searched, agencyProviders, setPage]);
+
   const filteredRows = useMemo(() => {
     const lowerCaseSearch = searched.toLocaleLowerCase();
+    setPage(0);
+    const ap = collection;
     if (searchOption === 'Provider Name') {
-      return agencyProviders?.filter(
+      return ap?.filter(
         (row) =>
           row.firstName.toLowerCase().includes(lowerCaseSearch) ||
           row.middleName.toLowerCase().includes(lowerCaseSearch) ||
@@ -90,19 +98,17 @@ const AgencyProviders: React.FC = () => {
     }
 
     if (searchOption === 'Business Name') {
-      return agencyProviders?.filter((row) =>
+      return ap?.filter((row) =>
         row.businessName.toLowerCase().includes(lowerCaseSearch)
       );
     }
 
     if (searchOption === 'Dodd Number') {
-      return agencyProviders?.filter((row) =>
-        row.doddNumber.includes(searched)
-      );
+      return ap?.filter((row) => row.doddNumber.includes(searched));
     }
 
     return agencyProviders;
-  }, [agencyProviders, searchOption, searched]);
+  }, [agencyProviders, collection, searchOption, searched]);
 
   return (
     <Page title="Agency Provider | Sonar">
@@ -171,40 +177,43 @@ const AgencyProviders: React.FC = () => {
             </TableHead>
             <TableBody>
               {filteredRows &&
-                filteredRows.map((agencyProvider, i) => (
-                  <AgencyProviderRow
-                    key={i}
-                    handleClick={() => handleClick(agencyProvider)}
-                    agencyProviderId={agencyProvider.agencyProviderId}
-                    doddNumber={agencyProvider.doddNumber}
-                    nationalProviderId={agencyProvider.nationalProviderId}
-                    firstName={agencyProvider.firstName}
-                    middleName={agencyProvider.middleName}
-                    lastName={agencyProvider.lastName}
-                    suffix={agencyProvider.suffix}
-                    businessName={agencyProvider.businessName}
-                    businessTIN={agencyProvider.businessTIN}
-                    businessAddress1={agencyProvider.businessAddress1}
-                    businessAddress2={agencyProvider.businessAddress2}
-                    businessCity={agencyProvider.businessCity}
-                    businessState={agencyProvider.businessState}
-                    businessZip={agencyProvider.businessZip}
-                    createdTimestamp={format(
-                      zonedTimeToUtc(
-                        agencyProvider.createdTimestamp,
-                        'America/New_York'
-                      ),
-                      "yyyy-MM-dd hh:mm aaaaa'm'"
-                    )}
-                    lastModifiedTimestamp={format(
-                      zonedTimeToUtc(
-                        agencyProvider.lastModifiedTimestamp,
-                        'America/New_York'
-                      ),
-                      "yyyy-MM-dd hh:mm aaaaa'm'"
-                    )}
-                  />
-                ))}
+                filteredRows
+                  .slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE)
+                  .filter((agencyProvider) => agencyProvider.doddNumber !== '0')
+                  .map((agencyProvider, i) => (
+                    <AgencyProviderRow
+                      key={i}
+                      handleClick={() => handleClick(agencyProvider)}
+                      agencyProviderId={agencyProvider.agencyProviderId}
+                      doddNumber={agencyProvider.doddNumber}
+                      nationalProviderId={agencyProvider.nationalProviderId}
+                      firstName={agencyProvider.firstName}
+                      middleName={agencyProvider.middleName}
+                      lastName={agencyProvider.lastName}
+                      suffix={agencyProvider.suffix}
+                      businessName={agencyProvider.businessName}
+                      businessTIN={agencyProvider.businessTIN}
+                      businessAddress1={agencyProvider.businessAddress1}
+                      businessAddress2={agencyProvider.businessAddress2}
+                      businessCity={agencyProvider.businessCity}
+                      businessState={agencyProvider.businessState}
+                      businessZip={agencyProvider.businessZip}
+                      createdTimestamp={format(
+                        zonedTimeToUtc(
+                          agencyProvider.createdTimestamp,
+                          'America/New_York'
+                        ),
+                        "yyyy-MM-dd hh:mm aaaaa'm'"
+                      )}
+                      lastModifiedTimestamp={format(
+                        zonedTimeToUtc(
+                          agencyProvider.lastModifiedTimestamp,
+                          'America/New_York'
+                        ),
+                        "yyyy-MM-dd hh:mm aaaaa'm'"
+                      )}
+                    />
+                  ))}
             </TableBody>
           </Table>
         </TableContainer>
