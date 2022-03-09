@@ -1,4 +1,11 @@
-import { useState, useCallback, useEffect, Key } from 'react';
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  Key,
+  ChangeEvent
+} from 'react';
 import {
   Box,
   Drawer,
@@ -21,6 +28,7 @@ import {
 import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
 import SearchBar from 'material-ui-search-bar';
 import FormControl from '@mui/material/FormControl';
+import { SyntheticEvent } from 'react-draft-wysiwyg';
 import AppointmentRow, { AppointmentDetails } from './AppointmentRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -92,45 +100,41 @@ const Appointments: React.FC = () => {
 
   const [collection, setCollection] = useState<AppointmentDetails[]>();
 
-  const [filterCollection, setFilteredCollection] = useState<
-    AppointmentDetails[]
-  >();
-
-  const searchData = (val: any, searchOption: string) => {
-    const query = val.toLowerCase();
-    setPage(0);
-    if (query === '') {
-      setFilteredCollection(appointments);
-    } else {
-      const apts = collection;
-      if (searchOption === 'Provider Name') {
-        const data = apts?.filter((item) =>
-          item.providerFullName.toLowerCase().includes(query)
-        );
-        setFilteredCollection(data);
-      }
-      if (searchOption === 'Patient Name') {
-        const data = apts?.filter(
-          (item) =>
-            item.firstName.toLowerCase().includes(query) ||
-            item.middleName.toLowerCase().includes(query) ||
-            item.lastName.toLowerCase().includes(query)
-        );
-        setFilteredCollection(data);
-      }
-    }
-  };
-
   const [searched, setSearched] = useState<string>('');
-  const [searchOption, setSearchOpen] = useState('Search By');
+  const [searchOption, setSearchOption] = useState('Search By');
 
-  const handleChange = (e: any) => {
-    setSearchOpen(e?.target.value);
+  const filteredRows = useMemo(() => {
+    const query = searched.toLowerCase();
+    setPage(0);
+    const apts = collection;
+    if (searchOption === 'Provider Name') {
+      return apts?.filter((item) =>
+        item.providerFullName.toLowerCase().includes(query)
+      );
+    }
+    if (searchOption === 'Patient Name') {
+      return apts?.filter(
+        (item) =>
+          item.firstName.toLowerCase().includes(query) ||
+          item.middleName.toLowerCase().includes(query) ||
+          item.lastName.toLowerCase().includes(query)
+      );
+    }
+    return appointments;
+  }, [appointments, searchOption, searched, collection]);
+
+  const handleChange = (
+    event: ChangeEvent<{
+      name?: string | undefined;
+      value: string;
+      event: Event | SyntheticEvent;
+    }>
+  ) => {
+    setSearchOption(event?.target.value);
   };
 
   useEffect(() => {
     setCollection(appointments);
-    setFilteredCollection(appointments);
   }, [searched, appointments, setPage]);
 
   const selectedAppointments = appointments?.filter(
@@ -163,11 +167,6 @@ const Appointments: React.FC = () => {
     },
     [setAppointmentToView, setIsViewDialogOpen]
   );
-
-  const cancelSearch = () => {
-    setFilteredCollection(collection);
-    setSearched('');
-  };
 
   return (
     <Page title="Appointments | Sonar">
@@ -220,8 +219,8 @@ const Appointments: React.FC = () => {
               <SearchBar
                 placeholder={`Search by ${searchOption}`}
                 value={searched}
-                onChange={(e) => searchData(e, searchOption)}
-                onCancelSearch={() => cancelSearch()}
+                onChange={(searchVal: string) => setSearched(searchVal)}
+                onCancelSearch={() => setSearched('')}
               />
             )}
           </Toolbar>
@@ -285,8 +284,8 @@ const Appointments: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filterCollection &&
-                filterCollection
+              {filteredRows &&
+                filteredRows
                   .slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE)
                   .map(
                     (
@@ -425,7 +424,7 @@ const Appointments: React.FC = () => {
         classes={{ ul: classes.justify }}
         page={page + 1}
         onChange={(event, value) => setPage(value - 1)}
-        count={Math.ceil((filterCollection?.length || 0) / PER_PAGE)}
+        count={Math.ceil((filteredRows?.length || 0) / PER_PAGE)}
         shape="rounded"
         size="small"
         sx={{ paddingBottom: '12px' }}
