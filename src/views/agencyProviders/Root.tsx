@@ -30,10 +30,6 @@ import EditAgencyProviderDialog from './EditAgencyProviderDialog';
 const useStyles = makeStyles((theme) => ({
   searchRoot: {
     marginLeft: theme.spacing(1),
-    '&.Mui-disabled': {
-      pointerEvents: 'auto',
-      cursor: 'help'
-    },
     width: '180px',
     height: '40px',
     padding: '0px 0px 2.25px 0px'
