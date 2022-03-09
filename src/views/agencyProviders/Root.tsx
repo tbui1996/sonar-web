@@ -60,7 +60,7 @@ const AgencyProviders: React.FC = () => {
 
   useEffect(() => {
     setRows(agencyProviders);
-  }, [setRows, agencyProviders]);
+  }, [agencyProviders]);
 
   const handleClick = useCallback(
     (agencyProvider: AgencyProviderDetails) => {
