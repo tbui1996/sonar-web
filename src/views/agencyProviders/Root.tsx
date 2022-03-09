@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, ChangeEvent } from 'react';
 import {
   Button,
   Paper,
@@ -16,6 +16,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { zonedTimeToUtc, format } from 'date-fns-tz';
 import SearchBar from 'material-ui-search-bar';
 import FormControl from '@mui/material/FormControl';
+import { SyntheticEvent } from 'react-draft-wysiwyg';
 import AgencyProviderRow from './AgencyProviderRow';
 import Page from '../../components/Page';
 import HeaderDashboard from '../../components/HeaderDashboard';
@@ -54,8 +55,14 @@ const AgencyProviders: React.FC = () => {
   const [searched, setSearched] = useState<string>('');
   const [searchOption, setSearchOpen] = useState('Search By');
 
-  const handleChange = (e: any) => {
-    setSearchOpen(e?.target.value);
+  const handleChange = (
+    event: ChangeEvent<{
+      name?: string | undefined;
+      value: string;
+      event: Event | SyntheticEvent;
+    }>
+  ) => {
+    setSearchOpen(event?.target.value);
   };
 
   useEffect(() => {
