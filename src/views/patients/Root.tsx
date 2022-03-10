@@ -13,7 +13,7 @@ import {
   TableRow
 } from '@material-ui/core';
 import { zonedTimeToUtc, format, utcToZonedTime } from 'date-fns-tz';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import SearchBar from 'material-ui-search-bar';
 import CreatePatientDialog from './CreatePatientDialog';
 import PatientRow, { PatientDetails } from './PatientRow';
@@ -48,14 +48,8 @@ const Patients: React.FC = () => {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [searched, setSearched] = useState<string>('');
 
-  const [collection, setCollection] = useState<PatientDetails[]>();
-
   const [page, setPage] = useState(0);
   const PER_PAGE = 10;
-
-  useEffect(() => {
-    setCollection(patients);
-  }, [setCollection, patients]);
 
   const handleClick = useCallback(
     (patient: PatientDetails) => {
@@ -74,15 +68,14 @@ const Patients: React.FC = () => {
   const filteredRows = useMemo(() => {
     const query = searched.toLowerCase();
     setPage(0);
-    const pt = collection;
 
-    return pt?.filter(
+    return patients?.filter(
       (item) =>
         item.patientFirstName.toLowerCase().includes(query) ||
         item.patientMiddleName.toLowerCase().includes(query) ||
         item.patientLastName.toLowerCase().includes(query)
     );
-  }, [searched, collection]);
+  }, [searched, patients]);
 
   const handleViewPatient = useCallback(
     (patient: PatientDetails) => {
