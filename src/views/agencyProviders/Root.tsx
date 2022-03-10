@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect, ChangeEvent } from 'react';
+import { useState, useCallback, useMemo, ChangeEvent } from 'react';
 import {
   Button,
   Paper,
@@ -70,8 +70,6 @@ const AgencyProviders: React.FC = () => {
   const [page, setPage] = useState(0);
   const PER_PAGE = 10;
 
-  const [collection, setCollection] = useState<AgencyProviderDetails[]>();
-
   const handleClick = useCallback(
     (agencyProvider: AgencyProviderDetails) => {
       setAgencyProviderToEdit(agencyProvider);
@@ -80,16 +78,11 @@ const AgencyProviders: React.FC = () => {
     [setIsEditDialogOpen, setAgencyProviderToEdit]
   );
 
-  useEffect(() => {
-    setCollection(agencyProviders);
-  }, [searched, agencyProviders, setPage]);
-
   const filteredRows = useMemo(() => {
     const lowerCaseSearch = searched.toLocaleLowerCase();
     setPage(0);
-    const ap = collection;
     if (searchOption === 'Provider Name') {
-      return ap?.filter(
+      return agencyProviders?.filter(
         (row) =>
           row.firstName.toLowerCase().includes(lowerCaseSearch) ||
           row.middleName.toLowerCase().includes(lowerCaseSearch) ||
@@ -98,17 +91,19 @@ const AgencyProviders: React.FC = () => {
     }
 
     if (searchOption === 'Business Name') {
-      return ap?.filter((row) =>
+      return agencyProviders?.filter((row) =>
         row.businessName.toLowerCase().includes(lowerCaseSearch)
       );
     }
 
     if (searchOption === 'Dodd Number') {
-      return ap?.filter((row) => row.doddNumber.includes(searched));
+      return agencyProviders?.filter((row) =>
+        row.doddNumber.includes(searched)
+      );
     }
 
     return agencyProviders;
-  }, [agencyProviders, collection, searchOption, searched]);
+  }, [agencyProviders, searchOption, searched]);
 
   return (
     <Page title="Agency Provider | Sonar">
