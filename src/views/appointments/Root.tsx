@@ -1,11 +1,4 @@
-import {
-  useState,
-  useCallback,
-  useMemo,
-  useEffect,
-  Key,
-  ChangeEvent
-} from 'react';
+import { useState, useCallback, useMemo, Key, ChangeEvent } from 'react';
 import {
   Box,
   Drawer,
@@ -98,22 +91,19 @@ const Appointments: React.FC = () => {
   const [page, setPage] = useState(0);
   const PER_PAGE = 10;
 
-  const [collection, setCollection] = useState<AppointmentDetails[]>();
-
   const [searched, setSearched] = useState<string>('');
   const [searchOption, setSearchOption] = useState('Search By');
 
   const filteredRows = useMemo(() => {
     const query = searched.toLowerCase();
     setPage(0);
-    const apts = collection;
     if (searchOption === 'Provider Name') {
-      return apts?.filter((item) =>
+      return appointments?.filter((item) =>
         item.providerFullName.toLowerCase().includes(query)
       );
     }
     if (searchOption === 'Patient Name') {
-      return apts?.filter(
+      return appointments?.filter(
         (item) =>
           item.firstName.toLowerCase().includes(query) ||
           item.middleName.toLowerCase().includes(query) ||
@@ -121,7 +111,7 @@ const Appointments: React.FC = () => {
       );
     }
     return appointments;
-  }, [appointments, searchOption, searched, collection]);
+  }, [appointments, searchOption, searched]);
 
   const handleChange = (
     event: ChangeEvent<{
@@ -132,10 +122,6 @@ const Appointments: React.FC = () => {
   ) => {
     setSearchOption(event?.target.value);
   };
-
-  useEffect(() => {
-    setCollection(appointments);
-  }, [searched, appointments, setPage]);
 
   const selectedAppointments = appointments?.filter(
     (f) => selectedAppointmentIds[f.appointmentId]
